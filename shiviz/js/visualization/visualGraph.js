@@ -35,6 +35,10 @@ function VisualGraph(graph, layout, hostPermutation) {
     /** @private */
     this.links = {}; // A mapping of edge IDs to VisualEdges
 
+    this.timeRange = graph.timeRange;
+
+    //window.alert(this.timeRange);
+
     this.graph.addObserver(AddNodeEvent, this, function(event, g) {
         g.addVisualNodeByNode(event.getNewNode());
         g.removeVisualEdgeByNodes(event.getPrev(), event.getNext());

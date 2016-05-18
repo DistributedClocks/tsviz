@@ -226,11 +226,11 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         }
 
         var labelGraph = {};
-
+        //Get the labels (names of the executions)
         var labels = parser.getLabels();
-        labels.forEach(function(label) {
+        labels.forEach(function(label) { //For each execution
             var graph = new ModelGraph(parser.getLogEvents(label));
-            labelGraph[label] = graph;
+            labelGraph[label] = graph; //Generate a modelGraph
 
             hostPermutation.addGraph(graph);
             if (sortType == "order") {

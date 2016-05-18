@@ -69,6 +69,12 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
 
     this.height = 0;
 
+    this.timeScale = d3.scale.linear()
+        .domain(visualGraph.timeRange)
+        //.domain([0,1])
+        .range([0,100000]);
+
+    //window.alert(this.timeScale);
     var nodeToNumParents = {};
     var nodeToChildren = {};
 
@@ -104,7 +110,7 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     }
 
     
-     var widthPerHost = Math.max(this.width / hosts.length, Global.MIN_HOST_WIDTH);
+    var widthPerHost = Math.max(this.width / hosts.length, Global.MIN_HOST_WIDTH);
     var leftMargin = widthPerHost / 2;
 
     while (noParents.length > 0) {
@@ -120,7 +126,8 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
             if (nodeToNumParents[child.getId()] == 0) {
                 noParents.push(child);
             }
-            child.setY(Math.max(child.getY(), current.getY() + this.delta));
+            //child.setY(Math.max(child.getY(), current.getY() + this.delta));
+            child.setY(this.timeScale(child.getNode().getFirstLogEvent().fields.timestamp));
         }
     }
 

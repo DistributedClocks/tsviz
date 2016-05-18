@@ -29,6 +29,15 @@ function ModelGraph(logEvents) {
     initPrevNext();
     initParentChild();
 
+    if(logEvents.length == 0){
+        this.timeRange = [0,1];
+    }else{
+        this.timeRange = [logEvents[0].fields.timestamp, logEvents[logEvents.length-1].fields.timestamp];
+    }
+    
+
+    //window.alert(timeRange);
+
     /*
      * Create and add nodes to host arrays. Initialize hosts if undefined by
      * adding them to hostSet and assigning head and tail dummy nodes
@@ -72,15 +81,15 @@ function ModelGraph(logEvents) {
 
     // Generate linear linked list among nodes in same host
     function initPrevNext() {
-        for (var host in hostToNodes) {
-            var array = hostToNodes[host];
-            array.sort(function(a, b) {
+        for (var host in hostToNodes) { //for each host
+            var array = hostToNodes[host]; //grab the nodes for it
+            array.sort(function(a, b) { //sort nodes in vector timestamp order
                 return getVT(a).compareToLocal(getVT(b));
             });
 
-            for (var i = 0; i < array.length; i++) {
+            for (var i = 0; i < array.length; i++) { //for each node
                 var node = array[i];
-                if (getTime(node) != i + 1) {
+                if (getTime(node) != i + 1) { //check exceptions (in execution)
                     throw i == 0 ? getStartValueException(node) : getClockIncrementException(node, array[i - 1]);
                 }
             }
@@ -285,6 +294,9 @@ ModelGraph.prototype.constructor = ModelGraph;
 ModelGraph.prototype.clone = function() {
     var newGraph = new ModelGraph([]);
     newGraph.hosts = this.getHosts();
+
+    newGraph.timeRange = this.timeRange;
+    console.log("Entered clone method");
 
     var allNodes = this.getAllNodes();
     var oldToNewNode = {};
