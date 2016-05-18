@@ -175,7 +175,7 @@ View.prototype.draw = function(viewPosition) {
     drawLinks();
     drawNodes();
     drawHosts();
-    drawLogLines();
+    //drawLogLines();
 
     // Hide line highlight
     $(".highlight").hide();

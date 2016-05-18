@@ -36,6 +36,7 @@ function VisualGraph(graph, layout, hostPermutation) {
     this.links = {}; // A mapping of edge IDs to VisualEdges
 
     this.timeRange = graph.timeRange;
+    this.minDistance = graph.minDistance;
 
     //window.alert(this.timeRange);
 

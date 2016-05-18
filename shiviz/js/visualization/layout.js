@@ -69,10 +69,19 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
 
     this.height = 0;
 
+    var offset = 100;
+    var minDistPix = 10;
+    var timeStart = visualGraph.timeRange[0];
+    var timeEnd = visualGraph.timeRange[1];
+
+    var rangeEnd = offset + (((timeEnd - timeStart)/visualGraph.minDistance) * minDistPix);
+    var rangeStart = offset;
+
+    console.log(timeEnd - timeStart, visualGraph.minDistance, timeStart, timeEnd, rangeEnd);
     this.timeScale = d3.scale.linear()
         .domain(visualGraph.timeRange)
         //.domain([0,1])
-        .range([0,100000]);
+        .range([rangeStart,rangeEnd]);
 
     //window.alert(this.timeScale);
     var nodeToNumParents = {};

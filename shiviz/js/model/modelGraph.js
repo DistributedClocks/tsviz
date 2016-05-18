@@ -30,8 +30,16 @@ function ModelGraph(logEvents) {
     initParentChild();
 
     if(logEvents.length == 0){
+        this.minDistance = 0;
         this.timeRange = [0,1];
     }else{
+        this.minDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp); 
+        for(var i = 1; i < logEvents.length; i++){
+            var localDistance = Math.abs(logEvents[i].fields.timestamp - logEvents[i-1].fields.timestamp);
+            if(localDistance < this.minDistance){
+                this.minDistance = localDistance;
+            }
+        }
         this.timeRange = [logEvents[0].fields.timestamp, logEvents[logEvents.length-1].fields.timestamp];
     }
     
@@ -294,7 +302,7 @@ ModelGraph.prototype.constructor = ModelGraph;
 ModelGraph.prototype.clone = function() {
     var newGraph = new ModelGraph([]);
     newGraph.hosts = this.getHosts();
-
+    newGraph.minDistance = this.minDistance;
     newGraph.timeRange = this.timeRange;
     console.log("Entered clone method");
 
