@@ -60,7 +60,7 @@ function ModelGraph(logEvents) {
         this.timeRange = [this.minTimestamp, this.maxTimestamp];
     }
     // this.minDistance = realminDistance;
-    this.minDistance = 1000; //miliseconds
+    this.minDistance = 1; //miliseconds
     console.log("realminDistance: " + this.minDistance);
     // console.log("mindistance: " + this.minDistance);
     console.log("minTimestamp: " + this.minTimestamp);

@@ -70,7 +70,7 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     this.height = 0;
 
     var offset = 56;
-    var minDistPix = 30;
+    var minDistPix = 2;
     var timeStart = visualGraph.timeRange[0];
     var timeEnd = visualGraph.timeRange[1];
 
