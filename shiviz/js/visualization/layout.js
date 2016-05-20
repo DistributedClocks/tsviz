@@ -69,8 +69,8 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
 
     this.height = 0;
 
-    var offset = 100;
-    var minDistPix = 10;
+    var offset = 56;
+    var minDistPix = 30;
     var timeStart = visualGraph.timeRange[0];
     var timeEnd = visualGraph.timeRange[1];
 
@@ -111,7 +111,8 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
             noParents.push(node);
         }
     }
-
+    console.log("number of nodes" + nodes.length);
+    console.log("number of noparents" + noParents.length);
     var hosts = hostPermutation.getHostsAndFilter(visualGraph.getHosts());
     var hostNameToIndex = {};
     for (var i = 0; i < hosts.length; i++) {

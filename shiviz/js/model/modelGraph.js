@@ -33,18 +33,37 @@ function ModelGraph(logEvents) {
         this.minDistance = 0;
         this.timeRange = [0,1];
     }else{
-        this.minDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp); 
-        for(var i = 1; i < logEvents.length; i++){
-            var localDistance = Math.abs(logEvents[i].fields.timestamp - logEvents[i-1].fields.timestamp);
-            if(localDistance < this.minDistance){
-                this.minDistance = localDistance;
+        this.minDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
+        // this.minDistance = 1;
+        //window.alert("mindistance: " + this.minDistance);
+        var localDistance = 0;
+        this.minTimestamp = logEvents[0].fields.timestamp;
+        this.maxTimestamp = 0;
+        console.log("number of logEvents:  " + logEvents.length);
+
+        //CALCULATE REAL MINIMUM DISTANCE BETWEEN TWO EVENTS
+        var realminDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
+        for (var i = 0; i < logEvents.length; i++) {      
+            if(logEvents[i].fields.timestamp < this.minTimestamp){
+                this.minTimestamp = logEvents[i].fields.timestamp;
+            }
+            if(logEvents[i].fields.timestamp > this.maxTimestamp){
+                this.maxTimestamp = logEvents[i].fields.timestamp
+            }  
+            for (var j = i+1; j < logEvents.length; j++) {
+                localDistance = Math.abs(logEvents[i].fields.timestamp - logEvents[j].fields.timestamp);
+                if((localDistance < realminDistance) && localDistance > 0){
+                    realminDistance = localDistance;
+                }
             }
         }
-        this.timeRange = [logEvents[0].fields.timestamp, logEvents[logEvents.length-1].fields.timestamp];
+        this.timeRange = [this.minTimestamp, this.maxTimestamp];
     }
-    
-
-    //window.alert(timeRange);
+    // this.minDistance = realminDistance;
+    this.minDistance = 1000; //miliseconds
+    console.log("realminDistance: " + this.minDistance);
+    // console.log("mindistance: " + this.minDistance);
+    console.log("minTimestamp: " + this.minTimestamp);
 
     /*
      * Create and add nodes to host arrays. Initialize hosts if undefined by
