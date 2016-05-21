@@ -473,15 +473,17 @@ section.input .left {
 }
 
 .visualization #graph {
-  margin-left: 264pt;
+  margin-left: 0pt;
 }
 
 /* Searchbar */
 #searchbar {
+  margin-left: 150pt;
+  /*width: calc(100% - 240px);*/
   position: fixed;
   top: 0;
   height: 2em;
-  padding: 2em 0;
+  padding: 2em 4em;
   background: #fff;
   z-index: 4;
 }
@@ -709,6 +711,7 @@ svg {
 }
 
 #vizContainer {
+  /*margin-left: 50pt;*/
   margin-top: 4em;
   white-space: nowrap;
 }
@@ -735,6 +738,7 @@ svg {
 
 /* hostBar */
 #hostBar {
+  /*margin-left: 50pt;*/
   position: fixed;
   background: white;
   z-index: 2;
@@ -1052,3 +1056,4 @@ svg#defs {
   z-index: 98;
   background: rgba(255, 255, 255, 0.8);
 }
+

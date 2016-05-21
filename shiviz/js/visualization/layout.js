@@ -77,7 +77,7 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     var rangeEnd = offset + (((timeEnd - timeStart)/visualGraph.minDistance) * minDistPix);
     var rangeStart = offset;
 
-    console.log(timeEnd - timeStart, visualGraph.minDistance, timeStart, timeEnd, rangeEnd);
+    // console.log(timeEnd - timeStart, visualGraph.minDistance, timeStart, timeEnd, rangeEnd);
     this.timeScale = d3.scale.linear()
         .domain(visualGraph.timeRange)
         //.domain([0,1])
@@ -111,8 +111,8 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
             noParents.push(node);
         }
     }
-    console.log("number of nodes" + nodes.length);
-    console.log("number of noparents" + noParents.length);
+    // console.log("number of nodes" + nodes.length);
+    // console.log("number of noparents" + noParents.length);
     var hosts = hostPermutation.getHostsAndFilter(visualGraph.getHosts());
     var hostNameToIndex = {};
     for (var i = 0; i < hosts.length; i++) {

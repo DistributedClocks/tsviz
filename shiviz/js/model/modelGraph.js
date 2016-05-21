@@ -39,7 +39,7 @@ function ModelGraph(logEvents) {
         var localDistance = 0;
         this.minTimestamp = logEvents[0].fields.timestamp;
         this.maxTimestamp = 0;
-        console.log("number of logEvents:  " + logEvents.length);
+        // console.log("number of logEvents:  " + logEvents.length);
 
         //CALCULATE REAL MINIMUM DISTANCE BETWEEN TWO EVENTS
         var realminDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
@@ -61,9 +61,9 @@ function ModelGraph(logEvents) {
     }
     // this.minDistance = realminDistance;
     this.minDistance = 1; //miliseconds
-    console.log("realminDistance: " + this.minDistance);
+    // console.log("realminDistance: " + this.minDistance);
     // console.log("mindistance: " + this.minDistance);
-    console.log("minTimestamp: " + this.minTimestamp);
+    // console.log("minTimestamp: " + this.minTimestamp);
 
     /*
      * Create and add nodes to host arrays. Initialize hosts if undefined by
@@ -323,7 +323,7 @@ ModelGraph.prototype.clone = function() {
     newGraph.hosts = this.getHosts();
     newGraph.minDistance = this.minDistance;
     newGraph.timeRange = this.timeRange;
-    console.log("Entered clone method");
+    // console.log("Entered clone method");
 
     var allNodes = this.getAllNodes();
     var oldToNewNode = {};
