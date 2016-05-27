@@ -291,6 +291,15 @@
                         <label><input id="hostsortLength" name="host_sort" type="radio" checked value="length"> # events</label>
                         <label><input id="hostsortOrder" name="host_sort" type="radio" value="order"> appearance in log</label>
                     </div>
+                    <div class="option">
+                        <label>Select a value for the smallest time difference in the graph: <input type="text" id="timeunit" name="timeunit" value="1"></label>
+                        <select id="graphtimescale">
+                            <option value="ns">nanoseconds</option>
+                            <option value="us" selected="selected">microseconds</option>
+                            <option value="ms">milliseconds</option>
+                            <option value="s">seconds</option>
+                        </select>
+                    </div>
                     <button id="visualize" disabled>Visualize</button>
                 </td>
                 <td class="right">
@@ -464,6 +473,17 @@
             <div class="info">
                 <div class="event"></div>
                 <table class="fields"></table>
+            </div>
+
+            <div class="option">
+                <label>Select a value for the smallest time difference in the graph: <input type="text" id="timeunitviz" name="timeunit" value="1"></label>
+                <select id="graphtimescaleviz">
+                    <option value="ns">nanoseconds</option>
+                    <option value="us" selected="selected">microseconds</option>
+                    <option value="ms">milliseconds</option>
+                    <option value="s">seconds</option>
+                </select>
+                <button id="refreshgraph">Refresh Graph</button>
             </div>
         </div>
 

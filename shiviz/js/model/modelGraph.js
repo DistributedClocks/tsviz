@@ -33,7 +33,7 @@ function ModelGraph(logEvents) {
         this.minDistance = 0;
         this.timeRange = [0,1];
     }else{
-        this.minDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
+        // this.minDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
         // this.minDistance = 1;
         //window.alert("mindistance: " + this.minDistance);
         var localDistance = 0;
@@ -50,18 +50,18 @@ function ModelGraph(logEvents) {
             if(logEvents[i].fields.timestamp > this.maxTimestamp){
                 this.maxTimestamp = logEvents[i].fields.timestamp
             }  
-            for (var j = i+1; j < logEvents.length; j++) {
-                localDistance = Math.abs(logEvents[i].fields.timestamp - logEvents[j].fields.timestamp);
-                if((localDistance < realminDistance) && localDistance > 0){
-                    realminDistance = localDistance;
-                }
-            }
+        //     for (var j = i+1; j < logEvents.length; j++) {
+        //         localDistance = Math.abs(logEvents[i].fields.timestamp - logEvents[j].fields.timestamp);
+        //         if((localDistance < realminDistance) && localDistance > 0){
+        //             realminDistance = localDistance;
+        //         }
+        //     }
         }
         this.timeRange = [this.minTimestamp, this.maxTimestamp];
     }
     // this.minDistance = realminDistance;
-    this.minDistance = 1; //miliseconds
-    // console.log("realminDistance: " + this.minDistance);
+    this.minDistance = 1000; //microseconds
+    // console.log("realminDistance: " + realminDistance);
     // console.log("mindistance: " + this.minDistance);
     // console.log("minTimestamp: " + this.minTimestamp);
 

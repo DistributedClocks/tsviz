@@ -69,11 +69,11 @@ function Shiviz() {
     }
 
     $(".tabs li").on("click", function() {
-        context.go($(this).index(), true);
+        context.go($(this).index(), true, true, false);
     });
 
     $(".try").on("click", function() {
-        context.go(1, true);
+        context.go(1, true, true, false);
     });
 
     $("#errorcover").on("click", function() {
@@ -92,9 +92,17 @@ function Shiviz() {
     $("#versionContainer").html(versionText);
 
     $("#visualize").on("click", function() {
-        context.go(2, true, true);
+        context.go(2, true, true, false);
     });
     
+    $("#refreshgraph").on("click", function() {
+        context.go(2, true, true, true);
+        // window.alert();
+        // var g = Global.getInstance();
+
+        // window.alert(g.views.minDistance);
+    });
+
     // Clears the file input value whenever 'Choose File' is clicked
     $("#file").on("click", function() {
        this.value = "";
@@ -199,7 +207,7 @@ Shiviz.prototype.resetView = function() {
  * This method creates the visualization. The user's input to UI elements are
  * retrieved and used to construct the visualization accordingly.
  */
-Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending) {
+Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance) {
     try {
         d3.selectAll("#vizContainer svg").remove();
 
@@ -207,6 +215,11 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         var delimiter = delimiterString == "" ? null : new NamedRegExp(delimiterString, "m");
         regexpString = regexpString.trim();
 
+        if(isNaN(minDistance)){
+            throw new Exception("The value entered in the minimum distace field is not a number.\n", true);
+        }else{
+            console.log("in shiviz.js, minDistance:   "+minDistance);
+        }
         if (regexpString == "")
             throw new Exception("The parser regexp field must not be empty.", true);
 
@@ -246,7 +259,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
             var label = labels[i];
             
             var graph = labelGraph[label];
-            var view = new View(graph, hostPermutation, label);
+            var view = new View(graph, hostPermutation, label, minDistance);
             views.push(view);
         }
         
@@ -307,7 +320,8 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
  * @param {Boolean} store Whether or not to store the history state
  * @param {Boolean} force Whether or not to force redrawing of graph
  */
-Shiviz.prototype.go = function(index, store, force) {
+Shiviz.prototype.go = function(index, store, force, viz) {
+    // window.alert("passou aqui");
     switch (index) {
         case 0:
             $("section").hide();
@@ -324,8 +338,28 @@ Shiviz.prototype.go = function(index, store, force) {
         case 2:
             $(".visualization").show();
             try {
-                if (!$("#vizContainer svg").length || force)
-                    this.visualize($("#input").val(), $("#parser").val(),  $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending");
+                if (!$("#vizContainer svg").length || force){
+
+                    var timescale = (viz)? $("#graphtimescaleviz option:selected").val().trim() : $("#graphtimescale option:selected").val().trim();                
+                    var timeunit = (viz)? Number($("#timeunitviz").val().trim()) : Number($("#timeunit").val().trim());
+
+                    switch(timescale){
+                        case "ns":
+                        
+                        break;
+                        case "us": 
+                        timeunit = timeunit * 1000;
+                        break;
+                        case "ms":
+                        timeunit = timeunit * 1000000;
+                        break;
+                        case "s":
+                        timeunit = timeunit * 1000000000;
+                        break;
+
+                    }
+                    this.visualize($("#input").val(), $("#parser").val(),  $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit);
+                }
             } catch(e) {
                 $(".visualization").hide();
                 throw e;

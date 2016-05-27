@@ -307,8 +307,8 @@ function testQuery(description, query, log, fields, expected) {
 }
 
 graph = new ModelGraph(parser.getLogEvents(""));
-var viewL = new View(graph, hostPermutation, "viewL");
-var viewR = new View(graph, hostPermutation, "viewR");
+var viewL = new View(graph, hostPermutation, "viewL", 1000);
+var viewR = new View(graph, hostPermutation, "viewR", 1000);
 var views = [viewL, viewR];
 
 var global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);
@@ -471,7 +471,7 @@ function drawNewLogAndShowDiff (log) {
     hostPermutation.addGraph(graph);
     hostPermutation.update();
 
-    viewR = new View(graph, hostPermutation, "viewR");
+    viewR = new View(graph, hostPermutation, "viewR", 1000);
     views = [viewL, viewR];
 
     global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);

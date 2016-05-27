@@ -96,7 +96,7 @@ Global.prototype.drawAll = function() {
     var searchbar = this.searchbar;
     this.resize();
 
-    this.$logTable.empty(); //TODO: check
+    // this.$logTable.empty(); //TODO: check
     this.$vizContainer.children("*").remove();
     this.$hostBar.children("*").remove();
     

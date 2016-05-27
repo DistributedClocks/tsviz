@@ -10,7 +10,12 @@
  * @param {HostPermutation} hostPermutation
  * @param {String} label
  */
-function View(model, hostPermutation, label) {
+function View(model, hostPermutation, label, minDistance) {
+    // console.trace();
+
+    /** @private */
+    console.log("in view.js, minDistance:  "+minDistance);
+    this.minDistance = minDistance;
     
     /** @private */
     this.$svg = $(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
@@ -34,14 +39,13 @@ function View(model, hostPermutation, label) {
     this.layout = new SpaceTimeLayout(0, 56);
 
     /** @private */
-    this.visualGraph = new VisualGraph(model, this.layout, hostPermutation);
+    this.visualGraph = new VisualGraph(model, this.layout, hostPermutation, this.minDistance);
 
     /** @private */
     this.transformer = new Transformer();
     
     /** @private */
     this.controller = null;
-    
 }
 
 /**
@@ -146,7 +150,7 @@ View.prototype.hasQueryMatch = function() {
 View.prototype.draw = function(viewPosition) {
 
     this.model = this.initialModel.clone();
-    this.visualGraph = new VisualGraph(this.model, this.layout, this.hostPermutation);
+    this.visualGraph = new VisualGraph(this.model, this.layout, this.hostPermutation, this.minDistance);
     this.transformer.transform(this.visualGraph);
 
     // Update the VisualGraph
