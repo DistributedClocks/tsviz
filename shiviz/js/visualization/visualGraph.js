@@ -18,8 +18,12 @@
  *            positions of VisualNodes and Edges
  * @param {HostPermutation} hostPermutation
  */
-function VisualGraph(graph, layout, hostPermutation, minDistance) {
+function VisualGraph(graph, layout, hostPermutation, minDistance, collapseLocal) {
     // console.trace();
+
+    /** @private */
+    this.collapseLocal = collapseLocal;
+
     /** @private */
     this.graph = graph;
 
@@ -36,11 +40,8 @@ function VisualGraph(graph, layout, hostPermutation, minDistance) {
     this.links = {}; // A mapping of edge IDs to VisualEdges
 
     this.timeRange = graph.timeRange;
-    console.log("in VisualGraph.js, minDistance:  "+minDistance);
-    this.minDistance = minDistance;
-    // this.minDistance = graph.minDistance;
 
-    //window.alert(this.timeRange);
+    this.minDistance = minDistance;
 
     this.graph.addObserver(AddNodeEvent, this, function(event, g) {
         g.addVisualNodeByNode(event.getNewNode());

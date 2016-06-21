@@ -10,11 +10,14 @@
  * @param {HostPermutation} hostPermutation
  * @param {String} label
  */
-function View(model, hostPermutation, label, minDistance) {
+function View(model, hostPermutation, label, minDistance, collapseLocal) {
     // console.trace();
 
     /** @private */
-    console.log("in view.js, minDistance:  "+minDistance);
+    this.collapseLocal = collapseLocal;
+
+    /** @private */
+    // console.log("in view.js, minDistance:  " + minDistance);
     this.minDistance = minDistance;
     
     /** @private */
@@ -39,10 +42,10 @@ function View(model, hostPermutation, label, minDistance) {
     this.layout = new SpaceTimeLayout(0, 56);
 
     /** @private */
-    this.visualGraph = new VisualGraph(model, this.layout, hostPermutation, this.minDistance);
+    this.visualGraph = new VisualGraph(model, this.layout, hostPermutation, this.minDistance, this.collapseLocal);
 
     /** @private */
-    this.transformer = new Transformer();
+    this.transformer = new Transformer(this.collapseLocal);
     
     /** @private */
     this.controller = null;
@@ -150,7 +153,7 @@ View.prototype.hasQueryMatch = function() {
 View.prototype.draw = function(viewPosition) {
 
     this.model = this.initialModel.clone();
-    this.visualGraph = new VisualGraph(this.model, this.layout, this.hostPermutation, this.minDistance);
+    this.visualGraph = new VisualGraph(this.model, this.layout, this.hostPermutation, this.minDistance, this.collapseLocal);
     this.transformer.transform(this.visualGraph);
 
     // Update the VisualGraph
@@ -180,6 +183,8 @@ View.prototype.draw = function(viewPosition) {
     drawNodes();
     drawHosts();
     // drawLogLines();
+
+
 
     // Hide line highlight
     $(".highlight").hide();

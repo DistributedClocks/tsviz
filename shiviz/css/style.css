@@ -191,7 +191,7 @@ section.home .shivizexample img {
   right: 24pt;
   height: 30px;
   text-align: right;
-  color: grey;
+  color: gray;
   font-size: 8pt;
   font-family: monospace;
 }
@@ -266,6 +266,159 @@ section.input .left {
 }
 
 /* Visualization */
+
+/* Ruler */
+
+#graph .ruler {
+  background: rgba(255,255,255,1); /*White*/
+  color: rgba(130,130,130,1); /*Gray*/
+  font-family: source code pro, "Arial Narrow", "Helvetica Neue", Helvetica, Arial, Veranda, sans-serif;
+  font-size: 12px;
+  line-height: 14px;
+  overflow: hidden;
+}
+#graph .ruler > div {
+  background: rgba(130,130,130,1); /*Gray*/
+}
+
+#graph .vRule {
+  position: fixed;
+  min-height: 100%;
+  width: 18px;
+  left: 10px;
+  top: 198px;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  z-index: 9;
+
+}
+#graph .corner {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 18px;
+  height: 18px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  z-index: 10;
+}
+
+#graph .vRule .tickLabel {
+  position: absolute;
+  right: 0px;
+  height: 1px;
+  width: 100%;
+  text-indent: 1px;
+}
+#graph .vRule .tickLabel span {
+  display: block;
+  position: absolute;
+  
+  top: 1px;
+  right: 0px;
+  margin-right: 18px;
+  
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  
+  -webkit-transform-origin: top right;
+  -moz-transform-origin: top right;
+  -ms-transform-origin: top right;
+  -o-transform-origin: top right;
+  transform-origin: top right;
+  
+}
+#graph .vRule .tickMajor {
+  position: absolute;
+  right: 0px;
+  height: 1px;
+  width: 6px;
+}
+
+#graph .vRule .tickMinor {
+  position: absolute;
+  right: 0px;
+  height: 1px;
+  width: 4px;
+}
+
+
+#graph .vMouse {
+  display: block;
+  position: fixed;
+  width: 100%;
+  height: 0px;
+  
+  left: 0;
+  background: rgba(0,0,0,0);
+  border-bottom: 1px dotted;
+  z-index: 11;
+}
+#graph .hMouse {
+  display: block;
+  position: fixed;
+  height: 100%;
+  width: 0px;
+  top: 0;
+
+  background: rgba(0,0,0,0);
+  border-left: 1px dotted;
+  z-index: 11;
+}
+#graph .mousePosBox {
+  height: 16px;
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+  font-family: source code pro;
+  font-size: 12px;
+  line-height: 16px;
+  border: 1px solid rgba(0,0,0,0.5);
+  position: fixed;
+  white-space: no-wrap;
+  display: block;
+  overflow-y:hidden;
+  float: left;
+  text-align: left;
+  left: -50%;
+  top: -50%;
+  padding: 0 2px;
+}
+
+#graph .hRule .tickLabel {
+  position: absolute;
+  top: 0px;
+  width: 1px;
+  height: 100%;
+  text-indent: 1px;
+}
+#graph .hRule .tickMajor {
+  position: absolute;
+  bottom: 0px;
+  width: 1px;
+  height: 6px;
+}
+#graph .hRule .tickMinor {
+  position: absolute;
+  bottom: 0px;
+  width: 1px;
+  height: 4px;
+}
+
+#graph .hRule {
+  position: fixed;
+  width: 100%;
+  height: 18px;
+  left: 0px;
+  top: 0px;
+  
+  border-bottom: 1px solid;
+  z-index: 9;
+}
+/*   END OF RULER    */
+
 .visualization header {
   position: fixed;
   background: #fff;
@@ -522,7 +675,8 @@ section.input .left {
   width: 22pt;
   position: absolute;
   margin-top: 1px;
-  left: calc(100% - 76pt);
+  /*left: calc(100% - 76pt);*/ /*--ORIGINAL*/
+  left: calc(100% - 182pt);
   background: white;
   cursor: pointer;
 }
@@ -532,7 +686,7 @@ section.input .left {
   background: #04a;
   position: absolute;
   overflow: hidden;
-  margin-left: 12pt;
+  margin-left: 12pt; /*--ORIGINAL*/
   margin-top: 4pt;
 }
 #searchbar #bar .clear .one {
@@ -576,7 +730,8 @@ section.input .left {
   width: calc(100% - 140pt);
 }
 #searchbar.results #bar .clear {
-  left: calc(100% - 180pt);
+  /*left: calc(100% - 180pt);*/ /*--ORIGINAL*/
+  left: calc(100% - 288pt);
 }
 #searchbar.results #bar .nav {
   display: initial;
@@ -711,13 +866,12 @@ svg {
 }
 
 #vizContainer {
-  /*margin-left: 50pt;*/
-  margin-top: 4em;
+  margin-top: 4em; /*--ORIGINAL*/
   white-space: nowrap;
 }
 #vizContainer svg {
   vertical-align: top;
-  margin-top: 45px;
+  margin-top: 45px; /*-- ORIGINAL*/
 }
 #vizContainer svg:last-child {
   padding-right: 240px;
@@ -738,8 +892,7 @@ svg {
 
 /* hostBar */
 #hostBar {
-  /*margin-left: 50pt;*/
-  position: fixed;
+  position: fixed; /*--ORIGINAL*/
   background: white;
   z-index: 2;
 }

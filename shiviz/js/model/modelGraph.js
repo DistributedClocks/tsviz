@@ -30,19 +30,12 @@ function ModelGraph(logEvents) {
     initParentChild();
 
     if(logEvents.length == 0){
-        this.minDistance = 0;
         this.timeRange = [0,1];
     }else{
-        // this.minDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
-        // this.minDistance = 1;
-        //window.alert("mindistance: " + this.minDistance);
         var localDistance = 0;
         this.minTimestamp = logEvents[0].fields.timestamp;
         this.maxTimestamp = 0;
-        // console.log("number of logEvents:  " + logEvents.length);
 
-        //CALCULATE REAL MINIMUM DISTANCE BETWEEN TWO EVENTS
-        var realminDistance = Math.abs(logEvents[1].fields.timestamp - logEvents[0].fields.timestamp);
         for (var i = 0; i < logEvents.length; i++) {      
             if(logEvents[i].fields.timestamp < this.minTimestamp){
                 this.minTimestamp = logEvents[i].fields.timestamp;
@@ -50,20 +43,9 @@ function ModelGraph(logEvents) {
             if(logEvents[i].fields.timestamp > this.maxTimestamp){
                 this.maxTimestamp = logEvents[i].fields.timestamp
             }  
-        //     for (var j = i+1; j < logEvents.length; j++) {
-        //         localDistance = Math.abs(logEvents[i].fields.timestamp - logEvents[j].fields.timestamp);
-        //         if((localDistance < realminDistance) && localDistance > 0){
-        //             realminDistance = localDistance;
-        //         }
-        //     }
         }
         this.timeRange = [this.minTimestamp, this.maxTimestamp];
     }
-    // this.minDistance = realminDistance;
-    this.minDistance = 1000; //microseconds
-    // console.log("realminDistance: " + realminDistance);
-    // console.log("mindistance: " + this.minDistance);
-    // console.log("minTimestamp: " + this.minTimestamp);
 
     /*
      * Create and add nodes to host arrays. Initialize hosts if undefined by
@@ -73,7 +55,7 @@ function ModelGraph(logEvents) {
         for (var i = 0; i < logEvents.length; i++) {
             var logEvent = logEvents[i];
             var host = logEvent.getHost();
-            var node = new ModelNode([ logEvent ]);
+            var node = new ModelNode([ logEvent ]); //Array of logEvents?
             node.host = host;
             node.graph = mg;
 

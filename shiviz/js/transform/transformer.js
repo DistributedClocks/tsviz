@@ -27,7 +27,7 @@
  * 
  * @constructor
  */
-function Transformer() {
+function Transformer(collapseLocal) {
 
     /** @private */
     this.transformations = [];
@@ -39,7 +39,7 @@ function Transformer() {
     this.viewToDiffTransform = {};
 
     /** @private */
-    this.collapseSequentialNodesTransformation = new CollapseSequentialNodesTransformation(2);
+    this.collapseNodesTransformation = (collapseLocal)? new CollapseSequentialNodesTransformation(2) : new CollapseTemporallyCloseNodesTransformation(2);
 
     /** @private */
     this.highlightHostTransformation = new HighlightHostTransformation();
@@ -205,7 +205,7 @@ Transformer.prototype.toggleHighlightHost = function(host) {
  * @see {@link CollapseSequentialNodesTransformation}
  */
 Transformer.prototype.collapseNode = function(node) {
-    this.collapseSequentialNodesTransformation.removeExemption(node);
+    this.collapseNodesTransformation.removeExemption(node);
 };
 
 /**
@@ -217,7 +217,7 @@ Transformer.prototype.collapseNode = function(node) {
  * @see {@link CollapseSequentialNodesTransformation}
  */
 Transformer.prototype.uncollapseNode = function(node) {
-    this.collapseSequentialNodesTransformation.addExemption(node);
+    this.collapseNodesTransformation.addExemption(node);
 };
 
 /**
@@ -227,7 +227,7 @@ Transformer.prototype.uncollapseNode = function(node) {
  * @see {@link CollapseSequentialNodesTransformation}
  */
 Transformer.prototype.toggleCollapseNode = function(node) {
-    this.collapseSequentialNodesTransformation.toggleExemption(node);
+    this.collapseNodesTransformation.toggleExemption(node);
 };
 
 /**
@@ -325,7 +325,7 @@ Transformer.prototype.transform = function(visualModel) {
     // get the underlying modelGraph
     var graph = visualModel.getGraph();
 
-    this.collapseSequentialNodesTransformation.transform(visualModel);
+    this.collapseNodesTransformation.transform(visualModel);
 
     var maxIndex = 0;
     for (var key in this.highlightHostToIndex) {

@@ -100,7 +100,7 @@ function SearchBar() {
         }
         context.hidePanel();
     });
-
+    
     $("#searchbar #bar .clear").on("click", function() {
         context.updateLocked = true;
         context.clear();
@@ -108,6 +108,7 @@ function SearchBar() {
         context.update();
         context.updateLocked = false;
         context.clearMotifsTab();
+        context.global.getController().bindScroll();
     });
 
     $("#searchbar .predefined button").on("click", function() {
@@ -209,6 +210,7 @@ SearchBar.getInstance = function() {
  * @param {Global} global the global associated with this search bar.
  */
 SearchBar.prototype.setGlobal = function(global) {
+    // console.trace();
     this.global = global;
 };
 
@@ -405,6 +407,7 @@ SearchBar.prototype.clearResults = function() {
     }
     $(".clusterBase").removeClass("fade");
     $(".clusterResults a").removeClass("execFade");
+    // this.global.getController().bindScroll();
 };
 
 /**
@@ -418,6 +421,7 @@ SearchBar.prototype.clear = function() {
     this.clearStructure();
     this.clearText();
     this.clearResults();
+
 };
 
 /**
@@ -634,6 +638,7 @@ SearchBar.prototype.clearMotifsTab = function() {
     $("#motifOption input").prop("checked", false);
     $(".motifResults td").empty();
     $(".motifResults td:empty").remove();
+    // this.global.getController().bindScroll();
 }
 
 /**

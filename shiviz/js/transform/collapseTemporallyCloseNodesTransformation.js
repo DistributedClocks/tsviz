@@ -1,0 +1,82 @@
+
+
+function CollapseTemporallyCloseNodesTransformation(threshold) {
+	CollapseNodesTransformation.call(this,threshold);
+    this.setThreshold(threshold);
+}
+
+
+CollapseTemporallyCloseNodesTransformation.prototype = Object.create(CollapseNodesTransformation.prototype);
+CollapseTemporallyCloseNodesTransformation.prototype.constructor = CollapseTemporallyCloseNodesTransformation;
+
+
+/**
+ * Overrides {@link CollapseNodesTransformation#transform}
+ */
+CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model) {
+
+    var graph = model.getGraph();
+
+    function collapse(curr, removalCount) {
+        var logEvents = [];
+        var hasHiddenParent = false;
+        var hasHiddenChild = false;
+
+        while (removalCount-- > 0) {
+            var prev = curr.getPrev();
+            logEvents = logEvents.concat(prev.getLogEvents().reverse());
+            var removedVN = model.getVisualNodeByNode(prev);
+            hasHiddenParent |= removedVN.hasHiddenParent();
+            hasHiddenChild |= removedVN.hasHiddenChild();
+            prev.remove();
+        }
+        var newNode = new ModelNode(logEvents.reverse());
+        curr.insertPrev(newNode);
+
+        var visualNode = model.getVisualNodeByNode(newNode);
+        visualNode.setRadius(15);
+        visualNode.setLabel(logEvents.length);
+        visualNode.setHasHiddenParent(hasHiddenParent);
+        visualNode.setHasHiddenChild(hasHiddenChild);
+    }
+
+    var hosts = graph.getHosts();
+    
+    for (var i = 0; i < hosts.length; i++) {
+        var host = hosts[i];
+
+        var groupCount = 0;
+        var ngroups = 0;
+        var curr = graph.getHead(host).getNext();
+        
+        var next;
+        var curr = curr;
+	    var temp1 = 0;
+	    var temp2 = 0;
+	    var temp3 = 0;
+	    while (curr != null) { 
+
+	        curr = curr.getNext();            
+	        
+	        if(curr != null){
+	            if(!curr.isTail()){
+	                temp1 = parseInt(curr.getFirstLogEvent().fields.timestamp);
+	                temp2 = parseInt(curr.getPrev().getFirstLogEvent().fields.timestamp);
+	                temp3 = temp1 - temp2;
+	                if (((temp3) >= model.minDistance) || CollapseNodesTransformation.prototype.isExempt.call(this, curr)) {
+	                        if(groupCount >= this.threshold) {
+	                            collapse(curr, groupCount);
+	                            // console.log("collapsing in curr");
+	                            groupCount = -1;
+	                            ngroups++;
+	                        }
+	                }else{
+	                    (groupCount == 0)? groupCount = 2 : groupCount++;
+	                }
+	            }	            
+	        }
+	    }
+    }
+
+    model.update();
+};

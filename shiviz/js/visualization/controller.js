@@ -16,9 +16,8 @@ function Controller(global) {
     var self = this;
     var searchbar = SearchBar.getInstance();
 
-    $(window).unbind("scroll");
-    $(window).bind("scroll", self.onScroll);
-    $(window).scroll();
+    // MODIFIED
+    self.bindScroll();
 
     $(window).unbind("resize");
     $(window).on("resize", function() {
@@ -33,11 +32,13 @@ function Controller(global) {
     $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
         if (e.which == 27) {
             $(".dialog").hide();
-            d3.select("circle.sel").each(function(d) {
+            d3.selectAll("circle.sel").each(function(d) {
                 $(this).remove();
                 d.setSelected(false);
             });
+            d3.selectAll("line.dashed").remove();
         }
+        self.bindScroll();
     });
 
     $(window).unbind("click.dialog").on("click.dialog", function(e) {
@@ -64,15 +65,17 @@ function Controller(global) {
         // remove the scrolling behavior for hiding/showing dialog boxes once we click outside the box
         $(window).unbind("scroll"); 
         
-        d3.select("circle.sel").each(function(d) {
+
+        d3.selectAll("circle.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
         });
-        
+        d3.selectAll("line.dashed").remove();
         d3.select("polygon.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
         });
+        self.bindScroll();
     });
 
     $("#searchbar #panel").unbind("click").on("click", function(e) {
@@ -118,6 +121,7 @@ function Controller(global) {
         // remove the scrolling behavior for hiding/showing dialog boxes when the diff button is clicked
         $(window).unbind("scroll");
         $(this).toggleClass("fade");
+        
 
         if ($(this).text() == "Show Differences") {
             $(this).text("Hide Differences");
@@ -129,12 +133,14 @@ function Controller(global) {
             global.setShowDiff(false);
             self.hideDiff();
         }
+        self.bindScroll();
     });
 
     $(".pairwiseButton").unbind().click(function() {    
         // remove the scrolling behavior for hiding/showing dialog boxes when the pairwise button is clicked
         $(window).unbind("scroll");
         $(this).toggleClass("fade");
+        
 
         if ($(this).text() == "Pairwise") {
             $(this).text("Individual");
@@ -159,6 +165,7 @@ function Controller(global) {
                 global.drawClusterIcons();
             }
         }
+        self.bindScroll();
     });
 
     // Event handler for switching between the left tabs
@@ -237,6 +244,7 @@ Controller.prototype.highlightMotif = function(motifFinder) {
     });
 
     this.global.drawAll();
+    // this.bindScroll();
 };
 
 /**
@@ -251,6 +259,7 @@ Controller.prototype.clearHighlight = function() {
     });
 
     this.global.drawAll();
+    // this.bindScroll();
 };
 
 /**
@@ -295,6 +304,7 @@ Controller.prototype.hideHost = function(host) {
     });
 
     this.global.drawAll();
+    // this.bindScroll();
 };
 
 /**
@@ -310,6 +320,7 @@ Controller.prototype.unhideHost = function(host) {
     });
 
     this.global.drawAll();
+    // this.bindScroll();
 };
 
 /**
@@ -324,6 +335,7 @@ Controller.prototype.toggleHostHighlight = function(host) {
     });
 
     this.global.drawAll();
+    // this.bindScroll();
 };
 
 /**
@@ -338,6 +350,7 @@ Controller.prototype.toggleCollapseNode = function(node) {
     });
 
     this.global.drawAll();
+    // this.bindScroll();
 };
 
 /**
@@ -390,6 +403,7 @@ Controller.prototype.bindNodes = function(nodes) {
             controller.toggleCollapseNode(e.getNode());
         }
         else {
+            //Add the drawing of a horizontal line here
             controller.showDialog(e, 0, this);
         }
     }).on("mouseover", function(e) {
@@ -566,7 +580,7 @@ Controller.prototype.bindHiddenHosts = function(host, node) {
  * @private
  * @param {Event} e The event object JQuery passes to the handler
  */
-Controller.prototype.onScroll = function(e) {
+Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll horizontally, since it has a fixed position
     var x = window.pageXOffset;
     $("#hostBar, .dialog.host:not(.hidden)").css("margin-left", -x);
     $(".log").css("margin-left", x);
@@ -588,15 +602,28 @@ Controller.prototype.onScroll = function(e) {
 Controller.prototype.showDialog = function(e, type, elem) {
 
     // Remove existing selection highlights
-    d3.select("circle.sel").each(function(d) {
-        $(this).remove();
-        d.setSelected(false);
-    });
-    
-    d3.select("polygon.sel").each(function(d) {
-        $(this).remove();
-        d.setSelected(false);
-    });
+    // The user can select at most two nodes at a time. If they select a third, the selections will be cleared.
+    if(d3.selectAll("circle.sel")[0].length == 2){
+        d3.selectAll("circle.sel").each(function(d){
+            $(this).remove();
+            d.setSelected(false);
+        });
+        // d3.selectAll("g.line").each(function(d){
+        //     $(this).remove;
+        // });
+        d3.selectAll("line.dashed").remove();
+        // console.log(d3.selectAll("line.dashed"));
+    }
+
+    // console.log(d3.selectAll("circle.sel"));
+    // console.log(d3.selectAll("circle.sel")[0].length);
+
+    if(d3.selectAll("polygon.sel")[0].length == 2){
+        d3.select("polygon.sel").each(function(d) {
+            $(this).remove();
+            d.setSelected(false);
+        }); 
+    } 
 
     // Highlight the node with an appropriate outline
     if (!type) {
@@ -656,6 +683,18 @@ Controller.prototype.showDialog = function(e, type, elem) {
                   return d.getRadius() + 6;
                 }
             });
+
+            var viz = $("#vizContainer");
+            var group = d3.select("#node" + e.getId());
+            group.append("line").attr("class", "dashed")
+                .attr("x1", -e.getX())
+                .attr("x2", viz.width())
+                .attr("y1", 0)
+                .attr("y2", 0)
+                .attr("stroke-dasharray", "5,5")
+                .attr("stroke-width", "2px")
+                .attr("stroke", "#000")
+                .attr("z-index", 120);
         }
     }
 
@@ -732,7 +771,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
         // If node is collapsible then show collapse button
         // Else don't show button
-        if (!CollapseSequentialNodesTransformation.isCollapseable(e.getNode(), 2))
+        if (!CollapseNodesTransformation.isCollapseable(e.getNode(), 2))
             $dialog.find(".collapse").hide();
         else
             $dialog.find(".collapse").show().text("Collapse");
@@ -789,4 +828,12 @@ Controller.prototype.showDialog = function(e, type, elem) {
             $dialog.show();
         }
     });
+}
+
+Controller.prototype.bindScroll = function (){
+    // console.trace();
+    var self = this;
+    $(window).unbind("scroll");
+    $(window).bind("scroll", self.onScroll);
+    $(window).scroll();
 }

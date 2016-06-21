@@ -293,7 +293,7 @@ testQuery("precedence query test 2", "a || (b && c)", "asdf", {}, true);
 function testQuery(description, query, log, fields, expected) {
     assert(description, function() {
         var vt = new VectorTimestamp({"a": 1}, "a");
-        var le = new LogEvent(log, vt, 1, fields);
+        var le = new LogEvent(log, vt, 1, fields, 0);
         
         try{
         var lem = new LogEventMatcher(query);
@@ -307,8 +307,8 @@ function testQuery(description, query, log, fields, expected) {
 }
 
 graph = new ModelGraph(parser.getLogEvents(""));
-var viewL = new View(graph, hostPermutation, "viewL", 1000);
-var viewR = new View(graph, hostPermutation, "viewR", 1000);
+var viewL = new View(graph, hostPermutation, "viewL", 1000, true);
+var viewR = new View(graph, hostPermutation, "viewR", 1000, true);
 var views = [viewL, viewR];
 
 var global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);
@@ -471,7 +471,7 @@ function drawNewLogAndShowDiff (log) {
     hostPermutation.addGraph(graph);
     hostPermutation.update();
 
-    viewR = new View(graph, hostPermutation, "viewR", 1000);
+    viewR = new View(graph, hostPermutation, "viewR", 1000, true);
     views = [viewL, viewR];
 
     global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);

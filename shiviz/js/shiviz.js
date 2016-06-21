@@ -92,15 +92,15 @@ function Shiviz() {
     $("#versionContainer").html(versionText);
 
     $("#visualize").on("click", function() {
+        //Reset properties for the time scale selector
+        $("#timeunitviz").val("1");
+        $("#graphtimescaleviz").val("us");
+        
         context.go(2, true, true, false);
     });
     
     $("#refreshgraph").on("click", function() {
         context.go(2, true, true, true);
-        // window.alert();
-        // var g = Global.getInstance();
-
-        // window.alert(g.views.minDistance);
     });
 
     // Clears the file input value whenever 'Choose File' is clicked
@@ -207,7 +207,7 @@ Shiviz.prototype.resetView = function() {
  * This method creates the visualization. The user's input to UI elements are
  * retrieved and used to construct the visualization accordingly.
  */
-Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance) {
+Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance, collapseLocal) {
     try {
         d3.selectAll("#vizContainer svg").remove();
 
@@ -217,9 +217,10 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
 
         if(isNaN(minDistance)){
             throw new Exception("The value entered in the minimum distace field is not a number.\n", true);
-        }else{
-            console.log("in shiviz.js, minDistance:   "+minDistance);
         }
+        // else{
+        //     console.log("in shiviz.js, minDistance:   "+minDistance);
+        // }
         if (regexpString == "")
             throw new Exception("The parser regexp field must not be empty.", true);
 
@@ -259,7 +260,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
             var label = labels[i];
             
             var graph = labelGraph[label];
-            var view = new View(graph, hostPermutation, label, minDistance);
+            var view = new View(graph, hostPermutation, label, minDistance, collapseLocal);
             views.push(view);
         }
         
@@ -305,6 +306,11 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
 
         global.setHostPermutation(hostPermutation);
         global.drawAll();
+
+        //Draw ruler
+        $("#graph").ruler();
+        global.getController().bindScroll();
+        // $("body").ruler();
     }
     catch (err) {
         this.handleException(err);
@@ -321,7 +327,6 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
  * @param {Boolean} force Whether or not to force redrawing of graph
  */
 Shiviz.prototype.go = function(index, store, force, viz) {
-    // window.alert("passou aqui");
     switch (index) {
         case 0:
             $("section").hide();
@@ -332,6 +337,9 @@ Shiviz.prototype.go = function(index, store, force, viz) {
             $("section").hide();
             $(window).scrollTop();
             $(".input").show();
+            $("#timeunit").val("1");
+            $("#graphtimescale").val("us");
+            $("#coll_time").prop('checked', true); //CHANGE HERE FOR LOCAL IF THATS WHAT THE USER WANTS
             inputHeight();
             $(window).on("load resize", inputHeight);
             break;
@@ -345,7 +353,6 @@ Shiviz.prototype.go = function(index, store, force, viz) {
 
                     switch(timescale){
                         case "ns":
-                        
                         break;
                         case "us": 
                         timeunit = timeunit * 1000;
@@ -358,7 +365,7 @@ Shiviz.prototype.go = function(index, store, force, viz) {
                         break;
 
                     }
-                    this.visualize($("#input").val(), $("#parser").val(),  $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit);
+                    this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, $("input[name=coll_str]:checked").val().trim() == "local");
                 }
             } catch(e) {
                 $(".visualization").hide();

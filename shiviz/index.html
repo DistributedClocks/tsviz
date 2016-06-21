@@ -8,6 +8,8 @@
     <link href="css/style.css" type="text/css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+    <script src="js/jquery.ruler.js"></script>
     <style type="text/css">
         #vizContainer svg line.hidden-link {
             stroke-width: 1px;
@@ -33,7 +35,7 @@
                 The <strong>ShiViz++</strong> vis&shy;ual&shy;izat&shy;ion engi&shy;ne gene&shy;r&shy;ate&shy;s inter&shy;active comm&shy;uni&shy;ca&shy;tion graphs from dis&shy;tri&shy;but&shy;ed sys&shy;tem exe&shy;cut&shy;ion logs.
             </h2>
 
-            <button class="try">Try out ShiViz</button>
+            <button class="try">Try out ShiViz++</button>
 
             <h3>What am I looking at?</h3>
             <p>
@@ -300,6 +302,12 @@
                             <option value="s">seconds</option>
                         </select>
                     </div>
+                    <div class="option">
+                        <label>Select a collapsing strategy for the graph:</label><br>
+                        <label><input type="radio" id="coll_local" name="coll_str" value="local">local nodes</label>
+                        <label><input type="radio" id="coll_time" name="coll_str" value="time">close in time</label>
+                    </div>
+
                     <button id="visualize" disabled>Visualize</button>
                 </td>
                 <td class="right">
@@ -319,7 +327,7 @@
     </section>
 
     <section class="visualization">
-        <div class="bg"></div>
+        <!-- <div class="bg"></div> -->
         <header class="icon">
             <ul class="tabs">
                 <li>h</li>
@@ -327,9 +335,9 @@
                 <li class="active">a</li>
             </ul>
         </header>
-       <!-- <div class="left">
-            <div class="bg"></div>
-            <header class="icon">
+       <div class="left">
+            <!-- <div class="bg"></div> -->
+            <!-- <header class="icon">
                 <ul class="tabs">
                     <li>h</li>
                     <li>i</li>
@@ -381,11 +389,18 @@
                         <tr></tr>
                     </table>
                 </div>
-            </div>
-            <div class="highlight"></div>
-        </div> -->
+            </div> -->
+            <!-- <div class="highlight"></div> -->
+        </div>
 
         
+            
+
+            <!-- <div id="hostBar"></div>
+            <div id="vizContainer"></div> -->
+        
+        <div id="graph">
+
             <div id="searchbar">
                 <div id="bar">
                     <input type="text" class="mono" placeholder="Search the visualization">
@@ -460,10 +475,6 @@
             </div>
             
 
-            <!-- <div id="hostBar"></div>
-            <div id="vizContainer"></div> -->
-        
-        <div id="graph">
             <div id="hostBar"></div>
             <div id="vizContainer"></div>
         </div>
@@ -555,6 +566,8 @@
     <script type="text/javascript" src="js/shiviz.js"></script>
 
     <script type="text/javascript" src="js/transform/transformation.js"></script>
+    <script type="text/javascript" src="js/transform/collapseNodesTransformation.js"></script>
+    <script type="text/javascript" src="js/transform/collapseTemporallyCloseNodesTransformation.js"></script>
     <script type="text/javascript" src="js/transform/collapseSequentialNodesTransformation.js"></script>
     <script type="text/javascript" src="js/transform/hideHostTransformation.js"></script>
     <script type="text/javascript" src="js/transform/highlightHostTransformation.js"></script>
