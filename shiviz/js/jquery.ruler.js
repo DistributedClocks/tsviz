@@ -13,75 +13,19 @@
 		var defaults = {
 			vRuleSize: 18,
 			hRuleSize: 0, // maybe comment out or set to 0
-			showCrosshair : false,
-			showMousePos: false //Maybe comment out
 		};//defaults
 		var settings = $.extend({},defaults,options);
 		
-		var hRule = '<div class="ruler hRule"></div>';
+		// var hRule = '<div class="ruler hRule"></div>';
 		var vRule = '<div class="ruler vRule"></div>';
 		var corner = '<div class="ruler corner"></div>';
-		var vMouse = '<div class="vMouse"></div>';
-		var hMouse = '<div class="hMouse"></div>';
-		var mousePosBox = '<div class="mousePosBox">x: 50%, y: 50%</div>';
-		
-
-		// Probably don't want mouse position for now, so comment this out
-		// if (!Modernizr.touch) { //Check if it's a touchscreen device
-			// Mouse crosshair
-			if (settings.showCrosshair) {
-				$('body').append(vMouse, hMouse);
-			}
-			// Mouse position
-			if (settings.showMousePos) {
-				$('body').append(mousePosBox);
-			}
-			// If either, then track mouse position
-			if (settings.showCrosshair || settings.showMousePos) {
-				$(window).mousemove(function(e) {
-					if (settings.showCrosshair) {
-						$('.vMouse').css("top",e.pageY-($(document).scrollTop())+1);
-						$('.hMouse').css("left",e.pageX+1);
-						//-($(window).scrollTop())
-					}
-					if (settings.showMousePos) {
-						$('.mousePosBox').html("x:" + (e.pageX-settings.vRuleSize) + ", y:" + (e.pageY-settings.hRuleSize) ).css({
-							top: e.pageY-($(document).scrollTop()) + 16,
-							left: e.pageX + 12
-						});
-					}
-				});
-			}
-		// }
-		
+				
 		//resize
 		$(window).resize(function(e){
-			var $hRule = $('.hRule');
+			// var $hRule = $('.hRule');
 			var $vRule = $('.vRule');
-			$hRule.empty();
-			// console.log($vRule.parent());
-			// console.log($vRule.parent().outerHeight());
-			// console.log($( window ).height());
-			// $vRule.empty().height(0).outerHeight($vRule.parent().outerHeight());
+			// $vRule.empty().height(0).outerHeight($vRule.parent().outerHeight()); // --GIVES IT THE WHOLE GRAPH SIZE
 			$vRule.empty().height(0).outerHeight($(window).height());
-
-			
-			// // Horizontal ruler ticks
-			var tickLabelPos = settings.vRuleSize;
-			var newTickLabel = "";
-			while ( tickLabelPos <= $hRule.width() ) {
-				if ((( tickLabelPos - settings.vRuleSize ) %50 ) == 0 ) {
-					newTickLabel = "<div class='tickLabel'>" + ( tickLabelPos - settings.vRuleSize ) + "</div>";
-					$(newTickLabel).css( "left", tickLabelPos+"px" ).appendTo($hRule);
-				} else if ((( tickLabelPos - settings.vRuleSize ) %10 ) == 0 ) {
-					newTickLabel = "<div class='tickMajor'></div>";
-					$(newTickLabel).css("left",tickLabelPos+"px").appendTo($hRule);
-				} else if ((( tickLabelPos - settings.vRuleSize ) %5 ) == 0 ) {
-					newTickLabel = "<div class='tickMinor'></div>";
-					$(newTickLabel).css( "left", tickLabelPos+"px" ).appendTo($hRule);
-				}
-				tickLabelPos = (tickLabelPos + 5);				
-			}//hz ticks
 			
 			// Vertical ruler ticks
 			tickLabelPos = settings.hRuleSize;
@@ -121,38 +65,23 @@
 				// $(vRule).width(settings.vRuleSize).height($this.outerHeight()).prependTo($this);
 				$(vRule).width(settings.vRuleSize).height($(window).height()).prependTo($this);
 			}
-			
-			if ( (settings.vRuleSize > 0) && (settings.hRuleSize > 0) ) {
-			// if ( (settings.vRuleSize > 0) ) {
+			var $vRule = $this.children('.vRule');
+			if ( (settings.vRuleSize > 0) ) {
+				var magnification = "<span> x" + $("#timeunitviz").val().trim() + $("#graphtimescaleviz option:selected").val().trim() + "</span>";
+				
 				$(corner).css({
 					width: settings.vRuleSize,
-					height: settings.hRuleSize
+					height: 30
 				}).prependTo($this);
+				var $corner = $(".corner")
+				$corner.children().remove();
+				$(magnification).appendTo($corner);
+				
+				console.log($corner);
 			}
 			
 			
-			var $hRule = $this.children('.hRule');
-			var $vRule = $this.children('.vRule');
-			// console.log($vRule.parent());
-			// console.log($vRule.parent().outerHeight());
-			// console.log($(window).height());
-		
-			// Horizontal ruler ticks
-			var tickLabelPos = settings.vRuleSize;
-			var newTickLabel = "";
-			while ( tickLabelPos <= $hRule.width() ) {
-				if ((( tickLabelPos - settings.vRuleSize ) %50 ) == 0 ) {
-					newTickLabel = "<div class='tickLabel'>" + ( tickLabelPos - settings.vRuleSize ) + "</div>";
-					$(newTickLabel).css( "left", tickLabelPos+"px" ).appendTo($hRule);
-				} else if ((( tickLabelPos - settings.vRuleSize ) %10 ) == 0 ) {
-					newTickLabel = "<div class='tickMajor'></div>";
-					$(newTickLabel).css("left",tickLabelPos+"px").appendTo($hRule);
-				} else if ((( tickLabelPos - settings.vRuleSize ) %5 ) == 0 ) {
-					newTickLabel = "<div class='tickMinor'></div>";
-					$(newTickLabel).css( "left", tickLabelPos+"px" ).appendTo($hRule);
-				}
-				tickLabelPos = (tickLabelPos + 5);				
-			}//hz ticks
+			
 			
 			// Vertical ruler ticks
 			tickLabelPos = settings.hRuleSize;

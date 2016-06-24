@@ -37,6 +37,7 @@ function Controller(global) {
                 d.setSelected(false);
             });
             d3.selectAll("line.dashed").remove();
+            $(".tdiff").children().remove();
         }
         self.bindScroll();
     });
@@ -75,6 +76,7 @@ function Controller(global) {
             $(this).remove();
             d.setSelected(false);
         });
+        $(".tdiff").children().remove();
         self.bindScroll();
     });
 
@@ -449,6 +451,57 @@ Controller.prototype.bindNodes = function(nodes) {
             }
         }
 
+        if(e.isCollapsed()){
+            var timestamps = [];
+            var stats = [];
+            var statsnames = ["Largest timestamp", "Smallest timestamp", "Median", "Range"];
+            var logEvents = e.getNode().getLogEvents();
+            for(var i = 0; i < logEvents.length; i++){
+                // console.log(logEvents[i]);
+                timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
+            }
+
+            function getMedian(array){
+                array.sort(function(a,b){
+                    return a - b;
+                });
+
+                var half = Math.floor(array.length/2);
+
+                if(array.length % 2) return array[half];
+                else return (array[half-1] + array[half]) / 2.0;
+            }
+
+            stats[0] = Math.max.apply(Math, timestamps);
+            stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
+            stats[1] = Math.min.apply(Math, timestamps);
+            stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
+            stats[2] = getMedian(timestamps).toString();
+            stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
+            stats[3] = stats[0] - stats[1];
+            stats[3] = stats[3].toString() + $("#graphtimescaleviz").val().trim();
+            for(var i in stats){
+                var $f = $("<tr>", {
+                    "class": "field"
+                });
+                var $g = $("<tr>", {
+                    "class": "field"
+                });
+                var $t = $("<th>", {
+                    "class": "title"
+                }).text(statsnames[i] + ":");
+                var $v = $("<td>", {
+                    "class": "value"
+                }).text(stats[i]);
+
+                
+                $f.append($t);
+                $(".fields").append($f);
+                $g.append($v);
+                $(".fields").append($g);
+            }
+        }
+
         $(".line.focus").css({
             "color": $(".focus").data("fill"),
             "background": "",
@@ -601,6 +654,30 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
  */
 Controller.prototype.showDialog = function(e, type, elem) {
 
+    if(d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
+        // console.log(d3.selectAll("circle.sel").data()[0]);
+        var node1 = Number(d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp.slice(3, d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp.length));
+        var node2 = Number(e.getNode().getFirstLogEvent().fields.timestamp.slice(3, e.getNode().getFirstLogEvent().fields.timestamp.length))
+        var difference = Math.abs(node1 - node2);
+
+        if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
+        else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
+        else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
+
+        var $f = $("<tr>", {
+            "class": "field"
+        });
+        var $t = $("<th>", {
+            "class": "title"
+        }).text("Time difference" + ":");
+        var $v = $("<td>", {
+            "class": "value"
+        }).text(difference + $("#graphtimescaleviz").val().trim());
+
+        $f.append($t).append($v);
+        $(".tdiff").append($f);
+
+    }
     // Remove existing selection highlights
     // The user can select at most two nodes at a time. If they select a third, the selections will be cleared.
     if(d3.selectAll("circle.sel")[0].length == 2){
@@ -612,6 +689,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
         //     $(this).remove;
         // });
         d3.selectAll("line.dashed").remove();
+        $(".tdiff").children().remove();
         // console.log(d3.selectAll("line.dashed"));
     }
 
@@ -684,17 +762,19 @@ Controller.prototype.showDialog = function(e, type, elem) {
                 }
             });
 
-            var viz = $("#vizContainer");
-            var group = d3.select("#node" + e.getId());
-            group.append("line").attr("class", "dashed")
-                .attr("x1", -e.getX())
-                .attr("x2", viz.width())
-                .attr("y1", 0)
-                .attr("y2", 0)
-                .attr("stroke-dasharray", "5,5")
-                .attr("stroke-width", "2px")
-                .attr("stroke", "#000")
-                .attr("z-index", 120);
+            if (e.getRadius() <= 5) {
+                var viz = $("#vizContainer");
+                var group = d3.select("#node" + e.getId());
+                group.append("line").attr("class", "dashed")
+                    .attr("x1", -e.getX())
+                    .attr("x2", viz.width())
+                    .attr("y1", 0)
+                    .attr("y2", 0)
+                    .attr("stroke-dasharray", "5,5")
+                    .attr("stroke-width", "2px")
+                    .attr("stroke", "#000")
+                    .attr("z-index", 120);
+            }
         }
     }
 

@@ -41,7 +41,7 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
     }
 
     var hosts = graph.getHosts();
-    
+    var test = "";
     for (var i = 0; i < hosts.length; i++) {
         var host = hosts[i];
 
@@ -54,14 +54,27 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
 	    var temp1 = 0;
 	    var temp2 = 0;
 	    var temp3 = 0;
+
 	    while (curr != null) { 
 
 	        curr = curr.getNext();            
 	        
 	        if(curr != null){
 	            if(!curr.isTail()){
-	                temp1 = parseInt(curr.getFirstLogEvent().fields.timestamp);
-	                temp2 = parseInt(curr.getPrev().getFirstLogEvent().fields.timestamp);
+	            	if(test != curr.getFirstLogEvent().fields.timestamp.slice(0, 3)) {
+	            		console.log("old:  " + test);
+	            		test = curr.getFirstLogEvent().fields.timestamp.slice(0, 3);
+	            		console.log("new:  " + test);
+	            	}
+	            	// for(var k = 0; k < Math.max(curr.getFirstLogEvent().fields.timestamp.length, curr.getPrev().getFirstLogEvent().fields.timestamp.length); k++){
+	            	// 	if(curr.getFirstLogEvent().fields.timestamp.charAt(k) != curr.getPrev().getFirstLogEvent().fields.timestamp.charAt(k)){ //split on first different character
+	            	// 		temp1 = parseInt(curr.getFirstLogEvent().fields.timestamp.substring(k,curr.getFirstLogEvent().fields.timestamp.length));
+	            	// 		temp2 = parseInt(curr.getPrev().getFirstLogEvent().fields.timestamp.substring(k, curr.getPrev().getFirstLogEvent().fields.timestamp.length));
+	            	// 		break;
+	            	// 	}
+	            	// }
+	                temp1 = parseInt(curr.getFirstLogEvent().fields.timestamp.slice(3, curr.getFirstLogEvent().fields.timestamp.length));
+	                temp2 = parseInt(curr.getPrev().getFirstLogEvent().fields.timestamp.slice(3, curr.getFirstLogEvent().fields.timestamp.length));
 	                temp3 = temp1 - temp2;
 	                if (((temp3) >= model.minDistance) || CollapseNodesTransformation.prototype.isExempt.call(this, curr)) {
 	                        if(groupCount >= this.threshold) {

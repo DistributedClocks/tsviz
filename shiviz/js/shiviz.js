@@ -210,7 +210,11 @@ Shiviz.prototype.resetView = function() {
 Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance, collapseLocal) {
     try {
         d3.selectAll("#vizContainer svg").remove();
+        d3.selectAll("span").remove();
 
+        if(collapseLocal) $("#coll_local_viz").prop('checked', true); 
+        else $("#coll_time_viz").prop('checked', true); 
+        
         delimiterString = delimiterString.trim();
         var delimiter = delimiterString == "" ? null : new NamedRegExp(delimiterString, "m");
         regexpString = regexpString.trim();
@@ -218,9 +222,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         if(isNaN(minDistance)){
             throw new Exception("The value entered in the minimum distace field is not a number.\n", true);
         }
-        // else{
-        //     console.log("in shiviz.js, minDistance:   "+minDistance);
-        // }
+
         if (regexpString == "")
             throw new Exception("The parser regexp field must not be empty.", true);
 
@@ -348,24 +350,52 @@ Shiviz.prototype.go = function(index, store, force, viz) {
             try {
                 if (!$("#vizContainer svg").length || force){
 
-                    var timescale = (viz)? $("#graphtimescaleviz option:selected").val().trim() : $("#graphtimescale option:selected").val().trim();                
-                    var timeunit = (viz)? Number($("#timeunitviz").val().trim()) : Number($("#timeunit").val().trim());
-
+                    if(viz){
+                        var timescale = $("#graphtimescaleviz option:selected").val().trim();
+                        var timeunit = Number($("#timeunitviz").val().trim());
+                        var collapseLocal = $("input[name=coll_str_viz]:checked").val().trim() == "local";
+                    }else{
+                        var timescale = $("#graphtimescale option:selected").val().trim();  
+                        var timeunit = Number($("#timeunit").val().trim());
+                        var collapseLocal = $("input[name=coll_str]:checked").val().trim() == "local" ;
+                        $("input[name=coll_str_viz]:checked").val($("input[name=coll_str]:checked").val().trim());
+                    }
+                    var scaleadjust = 0;
                     switch(timescale){
                         case "ns":
+                        scaleadjust = timeunit / 1000;
+                        if(scaleadjust >= 1 && scaleadjust < 1000) timescale = "us";
+                        else if(scaleadjust >= 1000 && scaleadjust< 1000000) {
+                            timescale = "ms";
+                            scaleadjust /= 1000;
+                        }else if(scaleadjust >= 1000000 && scaleadjust < 1000000000) {
+                            timescale = "s";
+                            scaleadjust /= 1000000;
+                        }else scaleadjust *= 1000;
                         break;
                         case "us": 
+                        scaleadjust = timeunit / 1000;
+                        if(scaleadjust >= 1 && scaleadjust < 1000) timescale = "ms";
+                        else if(scaleadjust >= 1000 && scaleadjust < 1000000) {
+                            timescale = "s";
+                            scaleadjust /= 1000;
+                        }else scaleadjust *= 1000;
                         timeunit = timeunit * 1000;
                         break;
                         case "ms":
+                        scaleadjust = timeunit / 1000;
+                        if(scaleadjust >= 1 && scaleadjust < 1000) timescale = "s";
+                        else scaleadjust *= 1000;
                         timeunit = timeunit * 1000000;
                         break;
                         case "s":
                         timeunit = timeunit * 1000000000;
                         break;
-
                     }
-                    this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, $("input[name=coll_str]:checked").val().trim() == "local");
+                    scaleadjust = scaleadjust.toString();
+                    $("#timeunitviz").val(scaleadjust).change();
+                    $("#graphtimescaleviz").val(timescale);
+                    this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, collapseLocal);
                 }
             } catch(e) {
                 $(".visualization").hide();

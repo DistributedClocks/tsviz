@@ -286,7 +286,7 @@ section.input .left {
   min-height: 100%;
   width: 18px;
   left: 10px;
-  top: 198px;
+  top: 172px;
   border-left: 1px solid;
   border-right: 1px solid;
   z-index: 9;
@@ -294,13 +294,41 @@ section.input .left {
 }
 #graph .corner {
   position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 18px;
-  height: 18px;
+  top: 139px;
+  left: 10px;
+  width: 19px;
+  height: 30px;
+  color: rgba(130,130,130,1); /*Gray*/
+  /*border-top: 1px solid;
+  border-left: 1px solid;
   border-right: 1px solid;
-  border-bottom: 1px solid;
+  border-bottom: 1px solid;*/
   z-index: 10;
+  text-indent: 1px;
+}
+#graph .corner span{
+  display: block;
+  position: absolute;
+
+  font-size: 10px;
+  top: 0px;
+  width: 30px;
+  height: 18px;
+  bottom: 0px;
+  right: 0px;
+  margin-right: 18px;
+
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+
+  -webkit-transform-origin: top right;
+  -moz-transform-origin: top right;
+  -ms-transform-origin: top right;
+  -o-transform-origin: top right;
+  transform-origin: top right;
 }
 
 #graph .vRule .tickLabel {
@@ -345,78 +373,6 @@ section.input .left {
   width: 4px;
 }
 
-
-#graph .vMouse {
-  display: block;
-  position: fixed;
-  width: 100%;
-  height: 0px;
-  
-  left: 0;
-  background: rgba(0,0,0,0);
-  border-bottom: 1px dotted;
-  z-index: 11;
-}
-#graph .hMouse {
-  display: block;
-  position: fixed;
-  height: 100%;
-  width: 0px;
-  top: 0;
-
-  background: rgba(0,0,0,0);
-  border-left: 1px dotted;
-  z-index: 11;
-}
-#graph .mousePosBox {
-  height: 16px;
-  background: rgba(0,0,0,0.25);
-  color: #fff;
-  font-family: source code pro;
-  font-size: 12px;
-  line-height: 16px;
-  border: 1px solid rgba(0,0,0,0.5);
-  position: fixed;
-  white-space: no-wrap;
-  display: block;
-  overflow-y:hidden;
-  float: left;
-  text-align: left;
-  left: -50%;
-  top: -50%;
-  padding: 0 2px;
-}
-
-#graph .hRule .tickLabel {
-  position: absolute;
-  top: 0px;
-  width: 1px;
-  height: 100%;
-  text-indent: 1px;
-}
-#graph .hRule .tickMajor {
-  position: absolute;
-  bottom: 0px;
-  width: 1px;
-  height: 6px;
-}
-#graph .hRule .tickMinor {
-  position: absolute;
-  bottom: 0px;
-  width: 1px;
-  height: 4px;
-}
-
-#graph .hRule {
-  position: fixed;
-  width: 100%;
-  height: 18px;
-  left: 0px;
-  top: 0px;
-  
-  border-bottom: 1px solid;
-  z-index: 9;
-}
 /*   END OF RULER    */
 
 .visualization header {
@@ -1034,6 +990,14 @@ svg {
   overflow: hidden;
 }
 
+#sidebar .tdiff, .dialog .info {
+  font-size: 10pt;
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  overflow: hidden;
+}
+
 #sidebar .fields .title, .dialog .info .title {
   text-align: left;
   vertical-align: top;
@@ -1041,7 +1005,20 @@ svg {
   white-space: nowrap;
 }
 
+#sidebar .tdiff .title, .dialog .info .title {
+  text-align: left;
+  vertical-align: top;
+  padding-right: 1em;
+  white-space: nowrap;
+}
+
 #sidebar .fields .value, .dialog .info .value {
+  /*word-break: break-all;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#sidebar .tdiff .value, .dialog .info .value {
   /*word-break: break-all;*/
   overflow: hidden;
   text-overflow: ellipsis;

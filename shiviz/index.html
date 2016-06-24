@@ -484,13 +484,19 @@
             <div class="info">
                 <div class="event"></div>
                 <table class="fields"></table>
+                <table class="tdiff"></table>
             </div>
 
+            <div class="option">
+                <label>Select a collapsing strategy for the graph:</label><br>
+                <label><input type="radio" id="coll_local_viz" name="coll_str_viz" value="local">local nodes</label><br>
+                <label><input type="radio" id="coll_time_viz" name="coll_str_viz" value="time">close in time</label>
+            </div>
             <div class="option">
                 <label>Select a value for the smallest time difference in the graph: <input type="text" id="timeunitviz" name="timeunit" value="1"></label>
                 <select id="graphtimescaleviz">
                     <option value="ns">nanoseconds</option>
-                    <option value="us" selected="selected">microseconds</option>
+                    <option value="us" >microseconds</option>
                     <option value="ms">milliseconds</option>
                     <option value="s">seconds</option>
                 </select>
