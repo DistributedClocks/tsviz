@@ -478,8 +478,27 @@ Controller.prototype.bindNodes = function(nodes) {
             stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
             stats[2] = getMedian(timestamps).toString();
             stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
-            stats[3] = stats[0] - stats[1];
-            stats[3] = stats[3].toString() + $("#graphtimescaleviz").val().trim();
+            stats[3] = stats[0] - stats[1]; //differece in nanoseconds
+            switch($("#graphtimescaleviz").val().trim()){
+                case "ns":
+                stats[3] = stats[3].toString() + " ns";
+                break;
+                case "us":
+                stats[3] /= 1000;
+                stats[3] = stats[3].toString() + " us";
+                break;
+                case "ms":
+                stats[3] /= 1000000;
+                stats[3] = stats[3].toString() + " ms";
+                break;
+                case "s":
+                stats[3] /=1000000000;
+                stats[3] = stats[3].toString() + " s";
+                break;
+                default: 
+                stats[3] = stats[3].toString() + " ns";
+                break;
+            }
             for(var i in stats){
                 var $f = $("<tr>", {
                     "class": "field"
