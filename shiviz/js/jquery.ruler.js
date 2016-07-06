@@ -11,7 +11,7 @@
 	$.fn.ruler = function(options) {
 	
 		var defaults = {
-			vRuleSize: 18,
+			vRuleSize: 40,
 			hRuleSize: 0, // maybe comment out or set to 0
 		};//defaults
 		var settings = $.extend({},defaults,options);
@@ -25,7 +25,10 @@
 			// var $hRule = $('.hRule');
 			var $vRule = $('.vRule');
 			// $vRule.empty().height(0).outerHeight($vRule.parent().outerHeight()); // --GIVES IT THE WHOLE GRAPH SIZE
-			$vRule.empty().height(0).outerHeight($(window).height());
+			$vRule.empty().height(0).outerHeight($(window).height() - 171);
+			
+			var userconstant = Number($("#timeunitviz").val().trim());
+			// console.log("userconstant" + userconstant.toString());
 			
 			// Vertical ruler ticks
 			tickLabelPos = settings.hRuleSize;
@@ -34,7 +37,8 @@
 			while (tickLabelPos <= $vRule.height()) {
 				if ((( tickLabelPos - settings.hRuleSize ) %50 ) == 0) {
 					// newTickLabel = "<div class='tickLabel'><span>" + ( tickLabelPos - settings.hRuleSize ) + "</span></div>";
-					newTickLabel = "<div class='tickLabel'><span>" + ( count ++ ) + "</span></div>";
+					newTickLabel = "<div class='tickLabel'><span>" + ( count ) + "</span></div>";
+					count += userconstant;
 					$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
 				} else if (((tickLabelPos - settings.hRuleSize)%10) == 0) {
 					newTickLabel = "<div class='tickMajor'></div>";
@@ -43,7 +47,7 @@
 					newTickLabel = "<div class='tickMinor'></div>";
 					$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
 				}
-				tickLabelPos = ( tickLabelPos + 5 );				
+				tickLabelPos = ( tickLabelPos + 5 );			
 			}//vert ticks
 		});//resize
 		
@@ -63,11 +67,13 @@
 				var oldWidth = $this.outerWidth();
 				// $this.css("padding-left", settings.vRuleSize + 1 + "px").outerWidth(oldWidth);
 				// $(vRule).width(settings.vRuleSize).height($this.outerHeight()).prependTo($this);
-				$(vRule).width(settings.vRuleSize).height($(window).height()).prependTo($this);
+				// console.log($(window).height() - 171);
+				$(vRule).width(settings.vRuleSize).height($(window).height() - 171).prependTo($this);
 			}
 			var $vRule = $this.children('.vRule');
 			if ( (settings.vRuleSize > 0) ) {
-				var magnification = "<span> x" + $("#timeunitviz").val().trim() + $("#graphtimescaleviz option:selected").val().trim() + "</span>";
+				if($("#graphtimescaleviz option:selected").val().trim() == "us") var magnification = "<span> &mu;s </span>";
+				else var magnification = "<span> " + $("#graphtimescaleviz option:selected").val().trim() + "</span>";
 				
 				$(corner).css({
 					width: settings.vRuleSize,
@@ -77,12 +83,10 @@
 				$corner.children().remove();
 				$(magnification).appendTo($corner);
 				
-				console.log($corner);
+				// console.log($corner);
 			}
-			
-			
-			
-			
+			var userconstant = Number($("#timeunitviz").val().trim()); 
+			// console.log("userconstant" + userconstant.toString());
 			// Vertical ruler ticks
 			tickLabelPos = settings.hRuleSize;
 			newTickLabel = "";
@@ -90,19 +94,18 @@
 			while (tickLabelPos <= $vRule.height()) {
 				if ((( tickLabelPos - settings.hRuleSize ) %50 ) == 0) {
 					// newTickLabel = "<div class='tickLabel'><span>" + ( tickLabelPos - settings.hRuleSize ) + "</span></div>";
-					newTickLabel = "<div class='tickLabel'><span>" + ( count ++ ) + "</span></div>";
-					$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
+					newTickLabel = "<div class='tickLabel'><span>" + ( count ) + "</span></div>";
+					count += userconstant;
+					$(newTickLabel).css( "top", tickLabelPos + "px" ).appendTo($vRule);
 				} else if (((tickLabelPos - settings.hRuleSize)%10) == 0) {
 					newTickLabel = "<div class='tickMajor'></div>";
-					$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
+					$(newTickLabel).css( "top", tickLabelPos + "px" ).appendTo($vRule);
 				} else if (((tickLabelPos - settings.hRuleSize)%5) == 0) {
 					newTickLabel = "<div class='tickMinor'></div>";
-					$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
+					$(newTickLabel).css( "top", tickLabelPos + "px" ).appendTo($vRule);
 				}
-				tickLabelPos = ( tickLabelPos + 5 );				
-			}//vert ticks			
-			
-		});//each		
-		
+				tickLabelPos = ( tickLabelPos + 5 );
+				}//vert ticks
+		});//each
 	};//ruler
 })( jQuery );

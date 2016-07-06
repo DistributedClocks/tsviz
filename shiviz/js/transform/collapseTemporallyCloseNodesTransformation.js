@@ -1,7 +1,7 @@
 
 
 function CollapseTemporallyCloseNodesTransformation(threshold) {
-	CollapseNodesTransformation.call(this,threshold);
+	CollapseNodesTransformation.call(this, threshold);
     this.setThreshold(threshold);
 }
 
@@ -9,6 +9,59 @@ function CollapseTemporallyCloseNodesTransformation(threshold) {
 CollapseTemporallyCloseNodesTransformation.prototype = Object.create(CollapseNodesTransformation.prototype);
 CollapseTemporallyCloseNodesTransformation.prototype.constructor = CollapseTemporallyCloseNodesTransformation;
 
+
+CollapseTemporallyCloseNodesTransformation.prototype.isCollapseable = function(node, threshold, minDistance) {
+	if (threshold < 2) {
+        throw new Exception("CollapseNodesTransformation.isCollapseable: Invalid threshold. Threshold must be greater than or equal to 2");
+    }
+
+    if(node.isHead() || node.isTail()) {
+        return false;
+    }
+
+    console.trace();
+    var countfor = 1;
+    var prev = node;
+    var curr = node.getNext();
+    var temp1 = 0;
+	var temp2 = 0;
+	var temp3 = 0;
+
+	//Count forward how many nodes can be collapsed starting on the current node
+	while(!curr.isTail()){
+		temp1 = parseInt(curr.getFirstLogEvent().fields.timestamp.slice(3, curr.getFirstLogEvent().fields.timestamp.length));
+	    temp2 = parseInt(prev.getFirstLogEvent().fields.timestamp.slice(3, curr.getFirstLogEvent().fields.timestamp.length));
+	    temp3 = temp1 - temp2;
+	    if(temp3 >= minDistance){ //current node is not collapseable
+	    	break;
+	    }else{ //current node is collapseable
+	    	countfor++;
+	    	if(countfor >= threshold) break;
+	    	curr = curr.getNext();
+	    	prev = prev.getNext();
+	    }
+	}
+
+	//Count backwards how many nodes can be collapsed starting on the current node
+	var countback = 1;
+	prev = node.getPrev();
+	curr = node;
+	while(!prev.isHead()){
+		temp1 = parseInt(curr.getFirstLogEvent().fields.timestamp.slice(3, curr.getFirstLogEvent().fields.timestamp.length));
+	    temp2 = parseInt(prev.getFirstLogEvent().fields.timestamp.slice(3, curr.getFirstLogEvent().fields.timestamp.length));
+	    temp3 =  temp1 - temp2;
+	    if(temp3 >= minDistance){ //current node is not collapseable
+	    	break;
+	    }else{ //current node is collapseable
+	    	countback++;
+	    	if(countback >= threshold) break;
+	    	prev = prev.getPrev();
+	    	curr = curr.getPrev();
+	    }
+	}
+
+	return countback >= threshold || countfor >= threshold;
+}
 
 /**
  * Overrides {@link CollapseNodesTransformation#transform}
@@ -50,7 +103,6 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
         var curr = graph.getHead(host).getNext();
         
         var next;
-        var curr = curr;
 	    var temp1 = 0;
 	    var temp2 = 0;
 	    var temp3 = 0;

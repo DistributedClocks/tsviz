@@ -36,6 +36,31 @@ function CollapseSequentialNodesTransformation(threshold) {
 CollapseSequentialNodesTransformation.prototype = Object.create(CollapseNodesTransformation.prototype);
 CollapseSequentialNodesTransformation.prototype.constructor = CollapseSequentialNodesTransformation;
 
+CollapseSequentialNodesTransformation.prototype.isCollapseable = function(node, threshold) {
+    if (threshold < 2) {
+        throw new Exception("CollapseNodesTransformation.isCollapseable: Invalid threshold. Threshold must be greater than or equal to 2");
+    }
+
+    if (node.hasFamily() || node.isHead() || node.isTail()) {
+        return false;
+    }
+
+    var count = 1;
+    var curr = node.getNext();
+    while (!curr.isTail() && !curr.hasFamily()) {
+        curr = curr.getNext();
+        count++;
+    }
+
+    curr = node.getPrev();
+    while (!curr.isHead() && !curr.hasFamily()) {
+        curr = curr.getPrev();
+        count++;
+    }
+
+    return count >= threshold;
+}
+
 /**
  * Overrides {@link CollapseNodesTransformation#transform}
  */

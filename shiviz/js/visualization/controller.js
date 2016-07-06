@@ -405,7 +405,6 @@ Controller.prototype.bindNodes = function(nodes) {
             controller.toggleCollapseNode(e.getNode());
         }
         else {
-            //Add the drawing of a horizontal line here
             controller.showDialog(e, 0, this);
         }
     }).on("mouseover", function(e) {
@@ -454,10 +453,9 @@ Controller.prototype.bindNodes = function(nodes) {
         if(e.isCollapsed()){
             var timestamps = [];
             var stats = [];
-            var statsnames = ["Largest timestamp", "Smallest timestamp", "Median", "Range"];
+            var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range"];
             var logEvents = e.getNode().getLogEvents();
             for(var i = 0; i < logEvents.length; i++){
-                // console.log(logEvents[i]);
                 timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
             }
 
@@ -470,15 +468,16 @@ Controller.prototype.bindNodes = function(nodes) {
 
                 if(array.length % 2) return array[half];
                 else return (array[half-1] + array[half]) / 2.0;
+                
             }
 
-            stats[0] = Math.max.apply(Math, timestamps);
+            stats[0] = Math.min.apply(Math, timestamps);
             stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
-            stats[1] = Math.min.apply(Math, timestamps);
+            stats[1] = Math.max.apply(Math, timestamps);
             stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
             stats[2] = getMedian(timestamps).toString();
             stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
-            stats[3] = stats[0] - stats[1]; //differece in nanoseconds
+            stats[3] = stats[1] - stats[0]; //differece in nanoseconds
             switch($("#graphtimescaleviz").val().trim()){
                 case "ns":
                 stats[3] = stats[3].toString() + " ns";
@@ -499,7 +498,7 @@ Controller.prototype.bindNodes = function(nodes) {
                 stats[3] = stats[3].toString() + " ns";
                 break;
             }
-            for(var i in stats){
+            for(var i = 2; i <= 3; i++){
                 var $f = $("<tr>", {
                     "class": "field"
                 });
@@ -674,11 +673,16 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
 Controller.prototype.showDialog = function(e, type, elem) {
 
     if(d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
-        // console.log(d3.selectAll("circle.sel").data()[0]);
-        var node1 = Number(d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp.slice(3, d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp.length));
-        var node2 = Number(e.getNode().getFirstLogEvent().fields.timestamp.slice(3, e.getNode().getFirstLogEvent().fields.timestamp.length))
+        //Get nodes
+        var node1 = d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp;
+        var node2 = e.getNode().getFirstLogEvent().fields.timestamp;
+        //Compress to fit in number type
+        node1 = Number(node1.slice(3, node1.length));
+        node2 = Number(node2.slice(3, node2.length));
+        //Calculate the difference
         var difference = Math.abs(node1 - node2);
 
+        //Scale the difference
         if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
         else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
         else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
@@ -698,23 +702,19 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
     }
     // Remove existing selection highlights
-    // The user can select at most two nodes at a time. If they select a third, the selections will be cleared.
+    // The user can select at most two nodes at a time. If she selects a third, the previous selections will be cleared.
     if(d3.selectAll("circle.sel")[0].length == 2){
         d3.selectAll("circle.sel").each(function(d){
             $(this).remove();
             d.setSelected(false);
         });
-        // d3.selectAll("g.line").each(function(d){
-        //     $(this).remove;
-        // });
+
         d3.selectAll("line.dashed").remove();
         $(".tdiff").children().remove();
-        // console.log(d3.selectAll("line.dashed"));
+
     }
 
-    // console.log(d3.selectAll("circle.sel"));
-    // console.log(d3.selectAll("circle.sel")[0].length);
-
+    //TODO: apply the same selection rule to polygons
     if(d3.selectAll("polygon.sel")[0].length == 2){
         d3.select("polygon.sel").each(function(d) {
             $(this).remove();
@@ -870,7 +870,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
         // If node is collapsible then show collapse button
         // Else don't show button
-        if (!CollapseNodesTransformation.isCollapseable(e.getNode(), 2))
+        if (!this.global.getViews()[0].getTransformer().collapseNodesTransformation.isCollapseable(e.getNode(), 2, this.global.getViews()[0].minDistance))
             $dialog.find(".collapse").hide();
         else
             $dialog.find(".collapse").show().text("Collapse");
@@ -930,7 +930,6 @@ Controller.prototype.showDialog = function(e, type, elem) {
 }
 
 Controller.prototype.bindScroll = function (){
-    // console.trace();
     var self = this;
     $(window).unbind("scroll");
     $(window).bind("scroll", self.onScroll);

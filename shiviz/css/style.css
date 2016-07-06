@@ -284,10 +284,9 @@ section.input .left {
 #graph .vRule {
   position: fixed;
   min-height: 100%;
-  width: 18px;
   left: 10px;
   top: 172px;
-  border-left: 1px solid;
+  /*border-left: 1px solid;*/
   border-right: 1px solid;
   z-index: 9;
 
@@ -296,7 +295,7 @@ section.input .left {
   position: fixed;
   top: 139px;
   left: 10px;
-  width: 19px;
+  width: 30px;
   height: 30px;
   color: rgba(130,130,130,1); /*Gray*/
   /*border-top: 1px solid;
@@ -310,19 +309,20 @@ section.input .left {
   display: block;
   position: absolute;
 
-  font-size: 10px;
-  top: 0px;
+  font-size: 12pt;
+  /*top: 0px;*/
+  text-align: end;
   width: 30px;
-  height: 18px;
+  height: 30px;
   bottom: 0px;
-  right: 0px;
-  margin-right: 18px;
+  /*right: 0px;*/
+  /*margin-right: 18px;*/
 
-  -webkit-transform: rotate(-90deg);
+  -/*webkit-transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
-  transform: rotate(-90deg);
+  transform: rotate(-90deg);*/
 
   -webkit-transform-origin: top right;
   -moz-transform-origin: top right;
@@ -335,7 +335,7 @@ section.input .left {
   position: absolute;
   right: 0px;
   height: 1px;
-  width: 100%;
+  width: 70%;
   text-indent: 1px;
 }
 #graph .vRule .tickLabel span {
@@ -346,11 +346,11 @@ section.input .left {
   right: 0px;
   margin-right: 18px;
   
-  -webkit-transform: rotate(-90deg);
+  /*-webkit-transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
-  transform: rotate(-90deg);
+  transform: rotate(-90deg);*/
   
   -webkit-transform-origin: top right;
   -moz-transform-origin: top right;
@@ -363,14 +363,15 @@ section.input .left {
   position: absolute;
   right: 0px;
   height: 1px;
-  width: 6px;
+  /*width: 6px;*/
+  width: 35%;
 }
 
 #graph .vRule .tickMinor {
   position: absolute;
   right: 0px;
   height: 1px;
-  width: 4px;
+  width: 17.5%;
 }
 
 /*   END OF RULER    */
@@ -582,7 +583,7 @@ section.input .left {
 }
 
 .visualization #graph {
-  margin-left: 0pt;
+  margin-left: 12pt;
 }
 
 /* Searchbar */

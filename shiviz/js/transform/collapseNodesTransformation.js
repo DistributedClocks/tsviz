@@ -180,29 +180,8 @@ CollapseNodesTransformation.prototype.isExempt = function(node) {
  *            be greater than or equal to 2
  * @returns {Boolean} true if the node can be collapsed
  */
-CollapseNodesTransformation.isCollapseable = function(node, threshold) {
-    if (threshold < 2) {
-        throw new Exception("CollapseNodesTransformation.isCollapseable: Invalid threshold. Threshold must be greater than or equal to 2");
-    }
-
-    if (node.hasFamily() || node.isHead() || node.isTail()) {
-        return false;
-    }
-
-    var count = 1;
-    var curr = node.getNext();
-    while (!curr.isTail() && !curr.hasFamily()) {
-        curr = curr.getNext();
-        count++;
-    }
-
-    curr = node.getPrev();
-    while (!curr.isHead() && !curr.hasFamily()) {
-        curr = curr.getPrev();
-        count++;
-    }
-
-    return count >= threshold;
+CollapseNodesTransformation.isCollapseable = function(node, threshold, minDistance) {
+    return 0;
 };
 
 // TO BE OVERRIDDEN
