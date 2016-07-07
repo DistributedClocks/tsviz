@@ -63,27 +63,32 @@ HighlightMotifTransformation.prototype.transform = function(model) {
     model.getVisualNodes().forEach(function(node) {
         // Only fade out non-host nodes
         if (!node.isStart()) {
-            node.setOpacity(0.2);
+            node.setOpacity(0.8);
         }
     });
     model.getVisualEdges().forEach(function(edge) {
-        edge.setOpacity(0.2);
+        edge.setOpacity(0.8);
     });
 
     var nodes = this.motifGroup.getNodes();
     for (var i = 0; i < nodes.length; i++) {
         var node = nodes[i];
         var visualNode = model.getVisualNodeByNode(node);
-        visualNode.setRadius(5 * 1.2);
+
+        if(!visualNode.isCollapsed()) {
+            visualNode.setRadius(visualNode.getRadius() * 2);
+        }
+
         visualNode.setOpacity(1);
     }
 
     var edges = this.motifGroup.getEdges();
-    for (var i = 0; i < edges.length; i++) {
+    for (i = 0; i < edges.length; i++) {
         var edge = edges[i];
         var visualEdge = model.getVisualEdgeByNodes(edge[0], edge[1]);
+
         visualEdge.setColor("#333");
         visualEdge.setOpacity(1);
-        // visualEdge.setWidth(visualEdge.getWidth() * 1.5);
+        visualEdge.setWidth(visualEdge.getWidth() * 4);
     }
 };

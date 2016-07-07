@@ -118,6 +118,22 @@ function SearchBar() {
         context.query();
     });
 
+    $("#searchbar .eventbased #startbar input").on("input", function() {
+        var startValue = $("#searchbar .eventbased #startbar input").val();
+        var endValue = $("#searchbar .eventbased #endbar input").val();
+        context.clearStructure();
+        context.clearResults();
+        context.setValue("#event");
+    });
+
+    $("#searchbar .eventbased #endbar input").on("input", function() {
+        var startValue = $("#searchbar .eventbased #startbar input").val();
+        var endValue = $("#searchbar .eventbased #endbar input").val();
+        context.clearStructure();
+        context.clearResults();
+        context.setValue("#event");
+    });
+
     $("#nextButton").on("click", function() {
         if (context.motifNavigator == null) {
             return;
@@ -188,6 +204,12 @@ SearchBar.MODE_PREDEFINED = 3;
 SearchBar.MODE_MOTIF = 4;
 
 /**
+ * @static
+ * @const
+ */
+SearchBar.MODE_EVENTBASED = 5;
+
+/**
  * @private
  * @static
  */
@@ -255,6 +277,9 @@ SearchBar.prototype.updateMode = function() {
     else if (value.slice(0, 7) == "#motif") {
         this.mode = SearchBar.MODE_MOTIF;
     }
+    else if (value.slice(0, 6) == "#event") {
+        this.mode = SearchBar.MODE_EVENTBASED;
+    }
     else {
         this.mode = SearchBar.MODE_PREDEFINED;
     }
@@ -314,6 +339,11 @@ SearchBar.prototype.update = function() {
 
     // Network motifs
     case SearchBar.MODE_MOTIF:
+        break;
+
+    // Eventbased Search
+    case SearchBar.MODE_EVENTBASED:
+        this.clearStructure();
         break;
 
     default:
@@ -508,6 +538,13 @@ SearchBar.prototype.query = function() {
                     Shiviz.getInstance().handleException(new Exception("unable to retrieve motifs from: " + url, true));
                 });
             });
+            break;
+
+        case SearchBar.MODE_EVENTBASED:
+            var startValue = $("#searchbar .eventbased #startbar input").val();
+            var endValue = $("#searchbar .eventbased #endbar input").val();
+            var finder = new EventMotifFinder(startValue, endValue);
+            this.global.getController().highlightMotif(finder);            
             break;
 
         default:
