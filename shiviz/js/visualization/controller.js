@@ -352,7 +352,6 @@ Controller.prototype.toggleCollapseNode = function(node) {
     });
 
     this.global.drawAll();
-    // this.bindScroll();
 };
 
 /**
@@ -453,7 +452,7 @@ Controller.prototype.bindNodes = function(nodes) {
         if(e.isCollapsed()){
             var timestamps = [];
             var stats = [];
-            var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range"];
+            var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range", "Minimum difference"];
             var logEvents = e.getNode().getLogEvents();
             for(var i = 0; i < logEvents.length; i++){
                 timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
@@ -471,34 +470,58 @@ Controller.prototype.bindNodes = function(nodes) {
                 
             }
 
+            function minDiff(array){
+                var diff = 0;
+                var min = Math.pow(2, 54);
+                for(var i = 0; i < array.length-1; i++){
+                    diff = Math.abs(array[i]-array[i+1]);
+                    if(diff<min) min = diff;
+                }
+                return min;
+            }
+            //Calculate everything
             stats[0] = Math.min.apply(Math, timestamps);
-            stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
             stats[1] = Math.max.apply(Math, timestamps);
-            stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
             stats[2] = getMedian(timestamps).toString();
             stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
             stats[3] = stats[1] - stats[0]; //differece in nanoseconds
+            stats[4] = minDiff(timestamps);
+
+
+            //Convert to string and format
+            stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
+            stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
             switch($("#graphtimescaleviz").val().trim()){
                 case "ns":
                 stats[3] = stats[3].toString() + " ns";
+                stats[4] = stats[4].toString() + " ns"; 
                 break;
                 case "us":
                 stats[3] /= 1000;
+                stats[4] /= 1000;
                 stats[3] = stats[3].toString() + " us";
+                stats[4] = stats[4].toString() + " us";
                 break;
                 case "ms":
                 stats[3] /= 1000000;
                 stats[3] = stats[3].toString() + " ms";
+                stats[4] /= 1000000;
+                stats[4] = stats[4].toString() + " ms";
                 break;
                 case "s":
                 stats[3] /=1000000000;
                 stats[3] = stats[3].toString() + " s";
+                stats[4] /=1000000000;
+                stats[4] = stats[4].toString() + " s";
                 break;
                 default: 
                 stats[3] = stats[3].toString() + " ns";
+                stats[4] = stats[4].toString() + " ns";
                 break;
             }
-            for(var i = 2; i <= 3; i++){
+            
+            //Display
+            for(var i = 2; i <= 4; i++){
                 var $f = $("<tr>", {
                     "class": "field"
                 });
@@ -674,31 +697,36 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
     if(d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
         //Get nodes
-        var node1 = d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp;
-        var node2 = e.getNode().getFirstLogEvent().fields.timestamp;
-        //Compress to fit in number type
-        node1 = Number(node1.slice(3, node1.length));
-        node2 = Number(node2.slice(3, node2.length));
-        //Calculate the difference
-        var difference = Math.abs(node1 - node2);
+        var node1 = d3.selectAll("circle.sel").data()[0];
+        var node2 = e;
+        
+        if(!node1.isCollapsed() && !node2.isCollapsed()){    
+            //Compress to fit in number type
+            node1 = d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp;
+            node2 = e.getNode().getFirstLogEvent().fields.timestamp;
+            node1 = Number(node1.slice(3, node1.length));
+            node2 = Number(node2.slice(3, node2.length));
+            //Calculate the difference
+            var difference = Math.abs(node1 - node2);
 
-        //Scale the difference
-        if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-        else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-        else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
+            //Scale the difference
+            if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
+            else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
+            else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
 
-        var $f = $("<tr>", {
-            "class": "field"
-        });
-        var $t = $("<th>", {
-            "class": "title"
-        }).text("Time difference" + ":");
-        var $v = $("<td>", {
-            "class": "value"
-        }).text(difference + $("#graphtimescaleviz").val().trim());
+            var $f = $("<tr>", {
+                "class": "field"
+            });
+            var $t = $("<th>", {
+                "class": "title"
+            }).text("Time difference" + ":");
+            var $v = $("<td>", {
+                "class": "value"
+            }).text(difference + $("#graphtimescaleviz").val().trim());
 
-        $f.append($t).append($v);
-        $(".tdiff").append($f);
+            $f.append($t).append($v);
+            $(".tdiff").append($f);
+        }
 
     }
     // Remove existing selection highlights
