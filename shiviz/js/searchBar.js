@@ -543,7 +543,8 @@ SearchBar.prototype.query = function() {
         case SearchBar.MODE_EVENTBASED:
             var startValue = $("#searchbar .eventbased #startbar input").val();
             var endValue = $("#searchbar .eventbased #endbar input").val();
-            var finder = new EventMotifFinder(startValue, endValue);
+            var onlyCommunication = $("#searchbar .eventbased #onlyCommunication").prop('checked');
+            var finder = new EventMotifFinder(startValue, endValue, onlyCommunication);
             this.global.getController().highlightMotif(finder);            
             break;
 

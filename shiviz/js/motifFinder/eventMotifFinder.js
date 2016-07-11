@@ -11,14 +11,16 @@
  * @constructor
  * @param {String} start
  * @param {String} end
+ * @param {boolean} onlyCommunication - search only communication between hosts
  */
-function EventMotifFinder(start, end) {
+function EventMotifFinder(start, end, onlyCommunication) {
 
     /** @private */
     this.start = start;
     this.end = end;
     this.logEventMatcherStart = new LogEventMatcher(start);
     this.logEventMatcherEnd = new LogEventMatcher(end);
+    this.searchCommunicationOnly = onlyCommunication;
 }
 
 // EventMotifFinder extends MotifFinder
@@ -46,24 +48,22 @@ EventMotifFinder.prototype.find = function(graph) {
                 var motif = new Motif();
 
                 // Check if the start-event communicates to another host, maybe the communication
-                // to another host leads to the end event. 
+                // to another host leads to the end event
                 if(currNode.hasChildren()) {
                     var children = currNode.getChildren();
 
                     for(var j = 0; j < children.length; j++) {
-                        console.log(children[j].getLogEvents());
                         if(this.logEventMatcherEnd.matchAny(children[j].getLogEvents())) {
                             motif.addNode(currNode);
                             motif.addNode(children[j]);
                             motif.addEdge(currNode, children[j]);
                         }
                     }
-                    // Done searching children of current node, so get the next node in this host
-                    prevNode = currNode;
-                    currNode = currNode.getNext();
                 }
-                // This start-event has no children so search for the next nodes.
-                else {
+
+                // Also add other nodes from the individual hosts if we don't 
+                // want only communication results
+                if(!this.searchCommunicationOnly) {
                     motif.addNode(currNode);
                     prevNode = currNode;
                     currNode = currNode.getNext();
@@ -83,6 +83,11 @@ EventMotifFinder.prototype.find = function(graph) {
                         prevNode = currNode;
                         currNode = currNode.getNext();
                     }
+                }
+                // Otherwise move onto next node
+                else {
+                    prevNode = currNode;
+                    currNode = currNode.getNext();
                 }
 
                 // Add the newly constructed motif to the group of motifs
