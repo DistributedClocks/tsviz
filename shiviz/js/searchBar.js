@@ -90,6 +90,15 @@ function SearchBar() {
         context.showPanel();
     });
 
+    $("#searchbar #bar input").on("click", function() {
+        if(context.getValue().length == 0) {
+            if ($("#searchbar .eventbased #startbar input").val().length > 0 &&
+                $("#searchbar .eventbased #endbar input").val().length > 0) {
+                context.setValue("#event");
+            }
+        }
+    });
+
     $("#searchButton").on("click", function(e) {
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
@@ -119,16 +128,18 @@ function SearchBar() {
     });
 
     $("#searchbar .eventbased #startbar input").on("input", function() {
-        var startValue = $("#searchbar .eventbased #startbar input").val();
-        var endValue = $("#searchbar .eventbased #endbar input").val();
         context.clearStructure();
         context.clearResults();
         context.setValue("#event");
     });
 
     $("#searchbar .eventbased #endbar input").on("input", function() {
-        var startValue = $("#searchbar .eventbased #startbar input").val();
-        var endValue = $("#searchbar .eventbased #endbar input").val();
+        context.clearStructure();
+        context.clearResults();
+        context.setValue("#event");
+    });
+
+    $("#searchbar .eventbased #onlyCommunication").on("change", function() {
         context.clearStructure();
         context.clearResults();
         context.setValue("#event");
