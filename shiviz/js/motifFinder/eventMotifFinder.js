@@ -45,26 +45,47 @@ EventMotifFinder.prototype.find = function(graph) {
             if(this.logEventMatcherStart.matchAny(currNode.getLogEvents())) {
                 var motif = new Motif();
 
-                motif.addNode(currNode);
-                prevNode = currNode;
-                currNode = currNode.getNext();
+                // Check if the start-event communicates to another host, maybe the communication
+                // to another host leads to the end event. 
+                if(currNode.hasChildren()) {
+                    var children = currNode.getChildren();
 
-                // Continue adding nodes to the motif until we've reached the end event or the end of the line
-                while(!this.logEventMatcherEnd.matchAny(currNode.getLogEvents()) && !currNode.isTail()){
-                    motif.addNode(currNode);
-                    motif.addEdge(prevNode, currNode);
+                    for(var j = 0; j < children.length; j++) {
+                        console.log(children[j].getLogEvents());
+                        if(this.logEventMatcherEnd.matchAny(children[j].getLogEvents())) {
+                            motif.addNode(currNode);
+                            motif.addNode(children[j]);
+                            motif.addEdge(currNode, children[j]);
+                        }
+                    }
+                    // Done searching children of current node, so get the next node in this host
                     prevNode = currNode;
                     currNode = currNode.getNext();
                 }
-
-                // Add the end-event nodes to the motif
-                while(this.logEventMatcherEnd.matchAny(currNode.getLogEvents()) && !currNode.isTail()) {
+                // This start-event has no children so search for the next nodes.
+                else {
                     motif.addNode(currNode);
-                    motif.addEdge(prevNode, currNode);
                     prevNode = currNode;
                     currNode = currNode.getNext();
+
+                    // Continue adding nodes to the motif until we've reached the end event or the end of the line
+                    while(!this.logEventMatcherEnd.matchAny(currNode.getLogEvents()) && !currNode.isTail()){
+                        motif.addNode(currNode);
+                        motif.addEdge(prevNode, currNode);
+                        prevNode = currNode;
+                        currNode = currNode.getNext();
+                    }
+
+                    // Add the end-event nodes to the motif
+                    while(this.logEventMatcherEnd.matchAny(currNode.getLogEvents()) && !currNode.isTail()) {
+                        motif.addNode(currNode);
+                        motif.addEdge(prevNode, currNode);
+                        prevNode = currNode;
+                        currNode = currNode.getNext();
+                    }
                 }
 
+                // Add the newly constructed motif to the group of motifs
                 motifGroup.addMotif(motif);
             }
             // Otherwise go to the next node of this host
