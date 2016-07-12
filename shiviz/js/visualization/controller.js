@@ -604,7 +604,7 @@ Controller.prototype.bindNodes = function(nodes) {
 Controller.prototype.bindEdges = function(edges) {
     var controller = this;
     edges.on("click", function(e) {
-        controller.showDialog(e, 0, this);
+        controller.showEdgeDialog(e, this);
     }).on("mouseover", function(e) {
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "w": function(d) {
@@ -627,6 +627,67 @@ Controller.prototype.bindEdges = function(edges) {
                 return d.getWidth() + 6;
             }
         });
+
+        // Don't update hover info if ther source node is null
+        if(e.getSourceVisualNode().getNode().isHead()) {
+            return;
+        }
+        
+        // Calculate time difference between source and target nodes
+        // Compress to fit in number type
+        var node1 = e.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+        var node2 = e.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+        node1 = Number(node1.slice(3, node1.length));
+        node2 = Number(node2.slice(3, node2.length));
+        
+        var difference = Math.abs(node1 - node2);
+
+        // Scale the difference
+        if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
+        else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
+        else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
+
+
+        // Add info to the dialog
+        $(".event").text(e.getSourceVisualNode().getText() + ' to ' + e.getTargetVisualNode().getText());
+        $(".fields").children().remove();
+
+        // Add host info
+        var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
+        var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
+        var host = fieldsSource.host;
+
+        // Check if the two hosts are the same
+        if((fieldsSource.host != fieldsTarget.host)) {
+            host = fieldsSource.host + ' to ' + fieldsTarget.host;
+        }
+
+        var $f = $("<tr>", {
+            "class": "field"
+        });
+        var $t = $("<th>", {
+            "class": "title"
+        }).text("host" + ":");
+        var $v = $("<td>", {
+            "class": "value"
+        }).text(host);
+
+        $f.append($t).append($v);
+        $(".fields").append($f);
+
+        // Add time difference info
+        $f = $("<tr>", {
+            "class": "field"
+        });
+        $t = $("<th>", {
+            "class": "title"
+        }).text("time difference" + ":");
+        $v = $("<td>", {
+            "class": "value"
+        }).text(difference + $("#graphtimescaleviz").val().trim());
+
+        $f.append($t).append($v);
+        $(".fields").append($f);
 
         console.log("Mouseover");
     });
@@ -725,6 +786,129 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
             "left": $(".line.focus").offset().left - parseFloat($(".line.focus").css("margin-left")) - $(".visualization .left").offset().left
         });
 };
+
+/**
+ * Shows the node selection popup dialog
+ * 
+ * @param {VisualEdge} e The VisualEdge that is selected
+ * @param {DOMElement} elem The SVG edge element
+ */
+Controller.prototype.showEdgeDialog = function(e, elem) {
+    // Don't do anything if the source node is the head node
+    if(e.getSourceVisualNode().getNode().isHead()) {
+        return;
+    }
+
+    var $dialog = $(".dialog");
+    var $svg = $(elem).parents("svg");
+    var $graph = $("#graph");
+
+    // Hide highlight button
+    $dialog.find(".filter").hide();
+
+    // Hide collapse button
+    $dialog.find(".collapse").hide();
+
+
+    // Set properties for dialog, and show
+    if (event.pageX - $(window).scrollLeft() > $graph.width() / 2)
+        $dialog.css({
+            "left": event.pageX - $dialog.width() - 40
+        }).removeClass("left").addClass("right").show();
+    else 
+        $dialog.css({
+            "left": event.pageX + 40
+        }).removeClass("right").addClass("left").show();
+
+    $dialog.css({
+        "top": event.pageY,
+        "margin-left": -$(window).scrollLeft(),
+        "background": e.getColor(),
+        "border-color": e.getColor()
+    }).data("element", "abc");
+
+
+    // Calculate time difference between source and target nodes
+    // Compress to fit in number type
+    var node1 = e.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    var node2 = e.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    node1 = Number(node1.slice(3, node1.length));
+    node2 = Number(node2.slice(3, node2.length));
+    
+    var difference = Math.abs(node1 - node2);
+
+    // Scale the difference
+    if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
+    else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
+    else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
+
+
+    // Add info to the dialog
+    $dialog.find(".name").text(e.getSourceVisualNode().getText() + ' to ' + e.getTargetVisualNode().getText());
+    $dialog.find(".info").children().remove();
+
+    // Add host info
+    var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
+    var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
+    var host = fieldsSource.host;
+
+    // Check if the two hosts are the same
+    if((fieldsSource.host != fieldsTarget.host)) {
+        host = fieldsSource.host + ' to ' + fieldsTarget.host;
+    }
+
+    var $f = $("<tr>", {
+        "class": "field"
+    });
+    var $t = $("<th>", {
+        "class": "title"
+    }).text("host" + ":");
+    var $v = $("<td>", {
+        "class": "value"
+    }).text(host);
+
+    $f.append($t).append($v);
+    $dialog.find(".info").append($f);
+
+    // Add time difference info
+    $f = $("<tr>", {
+        "class": "field"
+    });
+    $t = $("<th>", {
+        "class": "title"
+    }).text("time difference" + ":");
+    $v = $("<td>", {
+        "class": "value"
+    }).text(difference + $("#graphtimescaleviz").val().trim());
+
+    $f.append($t).append($v);
+    $dialog.find(".info").append($f);
+
+
+    // keep a copy of the dialog box's top coordinate
+    var copyOfDialogTop = $dialog.offset().top;
+
+    $(window).scroll(function() {
+        // get the current top coordinate of the dialog box and the current bottom coordinate of the hostbar 
+        // (both values change with scrolling)
+        var dialogTop = $dialog.offset().top;
+        var hostBarBottom = $("#hostBar").offset().top + $("#hostBar").height();
+        // get the vertical position of the scrollbar (position = 0 when scrollbar at very top)
+        var scrollbarTop = $(window).scrollTop();
+        
+        // when a dialog box is hidden, its top coordinate is set to 0 so dialogTop starts having the same value as scrollbarTop
+        // we don't want it to be hidden forever after the first time it's hidden so we check for this condition below. We also check
+        // if we've scrolled past the distance between the dialog box and host bar, this is when we want to hide it. 
+        // Note: the 20 in the second condition is hardcoded for host dialog boxes so that they're never hidden when scrolling
+        if ((scrollbarTop != dialogTop) && (scrollbarTop - 20 > (dialogTop - (hostBarBottom - scrollbarTop)))) { 
+            $dialog.hide();
+        // otherwise, if we haven't scrolled past the distance, show the dialog. Note: we use copyOfDialogTop here
+        // because dialogTop has already changed with scrolling and we want the original distance
+        } else if ($(window).scrollTop() <= (copyOfDialogTop - (hostBarBottom - $(window).scrollTop()))){
+            $dialog.show();
+        }
+    });
+}
 
 /**
  * Shows the node selection popup dialog
