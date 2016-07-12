@@ -628,7 +628,7 @@ Controller.prototype.bindEdges = function(edges) {
             }
         });
 
-        // Don't update hover info if ther source node is null
+        // Don't update hover info if the source node is null
         if(e.getSourceVisualNode().getNode().isHead()) {
             return;
         }
@@ -788,7 +788,7 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
 };
 
 /**
- * Shows the node selection popup dialog
+ * Shows the edge selection popup dialog
  * 
  * @param {VisualEdge} e The VisualEdge that is selected
  * @param {DOMElement} elem The SVG edge element
@@ -825,7 +825,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
         "margin-left": -$(window).scrollLeft(),
         "background": e.getColor(),
         "border-color": e.getColor()
-    }).data("element", "abc");
+    }).data("element", e);
 
 
     // Calculate time difference between source and target nodes
