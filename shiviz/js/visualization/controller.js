@@ -592,6 +592,47 @@ Controller.prototype.bindNodes = function(nodes) {
 };
 
 /**
+ * Binds events to the edges.
+ * 
+ * <ul>
+ * <li>mouseover: highlights edge, shows info in sidebar</li>
+ * <li>click: shows dialog with info</li>
+ * </ul>
+ * 
+ * @param {d3.selection} edges A D3 selection of the edges.
+ */
+Controller.prototype.bindEdges = function(edges) {
+    var controller = this;
+    edges.on("click", function(e) {
+        controller.showDialog(e, 0, this);
+    }).on("mouseover", function(e) {
+        d3.selectAll("g.focus .sel").transition().duration(100).attr({
+            "w": function(d) {
+                return d.getWidth() + 4;
+            }
+        });
+        d3.selectAll("g.focus").classed("focus", false).select("rect:not(.sel)").transition().duration(100).attr({
+            "w": function(d) {
+                return e.getWidth()*10;
+            }
+        });
+
+        d3.select(this).classed("focus", true).select("rect:not(.sel)").transition().duration(100).attr({
+            "w": function(d) {
+                return e.getWidth()*10 + 2;
+            }
+        });
+        d3.selectAll("g.focus .sel").transition().duration(100).attr({
+            "w": function(d) {
+                return d.getWidth() + 6;
+            }
+        });
+
+        console.log("Mouseover");
+    });
+};
+
+/**
  * Binds events to hosts
  * 
  * <ul>

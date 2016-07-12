@@ -190,9 +190,16 @@ View.prototype.draw = function(viewPosition) {
     $(".highlight").hide();
 
     function drawLinks() {
-        view.visualGraph.getVisualEdges().forEach(function(visualEdge) {
-            view.$svg.append(visualEdge.getSVG());
+        var edges = view.visualGraph.getVisualEdges();
+        var arr = [];
+        edges.forEach(function(visualEdge) {
+            var svg = visualEdge.getSVG();
+            view.$svg.append(svg);
+            arr.push(svg[0]);
         });
+
+        // Bind the edges
+        view.controller.bindEdges(d3.selectAll(arr).data(edges));
     }
 
     function drawNodes() {
