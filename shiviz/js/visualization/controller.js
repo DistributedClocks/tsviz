@@ -611,13 +611,13 @@ Controller.prototype.bindEdges = function(edges) {
                 return d.getWidth() + 4;
             }
         });
-        d3.selectAll("g.focus").classed("focus", false).select("rect:not(.sel)").transition().duration(100).attr({
+        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
             "w": function(d) {
                 return d.getWidth()*10;
             }
         });
 
-        d3.select(this).classed("focus", true).select("rect:not(.sel)").transition().duration(100).attr({
+        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
             "w": function(d) {
                 return d.getWidth()*10 + 2;
             }
