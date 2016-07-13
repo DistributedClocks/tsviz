@@ -414,6 +414,11 @@ Controller.prototype.bindNodes = function(nodes) {
         else {
             controller.showDialog(e, 0, this);
         }
+
+        // Unhighlight any previously clicked edges
+        d3.selectAll("line.sel").each(function(d) {
+            $(this).remove();
+        });
     }).on("mouseover", function(e) {
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "r": function(d) {
@@ -807,6 +812,11 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
         return;
     }
 
+    // Unhighlight any previously clicked edges
+    d3.selectAll("line.sel").each(function(d) {
+        $(this).remove();
+    });
+        
     // Add extra highlight to selected edge
     var $selLine = d3.select(elem).insert("line", "line");
     $selLine.style({
