@@ -159,6 +159,8 @@ View.prototype.draw = function(viewPosition) {
     // Update the VisualGraph
     this.visualGraph.update();
 
+    this.transformer.shrinkTimelinesTransformation.transform(this.visualGraph);
+
     // Define locally so that we can use in lambdas below
     var view = this;
 

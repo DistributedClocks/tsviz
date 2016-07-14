@@ -45,6 +45,9 @@ function Transformer(collapseLocal) {
     this.highlightHostTransformation = new HighlightHostTransformation();
 
     /** @private */
+    this.shrinkTimelinesTransformation = new ShrinkTimelinesTransformation();
+
+    /** @private */
     this.highlightHostToIndex = {};
 
     /** @private */

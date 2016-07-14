@@ -21,7 +21,7 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     
     /** @private */
     this.$svg = $(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
-
+    
     /** @private */
     this.sourceVisualNode = sourceVisualNode;
 
@@ -43,7 +43,7 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     /** @private */
     this.opacity;
     this.setOpacity(0.6);
-    
+
     this.$svg.attr({
         "x1": sourceVisualNode.getX(),
         "y1": sourceVisualNode.getY(),
@@ -79,12 +79,18 @@ VisualEdge.prototype.getTargetVisualNode = function() {
 };
 
 VisualEdge.prototype.updateCoords = function() {
-    this.$svg.attr({
-        "x1": this.sourceVisualNode.getX(),
-        "y1": this.sourceVisualNode.getY(),
-        "x2": this.targetVisualNode.getX(),
-        "y2": this.targetVisualNode.getY()
-    }); 
+    var attr = $(this.$svg).attr('x1');
+
+    // For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
+    if (typeof attr !== typeof undefined && attr !== false) {
+      // Element has this attribute
+      this.$svg.attr({
+            "x1": this.sourceVisualNode.getX(),
+            "y1": this.sourceVisualNode.getY(),
+            "x2": this.targetVisualNode.getX(),
+            "y2": this.targetVisualNode.getY()
+        });
+    }     
 };
 
 /**
