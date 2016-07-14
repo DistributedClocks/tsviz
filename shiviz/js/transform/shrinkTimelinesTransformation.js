@@ -139,7 +139,9 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 		for(var j = 0; j < intervals[i].edges.length;  j++){
 			var e = intervals[i].edges[j];
-			e.$svg = $(document.createElementNS('http://www.w3.org/2000/svg', 'path'));
+			// console.log(e);
+
+			e.$line = Util.svgElement("path");
 	        e.setWidth(1);
 	        e.setDashLength(0);
 	        e.setColor("#999");
@@ -162,10 +164,10 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	        lineData.push({x: x, y: y})
 	        var lineFunction = d3.svg.line().x(function(d) { return d.x; }).y(function(d) { return d.y; }).interpolate("monotone");
 
-	        e.$svg.attr("d", lineFunction(lineData));
+	        e.$line.attr("d", lineFunction(lineData));
+	        e.$svg = Util.svgElement("g");
+	        e.$svg.append(e.$line);
 		}
-
-		
 	}
 
 	// console.log("in transformation:   " + (longEdges[0].targetVisualNode.getY() - longEdges[0].sourceVisualNode.getY()));
