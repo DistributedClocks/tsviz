@@ -435,6 +435,21 @@
                                 </dl>
                             </p>
                         </div>
+                        <b>Search for events that occur between two events:</b>
+                        Enter the start and end events below.
+                        <div class="eventbased">
+                            <input type="checkbox" id="onlyCommunication">Search only communication edges between hosts.<br>
+                            <div id="startbar">
+                                <input type="text" class="mono" placeholder="Start event">
+                                <div class="clear">
+                                </div>
+                            </div>
+                            <div id="endbar">
+                                <input type="text" class="mono" placeholder="End event">
+                                <div class="clear">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="structuredTab" class="tab">
                         <ul class="structuredSearches">
@@ -565,6 +580,7 @@
     <script type="text/javascript" src="js/motifFinder/motifDrawer.js"></script>
     <script type="text/javascript" src="js/motifFinder/broadcastGatherFinder.js"></script>
     <script type="text/javascript" src="js/motifFinder/customMotifFinder.js"></script>
+    <script type="text/javascript" src="js/motifFinder/eventMotifFinder.js"></script>
     <script type="text/javascript" src="js/motifFinder/motifGroup.js"></script>
     <script type="text/javascript" src="js/motifFinder/motifNavigator.js"></script>
     <script type="text/javascript" src="js/motifFinder/requestResponseFinder.js"></script>

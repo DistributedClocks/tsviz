@@ -90,6 +90,15 @@ function SearchBar() {
         context.showPanel();
     });
 
+    $("#searchbar #bar input").on("click", function() {
+        if(context.getValue().length == 0) {
+            if ($("#searchbar .eventbased #startbar input").val().length > 0 &&
+                $("#searchbar .eventbased #endbar input").val().length > 0) {
+                context.setValue("#event");
+            }
+        }
+    });
+
     $("#searchButton").on("click", function(e) {
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
@@ -116,6 +125,24 @@ function SearchBar() {
         context.setValue("#" + this.name);
         context.hidePanel();
         context.query();
+    });
+
+    $("#searchbar .eventbased #startbar input").on("input", function() {
+        context.clearStructure();
+        context.clearResults();
+        context.setValue("#event");
+    });
+
+    $("#searchbar .eventbased #endbar input").on("input", function() {
+        context.clearStructure();
+        context.clearResults();
+        context.setValue("#event");
+    });
+
+    $("#searchbar .eventbased #onlyCommunication").on("change", function() {
+        context.clearStructure();
+        context.clearResults();
+        context.setValue("#event");
     });
 
     $("#nextButton").on("click", function() {
@@ -188,6 +215,12 @@ SearchBar.MODE_PREDEFINED = 3;
 SearchBar.MODE_MOTIF = 4;
 
 /**
+ * @static
+ * @const
+ */
+SearchBar.MODE_EVENTBASED = 5;
+
+/**
  * @private
  * @static
  */
@@ -255,6 +288,9 @@ SearchBar.prototype.updateMode = function() {
     else if (value.slice(0, 7) == "#motif") {
         this.mode = SearchBar.MODE_MOTIF;
     }
+    else if (value.slice(0, 6) == "#event") {
+        this.mode = SearchBar.MODE_EVENTBASED;
+    }
     else {
         this.mode = SearchBar.MODE_PREDEFINED;
     }
@@ -314,6 +350,11 @@ SearchBar.prototype.update = function() {
 
     // Network motifs
     case SearchBar.MODE_MOTIF:
+        break;
+
+    // Eventbased Search
+    case SearchBar.MODE_EVENTBASED:
+        this.clearStructure();
         break;
 
     default:
@@ -508,6 +549,14 @@ SearchBar.prototype.query = function() {
                     Shiviz.getInstance().handleException(new Exception("unable to retrieve motifs from: " + url, true));
                 });
             });
+            break;
+
+        case SearchBar.MODE_EVENTBASED:
+            var startValue = $("#searchbar .eventbased #startbar input").val();
+            var endValue = $("#searchbar .eventbased #endbar input").val();
+            var onlyCommunication = $("#searchbar .eventbased #onlyCommunication").prop('checked');
+            var finder = new EventMotifFinder(startValue, endValue, onlyCommunication);
+            this.global.getController().highlightMotif(finder);            
             break;
 
         default:
