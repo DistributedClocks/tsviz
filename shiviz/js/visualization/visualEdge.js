@@ -20,8 +20,11 @@
 function VisualEdge(sourceVisualNode, targetVisualNode) {
     
     /** @private */
-    this.$svg = $(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
-    
+    /** @private */
+    this.$svg = Util.svgElement("g");
+
+    this.$line = Util.svgElement("line");
+
     /** @private */
     this.sourceVisualNode = sourceVisualNode;
 
@@ -30,7 +33,7 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     /** @private */
     this.width;
-    this.setWidth(1);
+    this.setWidth(2);
 
     /** @private */
     this.dashLength;
@@ -43,13 +46,24 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     /** @private */
     this.opacity;
     this.setOpacity(0.6);
-
-    this.$svg.attr({
+    
+    this.$line.attr({
         "x1": sourceVisualNode.getX(),
         "y1": sourceVisualNode.getY(),
         "x2": targetVisualNode.getX(),
         "y2": targetVisualNode.getY()
     }); 
+    this.$svg.append(this.$line);
+
+    // This will help us detect a mouseover event
+    var mouseOverLine = Util.svgElement("line");
+    mouseOverLine.attr({
+        "fill": "transparent",
+        "stroke-width": this.getWidth() + 4,
+        "pointer-events": "none"
+    });
+    this.$svg.append(mouseOverLine);
+    
 }
 
 VisualEdge.prototype.getSVG = function() {
@@ -79,18 +93,18 @@ VisualEdge.prototype.getTargetVisualNode = function() {
 };
 
 VisualEdge.prototype.updateCoords = function() {
-    var attr = $(this.$svg).attr('x1');
+    var attr = $(this.$line).attr('x1');
 
-    // For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
+	// For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
     if (typeof attr !== typeof undefined && attr !== false) {
       // Element has this attribute
-      this.$svg.attr({
+      this.$line.attr({
             "x1": this.sourceVisualNode.getX(),
             "y1": this.sourceVisualNode.getY(),
             "x2": this.targetVisualNode.getX(),
             "y2": this.targetVisualNode.getY()
         });
-    }     
+    } 
 };
 
 /**
@@ -109,7 +123,7 @@ VisualEdge.prototype.getWidth = function() {
  */
 VisualEdge.prototype.setWidth = function(newWidth) {
     this.width = newWidth;
-    this.$svg.attr("stroke-width", newWidth + "px");
+    this.$line.attr("stroke-width", newWidth + "px");
 };
 
 /**
@@ -134,7 +148,7 @@ VisualEdge.prototype.setDashLength = function(newDashLength) {
     }
 
     this.dashLength = newDashLength;
-    this.$svg.attr("stroke-dasharray", newDashLength);
+    this.$line.attr("stroke-dasharray", newDashLength);
 };
 
 /**
@@ -155,7 +169,7 @@ VisualEdge.prototype.getColor = function() {
  */
 VisualEdge.prototype.setColor = function(newColor) {
     this.color = newColor;
-    this.$svg.attr("stroke", newColor);
+    this.$line.attr("stroke", newColor);
 };
 
 /**
@@ -174,5 +188,5 @@ VisualEdge.prototype.getOpacity = function() {
  */
 VisualEdge.prototype.setOpacity = function(newOpacity) {
     this.opacity = newOpacity;
-    this.$svg.attr("opacity", newOpacity);
+    this.$line.attr("opacity", newOpacity);
 };

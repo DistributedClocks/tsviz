@@ -36,6 +36,10 @@ function Controller(global) {
                 $(this).remove();
                 d.setSelected(false);
             });
+            // Unhighlight any previously clicked edges
+            d3.selectAll("line.sel").each(function(d) {
+                $(this).remove();
+            });
             d3.selectAll("line.dashed").remove();
             $(".tdiff").children().remove();
         }
@@ -70,6 +74,10 @@ function Controller(global) {
         d3.selectAll("circle.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
+        });
+        // Unhighlight any previously clicked edges
+        d3.selectAll("line.sel").each(function(d) {
+            $(this).remove();
         });
         d3.selectAll("line.dashed").remove();
         d3.select("polygon.sel").each(function(d) {
@@ -406,6 +414,11 @@ Controller.prototype.bindNodes = function(nodes) {
         else {
             controller.showDialog(e, 0, this);
         }
+
+        // Unhighlight any previously clicked edges
+        d3.selectAll("line.sel").each(function(d) {
+            $(this).remove();
+        });
     }).on("mouseover", function(e) {
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "r": function(d) {
@@ -606,32 +619,32 @@ Controller.prototype.bindEdges = function(edges) {
     edges.on("click", function(e) {
         controller.showEdgeDialog(e, this);
     }).on("mouseover", function(e) {
+        // Don't update hover if the source node is null
+        if(e.getSourceVisualNode().getNode().isHead()) {
+            return;
+        }
+
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "w": function(d) {
+            "stroke-width": function(d) {
                 return d.getWidth() + 4;
             }
         });
         d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
-            "w": function(d) {
-                return d.getWidth()*10;
+            "stroke-width": function(d) {
+                return d.getWidth();
             }
         });
 
         d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
-            "w": function(d) {
-                return d.getWidth()*10 + 2;
+            "stroke-width": function(d) {
+                return d.getWidth() + 2;
             }
         });
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "w": function(d) {
+            "stroke-width": function(d) {
                 return d.getWidth() + 6;
             }
         });
-
-        // Don't update hover info if the source node is null
-        if(e.getSourceVisualNode().getNode().isHead()) {
-            return;
-        }
         
         // Calculate time difference between source and target nodes
         // Compress to fit in number type
@@ -798,6 +811,25 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     if(e.getSourceVisualNode().getNode().isHead()) {
         return;
     }
+
+    // Unhighlight any previously clicked edges
+    d3.selectAll("line.sel").each(function(d) {
+        $(this).remove();
+    });
+        
+    // Add extra highlight to selected edge
+    var $selLine = d3.select(elem).insert("line", "line");
+    $selLine.style({
+        "stroke": e.getColor(),
+        "stroke-width": e.getWidth() + 6
+    });
+    $selLine.attr({
+        "class": "sel",
+        "x1": e.getSourceVisualNode().getX(),
+        "y1": e.getSourceVisualNode().getY(),
+        "x2": e.getTargetVisualNode().getX(),
+        "y2": e.getTargetVisualNode().getY(),
+    });
 
     var $dialog = $(".dialog");
     var $svg = $(elem).parents("svg");
