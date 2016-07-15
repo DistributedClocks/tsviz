@@ -821,7 +821,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     var $selLine = d3.select(elem).insert("line", "line");
     $selLine.style({
         "stroke": e.getColor(),
-        "stroke-width": e.getWidth() + 6
+        "stroke-width": e.getWidth() + 2
     });
     $selLine.attr({
         "class": "sel",

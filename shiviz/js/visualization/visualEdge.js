@@ -59,7 +59,7 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     var mouseOverLine = Util.svgElement("line");
     mouseOverLine.attr({
         "fill": "transparent",
-        "stroke-width": this.getWidth() + 4,
+        "stroke-width": this.getWidth() + 6,
         "pointer-events": "none"
     });
     this.$svg.append(mouseOverLine);
