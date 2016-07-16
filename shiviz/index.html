@@ -497,9 +497,30 @@
             <button class="pairwiseButton">Pairwise</button>
             <button class="diffButton">Show Differences</button>
             <div class="info">
-                <div class="event"></div>
-                <table class="fields"></table>
-                <table class="tdiff"></table>
+                <table class="event">
+                    <tr class="source">
+                        <th class="circle">
+                            <svg width="10" height="10">
+                                <circle cx="5" cy="5" r="5" fill="white" />
+                            </svg>
+                        </th>
+                        <td class="name"></td> 
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td class="innerTable">
+                            <table class="fields"></table>
+                        </td>
+                    </tr>
+                    <tr class="target">
+                        <th class="circle">
+                            <svg width="10" height="10">
+                                <circle cx="5" cy="5" r="5" fill="white" />
+                            </svg>
+                        </th>
+                        <td class="name"></td> 
+                    </tr>
+                </table>
             </div>
 
             <div class="option">
@@ -523,6 +544,7 @@
             <div class="triangle"></div>
             <div class="name"></div>
             <table class="info"></table>
+            <div class="nameBottom"></div>
             <button name="hide" class="hide hb">Hide</button>
             <button name="filter" class="filter hb">Highlight</button>
             <button name="collapse" class="collapse">Toggle Collapse</button>

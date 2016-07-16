@@ -191,8 +191,6 @@ Shiviz.prototype.resetView = function() {
         $("#visualize").prop("disabled", false);
         $(".icon .tabs li:last-child").removeClass("disabled");
     }
-    $(".event").text("");
-    $(".fields").html("");
 
     d3.selectAll("#vizContainer svg").remove();
 

@@ -1113,7 +1113,7 @@ svg#defs {
   left: -20px;
   top: 0;
 }
-.dialog .name {
+.dialog .name, .dialog .nameBottom {
   margin: 1em;
   color: white;
   word-break: break-all;
