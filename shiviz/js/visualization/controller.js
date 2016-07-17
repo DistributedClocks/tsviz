@@ -455,8 +455,6 @@ Controller.prototype.bindNodes = function(nodes) {
             .attr("r", 5)
             .style("fill", e.getFillColor());
 
-        $(".fields").children().remove();
-
         if (!e.isCollapsed()) {
             var fields = e.getNode().getLogEvents()[0].getFields();
             for (var i in fields) {
@@ -848,22 +846,17 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     // Add source and target names
     var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
     var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
-    var host = fieldsSource.host;
 
-    // Check if the two hosts are the same
-    if((fieldsSource.host != fieldsTarget.host)) {
-        host = fieldsSource.host + ' to ' + fieldsTarget.host;
-    }
-
+    // Add the source host
     var $f = $("<tr>", {
         "class": "field"
     });
     var $t = $("<th>", {
         "class": "title"
-    }).text("host" + ":");
+    }).text("Source host" + ":");
     var $v = $("<td>", {
         "class": "value"
-    }).text(host);
+    }).text(fieldsSource.host);
 
     $f.append($t).append($v);
     $dialog.find(".info").append($f);
@@ -874,13 +867,30 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     });
     $t = $("<th>", {
         "class": "title"
-    }).text("time diff" + ":");
+    }).text("Time difference" + ":");
     $v = $("<td>", {
         "class": "value"
     }).text(difference + $("#graphtimescaleviz").val().trim());
 
     $f.append($t).append($v);
     $dialog.find(".info").append($f);
+
+    // Check if the two hosts are the same
+    if((fieldsSource.host != fieldsTarget.host)) {
+            // Add the target host
+        $f = $("<tr>", {
+            "class": "field"
+        });
+        $t = $("<th>", {
+            "class": "title"
+        }).text("Target host" + ":");
+        $v = $("<td>", {
+            "class": "value"
+        }).text(fieldsTarget.host);
+
+        $f.append($t).append($v);
+        $dialog.find(".info").append($f);
+    }
 
 
     // keep a copy of the dialog box's top coordinate
@@ -950,7 +960,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
             }).text(difference + $("#graphtimescaleviz").val().trim());
 
             $f.append($t).append($v);
-            $(".fields").append($f);
+            $(".tdiff").append($f);
         }
 
     }
