@@ -7,6 +7,8 @@
  * {@link AbstractGraph}. Motifs can be used by other classes to identify or
  * store interesting or useful parts of a larger graph. The exact importance of
  * the edges and nodes stored is left up to the utilizing class.
+ * In order to keep track of a motif's space in time, the user must add the
+ * edges between each pair of nodes in the particular motif. 
  * 
  * @constructor
  */
@@ -17,6 +19,9 @@ function Motif() {
 
     /** @private */
     this.edges = {};
+
+    /** @private */
+    this.totalTime = 0;
 }
 
 /**
@@ -59,12 +64,13 @@ Motif.prototype.getNodes = function() {
  * classes utilizing Motif
  * 
  * @param {AbstractNode} node1 One of the nodes the edge connects. Must not be
- *            identical to node2
+ *            identical to node2. Must come earlier in time than node2
  * @param {AbstractNode} node2 One of the nodes the edge connects. Must not be
- *            identical to node1
+ *            identical to node1. Must come later in time than node1
  */
 Motif.prototype.addEdge = function(node1, node2) {
     this.edges[Motif.getEdgeId(node1, node2)] = [ node1, node2 ];
+    this.totalTime += node2.getFirstLogEvent().fields.timestamp - node2.getFirstLogEvent().fields.timestamp;
 };
 
 /**
@@ -154,4 +160,13 @@ Motif.getEdgeId = function(node1, node2) {
     var min = Math.min(node1.getId(), node2.getId());
     var max = Math.max(node1.getId(), node2.getId());
     return min + ":" + max;
+};
+
+/**
+ * Gets the total time of this motif
+ *
+ * @returns {Number} the space in time the nodes take up
+ */
+Motif.prototype.getTotalTime = function() {
+    return this.totalTime;
 };
