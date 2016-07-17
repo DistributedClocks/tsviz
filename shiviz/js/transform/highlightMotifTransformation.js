@@ -51,7 +51,7 @@ HighlightMotifTransformation.prototype.getHighlighted = function() {
  */
 HighlightMotifTransformation.prototype.findMotifs = function(graph) {
     this.motifGroup = this.finder.find(graph);
-}
+};
 
 /**
  * Overrides {@link Transformation#transform}

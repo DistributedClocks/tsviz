@@ -64,13 +64,13 @@ Motif.prototype.getNodes = function() {
  * classes utilizing Motif
  * 
  * @param {AbstractNode} node1 One of the nodes the edge connects. Must not be
- *            identical to node2. Must come earlier in time than node2
+ *            identical to node2. 
  * @param {AbstractNode} node2 One of the nodes the edge connects. Must not be
- *            identical to node1. Must come later in time than node1
+ *            identical to node1. 
  */
 Motif.prototype.addEdge = function(node1, node2) {
     this.edges[Motif.getEdgeId(node1, node2)] = [ node1, node2 ];
-    this.totalTime += node2.getFirstLogEvent().fields.timestamp - node2.getFirstLogEvent().fields.timestamp;
+    this.totalTime += Math.abs(node2.getFirstLogEvent().fields.timestamp - node1.getFirstLogEvent().fields.timestamp);
 };
 
 /**
