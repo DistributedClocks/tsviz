@@ -954,7 +954,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
             });
             var $t = $("<th>", {
                 "class": "title"
-            }).text("Time diff" + ":");
+            }).text("Time difference" + ":");
             var $v = $("<td>", {
                 "class": "value"
             }).text(difference + $("#graphtimescaleviz").val().trim());
