@@ -25,6 +25,8 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     this.$line = Util.svgElement("line");
 
+    this.$mouseOverLine = Util.svgElement("line");
+
     /** @private */
     this.sourceVisualNode = sourceVisualNode;
 
@@ -41,11 +43,11 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     /** @private */
     this.color;
-    this.setColor("#999");
+    this.setColor("dimgrey");
 
     /** @private */
     this.opacity;
-    this.setOpacity(0.6);
+    this.setOpacity(0.25);
     
     this.$line.attr({
         "x1": sourceVisualNode.getX(),
@@ -56,13 +58,16 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     this.$svg.append(this.$line);
 
     // This will help us detect a mouseover event
-    var mouseOverLine = Util.svgElement("line");
-    mouseOverLine.attr({
-        "fill": "transparent",
-        "stroke-width": this.getWidth() + 6,
-        "pointer-events": "none"
+    this.$mouseOverLine.attr({
+        "opacity": 0,
+        "stroke-width": 16,
+        "stroke": "white",
+        "x1": sourceVisualNode.getX(),
+        "y1": sourceVisualNode.getY(),
+        "x2": targetVisualNode.getX(),
+        "y2": targetVisualNode.getY()
     });
-    this.$svg.append(mouseOverLine);
+    this.$svg.append(this.$mouseOverLine);
     
 }
 
@@ -98,7 +103,13 @@ VisualEdge.prototype.updateCoords = function() {
 	// For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
     if (typeof attr !== typeof undefined && attr !== false) {
       // Element has this attribute
-      this.$line.attr({
+        this.$line.attr({
+            "x1": this.sourceVisualNode.getX(),
+            "y1": this.sourceVisualNode.getY(),
+            "x2": this.targetVisualNode.getX(),
+            "y2": this.targetVisualNode.getY()
+        });
+        this.$mouseOverLine.attr({
             "x1": this.sourceVisualNode.getX(),
             "y1": this.sourceVisualNode.getY(),
             "x2": this.targetVisualNode.getX(),

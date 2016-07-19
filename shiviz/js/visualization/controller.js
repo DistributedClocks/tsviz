@@ -639,24 +639,36 @@ Controller.prototype.bindEdges = function(edges) {
 
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "stroke-width": function(d) {
-                return d.getWidth() + 4;
-            }
+                return d.getWidth() + 2;
+            },
+            "stroke": "dimgrey",
+            "opacity": 1
         });
         d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
             "stroke-width": function(d) {
                 return d.getWidth();
+            },
+            "stroke": function(d) {
+                return d.getColor();
+            },
+            "opacity": function(d) {
+                return d.getOpacity();
             }
         });
 
         d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
             "stroke-width": function(d) {
-                return d.getWidth() + 2;
-            }
+                return d.getWidth() ;
+            },
+            "stroke": "dimgrey",
+            "opacity": 1
         });
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "stroke-width": function(d) {
-                return d.getWidth() + 6;
-            }
+                return d.getWidth() + 4;
+            },
+            "stroke": "dimgrey",
+            "opacity": 1
         });
 
         controller.clearSidebarInfo();
@@ -776,10 +788,11 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     });
         
     // Add extra highlight to selected edge
-    var $selLine = d3.select(elem).insert("line", "line");
+    var $selLine = d3.select(elem).append("line", "line");
     $selLine.style({
-        "stroke": e.getColor(),
-        "stroke-width": e.getWidth() + 2
+        "stroke": "red",
+        "stroke-width": e.getWidth(),
+        "opacity": 1
     });
     $selLine.attr({
         "class": "sel",
@@ -877,22 +890,20 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     $f.append($t).append($v);
     $dialog.find(".info").append($f);
 
-    // Check if the two hosts are the same
-    if((fieldsSource.host != fieldsTarget.host)) {
-            // Add the target host
-        $f = $("<tr>", {
-            "class": "field"
-        });
-        $t = $("<th>", {
-            "class": "title"
-        }).text("Target host" + ":");
-        $v = $("<td>", {
-            "class": "value"
-        }).text(fieldsTarget.host);
+    // Add the target host
+    $f = $("<tr>", {
+        "class": "field"
+    });
+    $t = $("<th>", {
+        "class": "title"
+    }).text("Target host" + ":");
+    $v = $("<td>", {
+        "class": "value"
+    }).text(fieldsTarget.host);
 
-        $f.append($t).append($v);
-        $dialog.find(".info").append($f);
-    }
+    $f.append($t).append($v);
+    $dialog.find(".info").append($f);
+
 
 
     // keep a copy of the dialog box's top coordinate
@@ -1286,21 +1297,18 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     $f.append($t).append($v);
     $fields.append($f);
 
-
-    // Check if the two hosts are the same if not add target node info
-    if((sourceNode.getHost() != targetNode.getHost())) {
-        $f = $("<tr>", {
-            "class": "field"
-        });
-        $t = $("<th>", {
-            "class": "title"
-        }).text("Target host" + ":");
-        $v = $("<td>", {
-            "class": "value"
-        }).text(targetNode.getHost());
-        $f.append($t).append($v);
-        $fields.append($f);
-    }
+    // Target host info
+    $f = $("<tr>", {
+        "class": "field"
+    });
+    $t = $("<th>", {
+        "class": "title"
+    }).text("Target host" + ":");
+    $v = $("<td>", {
+        "class": "value"
+    }).text(targetNode.getHost());
+    $f.append($t).append($v);
+    $fields.append($f);
 }
 
 Controller.prototype.bindScroll = function (){
