@@ -19,7 +19,7 @@ CollapseTemporallyCloseNodesTransformation.prototype.isCollapseable = function(n
         return false;
     }
 
-    console.trace();
+    // console.trace();
     var countfor = 1;
     var prev = node;
     var curr = node.getNext();
@@ -67,7 +67,7 @@ CollapseTemporallyCloseNodesTransformation.prototype.isCollapseable = function(n
  * Overrides {@link CollapseNodesTransformation#transform}
  */
 CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model) {
-
+	// console.log(model instanceof VisualGraph);
     var graph = model.getGraph();
 
     function collapse(curr, removalCount) {
