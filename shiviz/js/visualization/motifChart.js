@@ -120,7 +120,18 @@ MotifChart.prototype.drawChart = function() {
     	.attr("height", function(d) {
     		return yScale(d.getY());
     	})
-    	.attr("fill", "#04a");
+    	.attr("fill", "#04a")
+    	.on("mouseover", function(d) {
+    		// Highlight the bar
+            d3.select(this)
+            	.attr("fill", "black");
+        })
+        .on("mouseout", function(d) {
+        	// Unhighlight the bar
+            d3.select(this).attr("fill", function() {
+                return "#04a";
+            });
+        });
 
     this.$chart = $svg;
 };

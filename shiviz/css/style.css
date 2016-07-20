@@ -1064,9 +1064,6 @@ svg {
   margin-top: 1em;
 }
 
-#sidebar .chart rect:hover {
-  fill: black;
-}
 #sidebar .axis path, .axis line {
   fill: none;
   stroke-width: 1;
