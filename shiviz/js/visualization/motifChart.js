@@ -69,11 +69,20 @@ MotifChart.prototype.drawChart = function() {
 			      .orient("left")
     			  .ticks(0);				     
 
+    var tip = d3.tip()
+  				.attr('class', 'd3-tip')
+  				.offset([-14, 0])
+  				.html(function(d) {
+    				return "<strong>Time:</strong> <span style='color:white'>" + d.formatTime() + "</span>";
+  				});
+
    	// Insert an SVG which we will draw our chart and translate
     var $svg = d3.select(".chart")
     			 .append("svg")
     			 .attr("width", width)
     			 .attr("height", height);
+
+    $svg.call(tip);
 
     // Create an inner area for the bars in order to make space for axis
     $svg.append("g")
@@ -121,17 +130,8 @@ MotifChart.prototype.drawChart = function() {
     		return yScale(d.getY());
     	})
     	.attr("fill", "#04a")
-    	.on("mouseover", function(d) {
-    		// Highlight the bar
-            d3.select(this)
-            	.attr("fill", "black");
-        })
-        .on("mouseout", function(d) {
-        	// Unhighlight the bar
-            d3.select(this).attr("fill", function() {
-                return "#04a";
-            });
-        });
+    	.on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     this.$chart = $svg;
 };

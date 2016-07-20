@@ -170,3 +170,15 @@ MotifPoint.prototype.setLabel = function(newLabel) {
     }
     this.label = newLabel;
 };
+
+/**
+ * Format total time to current timescale.
+ *
+ * @returns {String} scaled time with unit
+ */
+MotifPoint.prototype.formatTime = function() {
+    if($("#graphtimescaleviz").val().trim() == "ns") return this.getY() + " ns";
+    else if($("#graphtimescaleviz").val().trim() == "us") return this.getY() / 1000 + " μs";
+    else if($("#graphtimescaleviz").val().trim() == "ms") return this.getY() / 1000000 + " ms";
+    else if($("#graphtimescaleviz").val().trim() == "s") return this.getY() / 1000000000 + " s";
+};
