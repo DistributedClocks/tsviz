@@ -68,7 +68,7 @@ MotifPoint.prototype.getMotif = function() {
 };
 
 /**
- * Gets the x coordinate of the center of the MotifPoint.
+ * Gets the x coordinate of the MotifPoint.
  * 
  * @returns {Number} The x-coordinate
  */
@@ -86,7 +86,7 @@ MotifPoint.prototype.setX = function(newX) {
 };
 
 /**
- * Gets the y coordinate of the center of the MotifPoint.
+ * Gets the y coordinate of the MotifPoint.
  * 
  * @returns {Number} The y-coordinate
  * 

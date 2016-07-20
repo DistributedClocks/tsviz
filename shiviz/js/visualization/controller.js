@@ -252,7 +252,8 @@ Controller.prototype.highlightMotif = function(motifFinder) {
     this.global.getViews().forEach(function(view) {
         view.getTransformer().highlightMotif(motifFinder, false);
         var motifGroup = motifFinder.find(view.getVisualModel().getGraph());
-        var motifGraph = new MotifGraph(motifGroup);
+        var motifChart = new MotifChart(motifGroup);
+        motifChart.draw();
     });
 
     this.global.drawAll();
