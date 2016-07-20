@@ -442,8 +442,19 @@ Controller.prototype.bindNodes = function(nodes) {
             }
         });
 
-        $(".event").text(e.getText());
-        $(".fields").children().remove();
+        controller.clearSidebarInfo();
+
+        // Add name to the dialog and colour the circle
+        $(".event").find(".source").find(".name").text(e.getText());
+        d3.select(".source").select(".circle").select("svg")
+            .attr("width", 10)
+            .attr("height", 10)
+            .select("circle")
+            .attr("cx", 5)
+            .attr("cy", 5)
+            .attr("r", 5)
+            .style("fill", e.getFillColor());
+
         if (!e.isCollapsed()) {
             var fields = e.getNode().getLogEvents()[0].getFields();
             for (var i in fields) {
@@ -645,64 +656,9 @@ Controller.prototype.bindEdges = function(edges) {
                 return d.getWidth() + 6;
             }
         });
-        
-        // Calculate time difference between source and target nodes
-        // Compress to fit in number type
-        var node1 = e.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-        var node2 = e.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-        node1 = Number(node1.slice(3, node1.length));
-        node2 = Number(node2.slice(3, node2.length));
-        
-        var difference = Math.abs(node1 - node2);
 
-        // Scale the difference
-        if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-        else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-        else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
-
-
-        // Add info to the dialog
-        $(".event").text(e.getSourceVisualNode().getText() + ' to ' + e.getTargetVisualNode().getText());
-        $(".fields").children().remove();
-
-        // Add host info
-        var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
-        var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
-        var host = fieldsSource.host;
-
-        // Check if the two hosts are the same
-        if((fieldsSource.host != fieldsTarget.host)) {
-            host = fieldsSource.host + ' to ' + fieldsTarget.host;
-        }
-
-        var $f = $("<tr>", {
-            "class": "field"
-        });
-        var $t = $("<th>", {
-            "class": "title"
-        }).text("host" + ":");
-        var $v = $("<td>", {
-            "class": "value"
-        }).text(host);
-
-        $f.append($t).append($v);
-        $(".fields").append($f);
-
-        // Add time difference info
-        $f = $("<tr>", {
-            "class": "field"
-        });
-        $t = $("<th>", {
-            "class": "title"
-        }).text("time difference" + ":");
-        $v = $("<td>", {
-            "class": "value"
-        }).text(difference + $("#graphtimescaleviz").val().trim());
-
-        $f.append($t).append($v);
-        $(".fields").append($f);
-
-        console.log("Mouseover");
+        controller.clearSidebarInfo();
+        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     });
 };
 
@@ -719,8 +675,8 @@ Controller.prototype.bindEdges = function(edges) {
 Controller.prototype.bindHosts = function(hosts) {
     var controller = this;
     hosts.on("mouseover", function(e) {
-        $(".event").text(e.getText());
-        $(".fields").children().remove();
+        controller.clearSidebarInfo();
+        $(".event").find(".source").find(".name").text(e.getText());
     }).on("dblclick", function(e) {
         var views = controller.global.getViews();
 
@@ -776,8 +732,8 @@ Controller.prototype.bindHiddenHosts = function(host, node) {
         controller.global.drawAll();
 
     }).on("mouseover", function(e) {
-        $(".event").text(host);
-        $(".fields").children().remove();
+        controller.clearSidebarInfo();
+        $(".event").find(".source").find(".name").text(host);
     }).on("click", function(e) {
         controller.showDialog(host, 2, this);
     });
@@ -821,7 +777,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     var $selLine = d3.select(elem).insert("line", "line");
     $selLine.style({
         "stroke": e.getColor(),
-        "stroke-width": e.getWidth() + 6
+        "stroke-width": e.getWidth() + 2
     });
     $selLine.attr({
         "class": "sel",
@@ -859,7 +815,6 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
         "border-color": e.getColor()
     }).data("element", e);
 
-
     // Calculate time difference between source and target nodes
     // Compress to fit in number type
     var node1 = e.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
@@ -874,30 +829,34 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
     else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
 
+//Experimental dialog
+/*    $dialog.find(".name").text("");
+    $dialog.find(".info").children().remove();
+    $(".info").append($(".event"));
 
     // Add info to the dialog
-    $dialog.find(".name").text(e.getSourceVisualNode().getText() + ' to ' + e.getTargetVisualNode().getText());
+    this.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".info"));
+*/
+
+    // Add info to the dialog
+    $dialog.find(".name").text(e.getSourceVisualNode().getText());
+    $dialog.find(".nameBottom").text(e.getTargetVisualNode().getText());
     $dialog.find(".info").children().remove();
 
-    // Add host info
+    // Add source and target names
     var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
     var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
-    var host = fieldsSource.host;
 
-    // Check if the two hosts are the same
-    if((fieldsSource.host != fieldsTarget.host)) {
-        host = fieldsSource.host + ' to ' + fieldsTarget.host;
-    }
-
+    // Add the source host
     var $f = $("<tr>", {
         "class": "field"
     });
     var $t = $("<th>", {
         "class": "title"
-    }).text("host" + ":");
+    }).text("Source host" + ":");
     var $v = $("<td>", {
         "class": "value"
-    }).text(host);
+    }).text(fieldsSource.host);
 
     $f.append($t).append($v);
     $dialog.find(".info").append($f);
@@ -908,13 +867,30 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     });
     $t = $("<th>", {
         "class": "title"
-    }).text("time difference" + ":");
+    }).text("Time difference" + ":");
     $v = $("<td>", {
         "class": "value"
     }).text(difference + $("#graphtimescaleviz").val().trim());
 
     $f.append($t).append($v);
     $dialog.find(".info").append($f);
+
+    // Check if the two hosts are the same
+    if((fieldsSource.host != fieldsTarget.host)) {
+            // Add the target host
+        $f = $("<tr>", {
+            "class": "field"
+        });
+        $t = $("<th>", {
+            "class": "title"
+        }).text("Target host" + ":");
+        $v = $("<td>", {
+            "class": "value"
+        }).text(fieldsTarget.host);
+
+        $f.append($t).append($v);
+        $dialog.find(".info").append($f);
+    }
 
 
     // keep a copy of the dialog box's top coordinate
@@ -951,6 +927,8 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
  * @param {DOMElement} elem The SVG node element
  */
 Controller.prototype.showDialog = function(e, type, elem) {
+    // Erase second event from the bottom
+    $(".dialog").find(".nameBottom").text("");
 
     if(d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
         //Get nodes
@@ -1212,6 +1190,115 @@ Controller.prototype.showDialog = function(e, type, elem) {
             $dialog.show();
         }
     });
+}
+
+
+/**
+ * Clears the information in the sidebar
+ */
+Controller.prototype.clearSidebarInfo = function() {
+    var sidebar = $(".event");
+
+    d3.select(".source").select(".circle").select("svg").select("circle")
+        .style("fill", "white");  
+    d3.select(".target").select(".circle").select("svg").select("circle")
+        .style("fill", "white"); 
+    sidebar.find(".source").find(".name").text("");
+    sidebar.find(".target").find(".name").text("");
+    sidebar.find(".fields").children().remove();
+}
+
+/**
+ * Formats the edge information for the container
+ * 
+ * @param {VisualNode} sourceNode 
+ * @param {VisualNode} targetNode 
+ * @param {infoContainer} either the sidebar or dialog 
+ */
+Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoContainer) {
+    // Calculate time difference between source and target nodes
+    // Compress to fit in number type
+    var node1 = sourceNode.getNode().getFirstLogEvent().fields.timestamp;
+    var node2 = targetNode.getNode().getFirstLogEvent().fields.timestamp;
+    node1 = Number(node1.slice(3, node1.length));
+    node2 = Number(node2.slice(3, node2.length));
+    
+    var difference = Math.abs(node1 - node2);
+
+    // Scale the difference
+    if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
+    else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
+    else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
+
+
+    // Add names to the dialog and colour the circles
+    infoContainer.find(".source").find(".name").text(sourceNode.getText());
+    d3.select(".source").select(".circle").select("svg")
+        .attr("width", 10)
+        .attr("height", 10)
+        .select("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 5)
+        .style("fill", sourceNode.getFillColor());
+
+    infoContainer.find(".target").find(".name").text(targetNode.getText());
+    d3.select(".target").select(".circle").select("svg")
+        .attr("width", 10)
+        .attr("height", 10)
+        .select("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 5)
+        .style("fill", targetNode.getFillColor());    
+    
+    // Get the location of the fields
+    $fields = infoContainer.find(".fields");
+    $fields.children().remove();
+
+    // Source host
+    var $f = $("<tr>", {
+        "class": "field"
+    });
+    var $t = $("<th>", {
+        "class": "title"
+    }).text("Source host" + ":");
+    var $v = $("<td>", {
+        "class": "value"
+    }).text(sourceNode.getHost());
+    $f.append($t).append($v);
+    $fields.append($f);
+
+
+    // Add time difference info
+    $f = $("<tr>", {
+        "class": "field"
+    });
+    $t = $("<th>", {
+        "class": "title"
+    }).text("Time:");
+    $v = $("<td>", {
+        "class": "value"
+    }).text(difference + $("#graphtimescaleviz").val().trim());
+
+    $f.append($t).append($v);
+    $fields.append($f);
+
+
+    // Check if the two hosts are the same if not add target node info
+    if((sourceNode.getHost() != targetNode.getHost())) {
+        $f = $("<tr>", {
+            "class": "field"
+        });
+        $t = $("<th>", {
+            "class": "title"
+        }).text("Target host" + ":");
+        $v = $("<td>", {
+            "class": "value"
+        }).text(targetNode.getHost());
+        $f.append($t).append($v);
+        $fields.append($f);
+    }
 }
 
 Controller.prototype.bindScroll = function (){
