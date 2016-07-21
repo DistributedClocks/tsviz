@@ -1025,10 +1025,13 @@ svg {
   text-overflow: ellipsis;
 }
 
+/* To help make the line connecting the two
+   circles on the sidebar info */
 #sidebar .info {
   position: absolute;
+  width: 176px;
+  height: 192px;
 }
-
 #sidebar .nodeConnection {
   position: relative;
 }
