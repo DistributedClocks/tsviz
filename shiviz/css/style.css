@@ -1025,6 +1025,14 @@ svg {
   text-overflow: ellipsis;
 }
 
+#sidebar .info {
+  position: absolute;
+}
+
+#sidebar .nodeConnection {
+  position: relative;
+}
+
 #sidebar {
   width: 240px;
   height: 100%;

@@ -788,7 +788,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     // Add extra highlight to selected edge
     var $selLine = d3.select(elem).append("line", "line");
     $selLine.style({
-        "stroke": "red",
+        "stroke": "firebrick",
         "stroke-width": e.getWidth(),
         "opacity": 1
     });
@@ -1217,6 +1217,7 @@ Controller.prototype.clearSidebarInfo = function() {
     sidebar.find(".source").find(".name").text("");
     sidebar.find(".target").find(".name").text("");
     sidebar.find(".fields").children().remove();
+    d3.select(".nodeConnection").select("svg").select("line").attr("opacity", 0);
 }
 
 /**
@@ -1307,11 +1308,24 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     }).text(targetNode.getHost());
     $f.append($t).append($v);
     $fields.append($f);
-}
+
+    // Add the line to connect the two circles together
+    var positionTop = $("#sidebar .info .source .circle circle").offset().top - $(window).scrollTop();
+    var positionBottom = $("#sidebar .info .target .circle circle").offset().top - $(window).scrollTop();
+
+    d3.select(".nodeConnection").select("svg").select("line")
+                                .attr("stroke", "dimgrey")
+                                .attr("stroke-width", 2)
+                                .attr("opacity", 0.25)
+                                .attr("x1", 8)
+                                .attr("y1", positionTop - 22)
+                                .attr("x2", 8)
+                                .attr("y2", positionBottom - 32);
+};
 
 Controller.prototype.bindScroll = function (){
     var self = this;
     $(window).unbind("scroll");
     $(window).bind("scroll", self.onScroll);
     $(window).scroll();
-}
+};
