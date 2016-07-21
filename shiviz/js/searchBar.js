@@ -39,6 +39,9 @@ function SearchBar() {
     this.motifNavigator = null;
 
     /** @private */
+    this.motifChart = null;
+
+    /** @private */
     this.graphBuilder = new GraphBuilder($("#panel svg"), $("#addButton"), false);
 
     /** @private */
@@ -438,6 +441,8 @@ SearchBar.prototype.clearText = function() {
 SearchBar.prototype.clearResults = function() {
     $("#searchbar").removeClass("results");
     this.motifNavigator = null;
+    if(this.motifChart != null) this.motifChart.removeChart();
+    this.motifChart = null;
     if (this.global != null && this.global.getController().hasHighlight()) {
         this.global.getController().clearHighlight();
     } else {
@@ -575,6 +580,7 @@ SearchBar.prototype.query = function() {
         // so countMotifs() should not be called during the initial search but during the on-click event in MotifDrawer.js
         $("#searchbar").addClass("results");
         this.countMotifs();
+        this.createResultsChart();
     }
 
     function handleMotifResponse(response) {
@@ -678,6 +684,22 @@ SearchBar.prototype.countMotifs = function() {
         }
         $("#numFound").text(numInstances + " in view");
     }
+};
+
+/**
+  * This function creates a new MotifChart to display the search results with
+  * respect to time. The elements in the chart will take the user to the result 
+  * that maps to that element when clicked on.
+  */
+SearchBar.prototype.createResultsChart = function() {
+    var views = this.global.getActiveViews();
+    var motifGroup = views[0].getTransformer().getHighlightedMotif();
+    if (this.global.getPairwiseView()) {
+        motifGroup.addMotifGroup(views[1].getTransformer().getHighlightedMotif());
+    }
+
+    this.motifChart = new MotifChart(motifGroup, this.motifNavigator);
+    this.motifChart.drawChart();
 };
 
 /**

@@ -15,7 +15,6 @@ function Controller(global) {
 
     var self = this;
     var searchbar = SearchBar.getInstance();
-    var motifChart = null;
 
     // MODIFIED
     self.bindScroll();
@@ -252,9 +251,6 @@ function Controller(global) {
 Controller.prototype.highlightMotif = function(motifFinder) {
     this.global.getViews().forEach(function(view) {
         view.getTransformer().highlightMotif(motifFinder, false);
-        var motifGroup = motifFinder.find(view.getVisualModel().getGraph());
-        motifChart = new MotifChart(motifGroup);
-        motifChart.drawChart();
     });
 
     this.global.drawAll();
@@ -271,8 +267,6 @@ Controller.prototype.clearHighlight = function() {
     this.global.getViews().forEach(function(view) {
         view.getTransformer().unhighlightMotif();
     });
-
-    motifChart.removeChart();
 
     this.global.drawAll();
     // this.bindScroll();

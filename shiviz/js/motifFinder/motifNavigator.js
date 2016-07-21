@@ -138,6 +138,26 @@ MotifNavigator.prototype.prev = function() {
 };
 
 /**
+ * Jumps to the specified motif. 
+ *
+ * @parameter {Motif} motif the motif to jump to in the visual graph.
+ */
+MotifNavigator.prototype.jumpTo = function(motif) {
+    var i = 0;
+
+    while (i < this.motifDatas.length) {
+
+        if (motif.equals(this.motifDatas[i].getMotif())) {
+            this.index = i;
+            this.handleCurrent();
+            return;
+        }
+
+        i++;
+    }
+};
+
+/**
  * Handles the currently selected motif
  * 
  * @private

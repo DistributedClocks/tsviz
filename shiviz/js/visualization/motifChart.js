@@ -9,12 +9,14 @@
  * parameter of this class.
  * 
  * @constructor
- * @param {MotifGroup} motifGroup
+ * @param {MotifGroup} motifGroup contains the search results
+ * @param {MotifNavigator} motifNavigator navigate the visual graph with this
  */
-function MotifChart(motifGroup) {
+function MotifChart(motifGroup, motifNavigator) {
 
 	/** @private */
 	this.motifPoints = [];
+    this.motifNavigator = motifNavigator;
 	this.$chart = null;
 
 	var motifs = motifGroup.getMotifs();
@@ -47,6 +49,8 @@ MotifChart.prototype.drawChart = function() {
     var padding = {top: 0, right: 0, bottom: 2, left: 2};
     var width = ((176 > motifPoints.length) ? 176 : motifPoints.length);
     var height = 192 - padding.top - padding.bottom * 2;
+
+    var motifNavigator = this.motifNavigator;
 
     // Create a x scale for the axis
     var xScale = d3.scale.linear()
@@ -131,7 +135,10 @@ MotifChart.prototype.drawChart = function() {
     	})
     	.attr("fill", "#04a")
     	.on("mouseover", tip.show)
-        .on("mouseout", tip.hide);
+        .on("mouseout", tip.hide)
+        .on("click", function(d) {
+            motifNavigator.jumpTo(d.getMotif());
+        });
 
     this.$chart = $svg;
 };

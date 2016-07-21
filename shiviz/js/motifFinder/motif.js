@@ -15,6 +15,9 @@
 function Motif() {
 
     /** @private */
+    this.id = Motif.number++;
+
+    /** @private */
     this.nodes = {};
 
     /** @private */
@@ -23,6 +26,14 @@ function Motif() {
     /** @private */
     this.totalTime = 0;
 }
+
+/**
+ * Global counter used to assign each motif a unique ID
+ * 
+ * @static
+ * @private
+ */
+Motif.number = 0;
 
 /**
  * Adds a node to this motif
@@ -169,4 +180,23 @@ Motif.getEdgeId = function(node1, node2) {
  */
 Motif.prototype.getTotalTime = function() {
     return this.totalTime;
+};
+
+/**
+ * Gets the ID of the Motif
+ *
+ * @returns {Number} the ID of this motif
+ */
+Motif.prototype.getId = function() {
+    return this.id;
+};
+
+/**
+ * Checks if this motif is the same as the one provided
+ *
+ * @parameter {Motif} motif being compared against
+ * @returns {boolean} true if both motifs are the same, false otherwise
+ */
+Motif.prototype.equals = function(motif) {
+    return (this.id == motif.getId());
 };
