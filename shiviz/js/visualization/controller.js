@@ -40,9 +40,9 @@ function Controller(global) {
             d3.selectAll("line.sel").each(function(d) {
                 $(this).remove();
             });
-            d3.selectAll("path.sel").each(function(d) {
-                $(this).remove();
-            })
+            // d3.selectAll("path.sel").each(function(d) {
+            //     $(this).remove();
+            // })
             d3.selectAll("line.dashed").remove();
             $(".tdiff").children().remove();
         }
@@ -83,9 +83,9 @@ function Controller(global) {
             $(this).remove();
         });
         d3.selectAll("line.dashed").remove();
-        d3.selectAll("path.sel").each(function(d) {
-            $(this).remove();
-        })
+        // d3.selectAll("path.sel").each(function(d) {
+        //     $(this).remove();
+        // });
         d3.select("polygon.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
@@ -637,9 +637,9 @@ Controller.prototype.bindEdges = function(edges) {
         controller.showEdgeDialog(e, this);
     }).on("mouseover", function(e) {
         // Don't update hover if the source node is null
-        // if(e.getSourceVisualNode().getNode().isHead()) {
-        //     return;
-        // }
+        if(e.getSourceVisualNode().getNode().isHead()) {
+            return;
+        }
 
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "stroke-width": function(d) {
@@ -651,17 +651,7 @@ Controller.prototype.bindEdges = function(edges) {
                 return d.getWidth();
             }
         });
-        d3.selectAll("g.focus").classed("focus", false).select("path:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
-                return d.getWidth();
-            }
-        });
         d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
-                return d.getWidth() + 2;
-            }
-        });
-        d3.select(this).classed("focus", true).select("path:not(.sel)").transition().duration(100).attr({
             "stroke-width": function(d) {
                 return d.getWidth() + 2;
             }
@@ -673,9 +663,7 @@ Controller.prototype.bindEdges = function(edges) {
         });
 
         controller.clearSidebarInfo();
-        if(e.getSourceVisualNode().getNode().isHead()) {
-            controller.formatEdgeInfo(null, e.getTargetVisualNode(), $(".event"));
-        }
+        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     });
 };
 
@@ -1266,101 +1254,86 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     // Calculate time difference between source and target nodes
     // Compress to fit in number type
     
-    var node1 = 0;
-    var sourceNodeText = "";
-    var sourceNodeColor = "";
-    var sourceNodeHost = "";
+    var node1 = sourceNode.getNode().getFirstLogEvent().fields.timestamp;
     var node2 = targetNode.getNode().getFirstLogEvent().fields.timestamp;
+    node1 = Number(node1.slice(3, node1.length));
     node2 = Number(node2.slice(3, node2.length));
-
-    if(sourceNode == null){
-        node1 = node2;
-        sourceNodeText = "Log Activity Start";
-        sourceNodeColor = targetNode.getFillColor();
-        sourceNodeHost = targetNode.getHost();
-    }else{
-        node1 = sourceNode.getNode().getFirstLogEvent().fields.timestamp;
-        node1 = Number(node1.slice(3, node1.length));
-        sourceNodeText = sourceNode.getText();
-        sourceNodeColor = sourceNode.getFillColor();
-        sourceNodeHost = sourceNode.getHost();
-    }
 
     var difference = Math.abs(node2 - node1);
 
-        // Scale the difference
-        if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-        else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-        else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
+    // Scale the difference
+    if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
+    else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
+    else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
 
 
-        // Add names to the dialog and colour the circles
-        infoContainer.find(".source").find(".name").text(sourceNodeText);
-        d3.select(".source").select(".circle").select("svg")
-            .attr("width", 10)
-            .attr("height", 10)
-            .select("circle")
-            .attr("cx", 5)
-            .attr("cy", 5)
-            .attr("r", 5)
-            .style("fill", sourceNodeColor);
+    // Add names to the dialog and colour the circles
+    infoContainer.find(".source").find(".name").text(sourceNode.getText());
+    d3.select(".source").select(".circle").select("svg")
+        .attr("width", 10)
+        .attr("height", 10)
+        .select("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 5)
+        .style("fill", sourceNode.getFillColor());
 
-        infoContainer.find(".target").find(".name").text(targetNode.getText());
-        d3.select(".target").select(".circle").select("svg")
-            .attr("width", 10)
-            .attr("height", 10)
-            .select("circle")
-            .attr("cx", 5)
-            .attr("cy", 5)
-            .attr("r", 5)
-            .style("fill", targetNode.getFillColor());    
-        
-        // Get the location of the fields
-        $fields = infoContainer.find(".fields");
-        $fields.children().remove();
+    infoContainer.find(".target").find(".name").text(targetNode.getText());
+    d3.select(".target").select(".circle").select("svg")
+        .attr("width", 10)
+        .attr("height", 10)
+        .select("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 5)
+        .style("fill", targetNode.getFillColor());    
+    
+    // Get the location of the fields
+    $fields = infoContainer.find(".fields");
+    $fields.children().remove();
 
-        // Source host
-        var $f = $("<tr>", {
-            "class": "field"
-        });
-        var $t = $("<th>", {
-            "class": "title"
-        }).text("Source host" + ":");
-        var $v = $("<td>", {
-            "class": "value"
-        }).text(sourceNodeHost);
-        $f.append($t).append($v);
-        $fields.append($f);
+    // Source host
+    var $f = $("<tr>", {
+        "class": "field"
+    });
+    var $t = $("<th>", {
+        "class": "title"
+    }).text("Source host" + ":");
+    var $v = $("<td>", {
+        "class": "value"
+    }).text(sourceNode.getHost());
+    $f.append($t).append($v);
+    $fields.append($f);
 
 
-        // Add time difference info
+    // Add time difference info
+    $f = $("<tr>", {
+        "class": "field"
+    });
+    $t = $("<th>", {
+        "class": "title"
+    }).text("Time:");
+    $v = $("<td>", {
+        "class": "value"
+    }).text(difference + $("#graphtimescaleviz").val().trim());
+
+    $f.append($t).append($v);
+    $fields.append($f);
+
+    // Check if the two hosts are the same if not add target node info
+    if((sourceNode.getHost() != targetNode.getHost())) {
         $f = $("<tr>", {
             "class": "field"
         });
         $t = $("<th>", {
             "class": "title"
-        }).text("Time:");
+        }).text("Target host" + ":");
         $v = $("<td>", {
             "class": "value"
-        }).text(difference + $("#graphtimescaleviz").val().trim());
-
+        }).text(targetNode.getHost());
         $f.append($t).append($v);
         $fields.append($f);
-
-        // Check if the two hosts are the same if not add target node info
-        if((sourceNodeHost != targetNode.getHost())) {
-            $f = $("<tr>", {
-                "class": "field"
-            });
-            $t = $("<th>", {
-                "class": "title"
-            }).text("Target host" + ":");
-            $v = $("<td>", {
-                "class": "value"
-            }).text(targetNode.getHost());
-            $f.append($t).append($v);
-            $fields.append($f);
-        }
+    }
 }
 
 Controller.prototype.bindScroll = function (){
