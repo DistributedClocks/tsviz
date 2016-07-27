@@ -657,16 +657,16 @@ Controller.prototype.bindEdges = function(edges) {
         }
 
         // Calculate offset for tip
-        var height;
+        var horizontalOffset = 0
         if(e.getSourceVisualNode().getNode().getHost() == e.getTargetVisualNode().getNode().getHost()) {
-            height = 10;
+            horizontalOffset = 0;
         }
         else {
-            height = (Math.abs(e.getSourceVisualNode().getY() - e.getTargetVisualNode().getY())) / 2 - 20;
+            horizontalOffset = event.pageX - 45 - (e.getSourceVisualNode().getX() + e.getTargetVisualNode().getX()) / 2;
         }
            
         tip.attr('class', 'd3-tip')
-           .offset([height, 0])
+           .offset([event.pageY - e.getSourceVisualNode().getY() - 155, horizontalOffset])
            .html(function(d) {
                 return "<strong>Time:</strong> <span style='color:white'>" + e.getTimeDifference() + "</span>";
            });
@@ -854,135 +854,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
         "x2": e.getTargetVisualNode().getX(),
         "y2": e.getTargetVisualNode().getY(),
     });
-
-    var $dialog = $(".dialog");
-    var $svg = $(elem).parents("svg");
-    var $graph = $("#graph");
-
-    // Hide highlight button
-    $dialog.find(".filter").hide();
-
-    // Hide collapse button
-    $dialog.find(".collapse").hide();
-
-
-    // Set properties for dialog, and show
-    if (event.pageX - $(window).scrollLeft() > $graph.width() / 2)
-        $dialog.css({
-            "left": event.pageX - $dialog.width() - 40
-        }).removeClass("left").addClass("right").show();
-    else 
-        $dialog.css({
-            "left": event.pageX + 40
-        }).removeClass("right").addClass("left").show();
-
-    $dialog.css({
-        "top": event.pageY,
-        "margin-left": -$(window).scrollLeft(),
-        "background": e.getColor(),
-        "border-color": e.getColor()
-    }).data("element", e);
-
-    // Calculate time difference between source and target nodes
-    // Compress to fit in number type
-    var node1 = e.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-    var node2 = e.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-    node1 = Number(node1.slice(3, node1.length));
-    node2 = Number(node2.slice(3, node2.length));
-    
-    var difference = Math.abs(node1 - node2);
-
-    // Scale the difference
-    if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-    else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-    else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
-
-//Experimental dialog
-/*    $dialog.find(".name").text("");
-    $dialog.find(".info").children().remove();
-    $(".info").append($(".event"));
-
-    // Add info to the dialog
-    this.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".info"));
-*/
-
-    // Add info to the dialog
-    $dialog.find(".name").text(e.getSourceVisualNode().getText());
-    $dialog.find(".nameBottom").text(e.getTargetVisualNode().getText());
-    $dialog.find(".info").children().remove();
-
-    // Add source and target names
-    var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
-    var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
-
-    // Add the source host
-    var $f = $("<tr>", {
-        "class": "field"
-    });
-    var $t = $("<th>", {
-        "class": "title"
-    }).text("Source host" + ":");
-    var $v = $("<td>", {
-        "class": "value"
-    }).text(fieldsSource.host);
-
-    $f.append($t).append($v);
-    $dialog.find(".info").append($f);
-
-    // Add time difference info
-    $f = $("<tr>", {
-        "class": "field"
-    });
-    $t = $("<th>", {
-        "class": "title"
-    }).text("Time difference" + ":");
-    $v = $("<td>", {
-        "class": "value"
-    }).text(difference + $("#graphtimescaleviz").val().trim());
-
-    $f.append($t).append($v);
-    $dialog.find(".info").append($f);
-
-    // Add the target host
-    $f = $("<tr>", {
-        "class": "field"
-    });
-    $t = $("<th>", {
-        "class": "title"
-    }).text("Target host" + ":");
-    $v = $("<td>", {
-        "class": "value"
-    }).text(fieldsTarget.host);
-
-    $f.append($t).append($v);
-    $dialog.find(".info").append($f);
-
-
-
-    // keep a copy of the dialog box's top coordinate
-    var copyOfDialogTop = $dialog.offset().top;
-
-    $(window).scroll(function() {
-        // get the current top coordinate of the dialog box and the current bottom coordinate of the hostbar 
-        // (both values change with scrolling)
-        var dialogTop = $dialog.offset().top;
-        var hostBarBottom = $("#hostBar").offset().top + $("#hostBar").height();
-        // get the vertical position of the scrollbar (position = 0 when scrollbar at very top)
-        var scrollbarTop = $(window).scrollTop();
-        
-        // when a dialog box is hidden, its top coordinate is set to 0 so dialogTop starts having the same value as scrollbarTop
-        // we don't want it to be hidden forever after the first time it's hidden so we check for this condition below. We also check
-        // if we've scrolled past the distance between the dialog box and host bar, this is when we want to hide it. 
-        // Note: the 20 in the second condition is hardcoded for host dialog boxes so that they're never hidden when scrolling
-        if ((scrollbarTop != dialogTop) && (scrollbarTop - 20 > (dialogTop - (hostBarBottom - scrollbarTop)))) { 
-            $dialog.hide();
-        // otherwise, if we haven't scrolled past the distance, show the dialog. Note: we use copyOfDialogTop here
-        // because dialogTop has already changed with scrolling and we want the original distance
-        } else if ($(window).scrollTop() <= (copyOfDialogTop - (hostBarBottom - $(window).scrollTop()))){
-            $dialog.show();
-        }
-    });
-}
+};
 
 /**
  * Shows the node selection popup dialog
