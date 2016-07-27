@@ -693,12 +693,18 @@ SearchBar.prototype.countMotifs = function() {
   */
 SearchBar.prototype.createResultsChart = function() {
     var views = this.global.getActiveViews();
-    var motifGroup = views[0].getTransformer().getHighlightedMotif();
+
+    this.motifChart = new MotifChart(this.motifNavigator);
+
+    this.motifChart.addMotif(views[0].getVisualModel(), views[0].getTransformer().getHighlightedMotif());
     if (this.global.getPairwiseView()) {
-        motifGroup.addMotifGroup(views[1].getTransformer().getHighlightedMotif());
+        this.motifChart.addMotif(views[1].getVisualModel(), views[1].getTransformer().getHighlightedMotif());
     }
 
-    this.motifChart = new MotifChart(motifGroup, this.motifNavigator);
+    this.motifChart.sortByHost();
+    this.motifChart.drawChart();
+    
+    this.motifChart.sortByTime(true);
     this.motifChart.drawChart();
 };
 

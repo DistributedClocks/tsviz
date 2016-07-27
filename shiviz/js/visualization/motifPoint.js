@@ -10,11 +10,13 @@
  * 
  * @constructor
  * @param {Motif} motif
+ * @param {VisualGraph} that contains the motif
  */
-function MotifPoint(motif) {
+function MotifPoint(visualGraph, motif) {
 
     /** @private */
     this.motif = motif;
+    this.visualGraph = visualGraph;
     this.y = motif.getTotalTime();
     this.x = 0;
     
@@ -30,7 +32,7 @@ function MotifPoint(motif) {
 
     /** @private */
     this.fillColor = "#000";
-    this.setFillColor("#000");
+    this.setFillColor(((this.getVisualGraph()).getVisualNodeByNode(this.getMotif().getNodes()[0])).getFillColor());
 
     /** @private */
     this.opacity = 0.7;
@@ -65,6 +67,15 @@ MotifPoint.prototype.getSVG = function() {
  */
 MotifPoint.prototype.getMotif = function() {
     return this.motif;
+};
+
+/**
+ * Gets the {@link VisualGraph} that this MotifPoint is in.
+ * 
+ * @returns {VisualGraph} that contains the information in this {@link MotifPoint}
+ */
+MotifPoint.prototype.getVisualGraph = function() {
+    return this.visualGraph;
 };
 
 /**
@@ -181,4 +192,14 @@ MotifPoint.prototype.formatTime = function() {
     else if($("#graphtimescaleviz").val().trim() == "us") return this.getY() / 1000 + " μs";
     else if($("#graphtimescaleviz").val().trim() == "ms") return this.getY() / 1000000 + " ms";
     else if($("#graphtimescaleviz").val().trim() == "s") return this.getY() / 1000000000 + " s";
+};
+
+/**
+ * Gets the host of this point chosen 
+ * from the first node in the motif
+ * 
+ * @returns {String} the host name
+ */
+MotifPoint.prototype.getHost = function() {
+    return  this.motif.getNodes()[0].getHost();
 };

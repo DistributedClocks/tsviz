@@ -9,48 +9,51 @@
  * parameter of this class.
  * 
  * @constructor
- * @param {MotifGroup} motifGroup contains the search results
  * @param {MotifNavigator} motifNavigator navigate the visual graph with this
  */
-function MotifChart(motifGroup, motifNavigator) {
+function MotifChart(motifNavigator) {
 
 	/** @private */
 	this.motifPoints = [];
     this.motifNavigator = motifNavigator;
 	this.$chart = null;
+    this.sortedByHost = false;
 
-	var motifs = motifGroup.getMotifs();
-	var sorted = [];
-
-	for (var i = 0; i < motifs.length; i++) {
-		sorted[i] = new MotifPoint(motifs[i]);
-	}
-
-	sorted.sort(function(a, b) {
-		// Descending order: largest y to smallest y
-		return b.getY() - a.getY();
-	});
-
-	motifPoints = sorted;
-
-	// Fix X co-ordinates to be from 0 to the number of motifs
-	for (i = 0; i < motifPoints.length; i++) {
-		motifPoints[i].setX(i);
-		console.log(motifPoints[i].getY());
-	}
 }
+
+/**
+ * Adds a group of motifs to the chart
+ * 
+ * @param {VisualGraph} visualGraph The visual graph that contains the motif
+ *        group
+ * @param {MotifGroup} motifGroup The group of motifs to add
+ */
+MotifChart.prototype.addMotif = function(visualGraph, motifGroup) {
+
+    var motifs = motifGroup.getMotifs();
+
+    for (var m = 0; m < motifs.length; m++) {
+        var motif = motifs[m];
+        var motifPoint = new MotifPoint(visualGraph, motif);
+        this.motifPoints.push(motifPoint);
+    }
+};
 
 /**
  * Draws the graph based on the data constructed.
  */
 MotifChart.prototype.drawChart = function() {
-	// Chart sizes
+	var motifPoints = this.motifPoints;
+    var sortedByHost = this.sortedByHost;
+
+    // Chart sizes
     var barPadding = 0; // Padding between bars
     var padding = {top: 0, right: 0, bottom: 2, left: 2};
-    var width = ((176 > motifPoints.length) ? 176 : motifPoints.length);
+    var width = ((176 / 3 > motifPoints.length) ? 176 : motifPoints.length * 3);
     var height = 192 - padding.top - padding.bottom * 2;
 
     var motifNavigator = this.motifNavigator;
+    var visualGraph = this.visualGraph;
 
     // Create a x scale for the axis
     var xScale = d3.scale.linear()
@@ -97,7 +100,7 @@ MotifChart.prototype.drawChart = function() {
     $svg.append("g")
     	.attr("class", "axis")
     	.attr("transform", "translate(0," + (height - 1) +")")
-    	.call(xAxis)
+    	.call(xAxis);
 /*    	.append("text")
     	.attr("x", 88)
     	.attr("y", -14)
@@ -133,7 +136,12 @@ MotifChart.prototype.drawChart = function() {
     	.attr("height", function(d) {
     		return yScale(d.getY());
     	})
-    	.attr("fill", "#04a")
+    	.attr("fill", function(d){
+            if(sortedByHost)
+                return d.getFillColor();
+            else
+                return "#04a";
+        })
     	.on("mouseover", tip.show)
         .on("mouseout", tip.hide)
         .on("click", function(d) {
@@ -144,8 +152,102 @@ MotifChart.prototype.drawChart = function() {
 };
 
 /**
+ * Sorts by host and descending time.
+ */
+MotifChart.prototype.sortByHost = function() {
+    var motifPoints = this.motifPoints;
+
+    console.log("Number of motifs before sort: " + this.motifPoints.length);
+
+    motifPoints.sort(function(a, b) {
+        // Hosts must be the same
+        return (b.getHost() == a.getHost());
+    });
+
+    var allSorted = [];
+    var i = 0;
+
+    // Separate motifs by host and sort them by descending time
+    while (i < motifPoints.length) {
+        var sort = [];
+
+        // Add the first motif of this host and then go to the next one
+        sort.push(motifPoints[i]);
+        i++;
+
+        // Compare current motif's host with the previous one, if its the same add to the array
+        while (i < motifPoints.length && motifPoints[i - 1].getHost() == motifPoints[i].getHost()) {
+            sort.push(motifPoints[i]);
+            i++;
+        }
+
+        // Sort the new array
+        sort.sort(function(a, b) {
+            // Descending order: largest y to smallest y
+            return b.getY() - a.getY();
+        });
+
+        // Add sorted motifs with same host to final array
+        //allSorted = allSorted.concat(sort);
+        allSorted.push(sort);
+    }
+
+    allSorted.sort(function(a, b) {
+        // Sort the individual host arrays by the longest motif in descending time
+        return (b[0].getY() - a[0].getY());
+    });
+
+    var newMotifPoints = [];
+
+    // Add indiviual motifPoints to a new array
+    for (i = 0; i < allSorted.length; i++ ) {
+        newMotifPoints = newMotifPoints.concat(allSorted[i]);
+    }
+
+    // Update reference 
+    this.motifPoints = newMotifPoints;
+
+    this.setXValues();
+    this.sortedByHost = true;
+
+    console.log("Number of motifs: " + this.motifPoints.length);
+};
+
+/**
+ * Sorts by time only.
+ *
+ * @param {boolean} true for descending, false for ascending
+ */
+MotifChart.prototype.sortByTime = function(descending) {
+    console.log("Number of motifs before sort: " + this.motifPoints.length);
+
+    this.motifPoints.sort(function(a, b) {
+        // Descending order: largest y to smallest y
+        return (descending ? b.getY() - a.getY() : a.getY() - b.getY());
+    });
+
+    this.setXValues();
+    this.sortedByHost = false;
+
+    console.log("Number of motifs: " + this.motifPoints.length);
+};
+
+/**
+ * Sets the x-coordinates of the data in its current order.
+ *
+ * @private
+ */
+MotifChart.prototype.setXValues = function() {
+    // Fix X co-ordinates to be from 0 to the number of motifs
+    for (i = 0; i < this.motifPoints.length; i++) {
+        this.motifPoints[i].setX(i);
+    }
+};
+
+/**
  * Removes the chart.
  */
 MotifChart.prototype.removeChart = function() {
 	this.$chart.remove();
+    d3.select(".chart").selectAll("svg").remove();
 };

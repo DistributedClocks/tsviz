@@ -1075,6 +1075,10 @@ svg {
   margin-top: 1em;
 }
 
+#sidebar .chart {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 #sidebar .axis path, .axis line {
   fill: none;
   stroke-width: 1;
