@@ -31,6 +31,7 @@ function Controller(global) {
 
     $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
         if (e.which == 27) {
+            self.clearSidebarInfo();
             $(".dialog").hide();
             d3.selectAll("circle.sel").each(function(d) {
                 $(this).remove();
@@ -70,7 +71,8 @@ function Controller(global) {
         // remove the scrolling behavior for hiding/showing dialog boxes once we click outside the box
         $(window).unbind("scroll"); 
         
-
+        self.clearSidebarInfo();
+        
         d3.selectAll("circle.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
@@ -413,6 +415,177 @@ Controller.prototype.bindNodes = function(nodes) {
         }
         else {
             controller.showDialog(e, 0, this);
+
+            controller.clearSidebarInfo();
+
+            // Add name to the dialog and colour the circle
+            $(".event").find(".source").find(".name").text(e.getText());
+            d3.select(".source").select(".circle").select("svg")
+                .attr("width", 10)
+                .attr("height", 10)
+                .select("circle")
+                .attr("cx", 5)
+                .attr("cy", 5)
+                .attr("r", 5)
+                .style("fill", e.getFillColor());
+
+            if (!e.isCollapsed()) {
+                var fields = e.getNode().getLogEvents()[0].getFields();
+                for (var i in fields) {
+                    var $f = $("<tr>", {
+                        "class": "field"
+                    });
+                    var $t = $("<th>", {
+                        "class": "title"
+                    }).text(i + ":");
+                    var $v = $("<td>", {
+                        "class": "value"
+                    }).text(fields[i]);
+
+                    $f.append($t).append($v);
+                    $(".fields").append($f);
+                }
+            }
+
+            if(e.isCollapsed()){
+                var timestamps = [];
+                var stats = [];
+                var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range", "Minimum difference"];
+                var logEvents = e.getNode().getLogEvents();
+                for(var i = 0; i < logEvents.length; i++){
+                    timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
+                }
+
+                function getMedian(array){
+                    array.sort(function(a,b){
+                        return a - b;
+                    });
+
+                    var half = Math.floor(array.length/2);
+
+                    if(array.length % 2) return array[half];
+                    else return (array[half-1] + array[half]) / 2.0;
+                    
+                }
+
+                function minDiff(array){
+                    var diff = 0;
+                    var min = Math.pow(2, 54);
+                    for(var i = 0; i < array.length-1; i++){
+                        diff = Math.abs(array[i]-array[i+1]);
+                        if(diff<min) min = diff;
+                    }
+                    return min;
+                }
+                //Calculate everything
+                stats[0] = Math.min.apply(Math, timestamps);
+                stats[1] = Math.max.apply(Math, timestamps);
+                stats[2] = getMedian(timestamps).toString();
+                stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
+                stats[3] = stats[1] - stats[0]; //differece in nanoseconds
+                stats[4] = minDiff(timestamps);
+
+
+                //Convert to string and format
+                stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
+                stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
+                switch($("#graphtimescaleviz").val().trim()){
+                    case "ns":
+                    stats[3] = stats[3].toString() + " ns";
+                    stats[4] = stats[4].toString() + " ns"; 
+                    break;
+                    case "us":
+                    stats[3] /= 1000;
+                    stats[4] /= 1000;
+                    stats[3] = stats[3].toString() + " us";
+                    stats[4] = stats[4].toString() + " us";
+                    break;
+                    case "ms":
+                    stats[3] /= 1000000;
+                    stats[3] = stats[3].toString() + " ms";
+                    stats[4] /= 1000000;
+                    stats[4] = stats[4].toString() + " ms";
+                    break;
+                    case "s":
+                    stats[3] /=1000000000;
+                    stats[3] = stats[3].toString() + " s";
+                    stats[4] /=1000000000;
+                    stats[4] = stats[4].toString() + " s";
+                    break;
+                    default: 
+                    stats[3] = stats[3].toString() + " ns";
+                    stats[4] = stats[4].toString() + " ns";
+                    break;
+                }
+                
+                //Display
+                for(var i = 2; i <= 4; i++){
+                    var $f = $("<tr>", {
+                        "class": "field"
+                    });
+                    var $g = $("<tr>", {
+                        "class": "field"
+                    });
+                    var $t = $("<th>", {
+                        "class": "title"
+                    }).text(statsnames[i] + ":");
+                    var $v = $("<td>", {
+                        "class": "value"
+                    }).text(stats[i]);
+
+                    
+                    $f.append($t);
+                    $(".fields").append($f);
+                    $g.append($v);
+                    $(".fields").append($g);
+                }
+            }
+
+            $(".line.focus").css({
+                "color": $(".focus").data("fill"),
+                "background": "",
+                "width": "inherit"
+            }).removeClass("focus");
+
+            $(".reveal").removeClass("reveal");
+
+            var $line = $("#line" + e.getId());
+            var $parent = $line.parent(".line").addClass("reveal");
+
+            // Only highlight log lines on the Log Lines tab
+
+            if ($(".leftTabLinks li").first().hasClass("default")) {
+                
+                $line.addClass("focus").css({
+                    "background": "transparent",
+                    "color": "white",
+                    "width": "calc(" + $line.width() + "px - 1em)"
+                }).data("fill", e.getFillColor());
+
+                $(".highlight").css({
+                    "width": $line.width(),
+                    "height": $line.height(),
+                    "opacity": e.getOpacity()
+                });
+
+                var top = parseFloat($line.css("top")) || 0;
+                var ptop = parseFloat($parent.css("top")) || 0;
+                var margin = parseFloat($line.css("margin-top")) || 0;
+                var pmargin = parseFloat($parent.css("margin-top")) || 0;
+                var vleft = $(".visualization .left").offset().left;
+                var vtop = $(".visualization .left").offset().top;
+                var offset = $(".log").offset().top - vtop;
+
+                $(".highlight").css({
+                    "background": e.getFillColor(),
+                    "top": top + ptop + margin + pmargin + offset,
+                    "left": $line.offset().left - parseFloat($line.css("margin-left")) - vleft
+                }).attr({
+                    "data-ln": e.getLineNumber()
+                }).data({
+                    "id": e.getId()
+                }).show();
+            }
         }
 
         // Unhighlight any previously clicked edges
@@ -441,177 +614,6 @@ Controller.prototype.bindNodes = function(nodes) {
                 return d.getRadius() + 6;
             }
         });
-
-        controller.clearSidebarInfo();
-
-        // Add name to the dialog and colour the circle
-        $(".event").find(".source").find(".name").text(e.getText());
-        d3.select(".source").select(".circle").select("svg")
-            .attr("width", 10)
-            .attr("height", 10)
-            .select("circle")
-            .attr("cx", 5)
-            .attr("cy", 5)
-            .attr("r", 5)
-            .style("fill", e.getFillColor());
-
-        if (!e.isCollapsed()) {
-            var fields = e.getNode().getLogEvents()[0].getFields();
-            for (var i in fields) {
-                var $f = $("<tr>", {
-                    "class": "field"
-                });
-                var $t = $("<th>", {
-                    "class": "title"
-                }).text(i + ":");
-                var $v = $("<td>", {
-                    "class": "value"
-                }).text(fields[i]);
-
-                $f.append($t).append($v);
-                $(".fields").append($f);
-            }
-        }
-
-        if(e.isCollapsed()){
-            var timestamps = [];
-            var stats = [];
-            var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range", "Minimum difference"];
-            var logEvents = e.getNode().getLogEvents();
-            for(var i = 0; i < logEvents.length; i++){
-                timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
-            }
-
-            function getMedian(array){
-                array.sort(function(a,b){
-                    return a - b;
-                });
-
-                var half = Math.floor(array.length/2);
-
-                if(array.length % 2) return array[half];
-                else return (array[half-1] + array[half]) / 2.0;
-                
-            }
-
-            function minDiff(array){
-                var diff = 0;
-                var min = Math.pow(2, 54);
-                for(var i = 0; i < array.length-1; i++){
-                    diff = Math.abs(array[i]-array[i+1]);
-                    if(diff<min) min = diff;
-                }
-                return min;
-            }
-            //Calculate everything
-            stats[0] = Math.min.apply(Math, timestamps);
-            stats[1] = Math.max.apply(Math, timestamps);
-            stats[2] = getMedian(timestamps).toString();
-            stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
-            stats[3] = stats[1] - stats[0]; //differece in nanoseconds
-            stats[4] = minDiff(timestamps);
-
-
-            //Convert to string and format
-            stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
-            stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
-            switch($("#graphtimescaleviz").val().trim()){
-                case "ns":
-                stats[3] = stats[3].toString() + " ns";
-                stats[4] = stats[4].toString() + " ns"; 
-                break;
-                case "us":
-                stats[3] /= 1000;
-                stats[4] /= 1000;
-                stats[3] = stats[3].toString() + " us";
-                stats[4] = stats[4].toString() + " us";
-                break;
-                case "ms":
-                stats[3] /= 1000000;
-                stats[3] = stats[3].toString() + " ms";
-                stats[4] /= 1000000;
-                stats[4] = stats[4].toString() + " ms";
-                break;
-                case "s":
-                stats[3] /=1000000000;
-                stats[3] = stats[3].toString() + " s";
-                stats[4] /=1000000000;
-                stats[4] = stats[4].toString() + " s";
-                break;
-                default: 
-                stats[3] = stats[3].toString() + " ns";
-                stats[4] = stats[4].toString() + " ns";
-                break;
-            }
-            
-            //Display
-            for(var i = 2; i <= 4; i++){
-                var $f = $("<tr>", {
-                    "class": "field"
-                });
-                var $g = $("<tr>", {
-                    "class": "field"
-                });
-                var $t = $("<th>", {
-                    "class": "title"
-                }).text(statsnames[i] + ":");
-                var $v = $("<td>", {
-                    "class": "value"
-                }).text(stats[i]);
-
-                
-                $f.append($t);
-                $(".fields").append($f);
-                $g.append($v);
-                $(".fields").append($g);
-            }
-        }
-
-        $(".line.focus").css({
-            "color": $(".focus").data("fill"),
-            "background": "",
-            "width": "inherit"
-        }).removeClass("focus");
-
-        $(".reveal").removeClass("reveal");
-
-        var $line = $("#line" + e.getId());
-        var $parent = $line.parent(".line").addClass("reveal");
-
-        // Only highlight log lines on the Log Lines tab
-
-        if ($(".leftTabLinks li").first().hasClass("default")) {
-            
-            $line.addClass("focus").css({
-                "background": "transparent",
-                "color": "white",
-                "width": "calc(" + $line.width() + "px - 1em)"
-            }).data("fill", e.getFillColor());
-
-            $(".highlight").css({
-                "width": $line.width(),
-                "height": $line.height(),
-                "opacity": e.getOpacity()
-            });
-
-            var top = parseFloat($line.css("top")) || 0;
-            var ptop = parseFloat($parent.css("top")) || 0;
-            var margin = parseFloat($line.css("margin-top")) || 0;
-            var pmargin = parseFloat($parent.css("margin-top")) || 0;
-            var vleft = $(".visualization .left").offset().left;
-            var vtop = $(".visualization .left").offset().top;
-            var offset = $(".log").offset().top - vtop;
-
-            $(".highlight").css({
-                "background": e.getFillColor(),
-                "top": top + ptop + margin + pmargin + offset,
-                "left": $line.offset().left - parseFloat($line.css("margin-left")) - vleft
-            }).attr({
-                "data-ln": e.getLineNumber()
-            }).data({
-                "id": e.getId()
-            }).show();
-        }
     });
 };
 
@@ -629,6 +631,8 @@ Controller.prototype.bindEdges = function(edges) {
     var controller = this;
     edges.on("click", function(e) {
         controller.showEdgeDialog(e, this);
+        controller.clearSidebarInfo();
+        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     }).on("mouseover", function(e) {
         // Don't update hover if the source node is null
         if(e.getSourceVisualNode().getNode().isHead()) {
@@ -668,9 +672,6 @@ Controller.prototype.bindEdges = function(edges) {
             "stroke": "dimgrey",
             "opacity": 1
         });
-
-        controller.clearSidebarInfo();
-        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     });
 };
 
