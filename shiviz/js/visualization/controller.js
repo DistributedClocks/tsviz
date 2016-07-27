@@ -72,7 +72,7 @@ function Controller(global) {
         $(window).unbind("scroll"); 
         
         self.clearSidebarInfo();
-        
+
         d3.selectAll("circle.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
@@ -408,6 +408,9 @@ Controller.prototype.hideDiff = function() {
  */
 Controller.prototype.bindNodes = function(nodes) {
     var controller = this;
+    var tip = d3.tip();
+    nodes.call(tip);
+    
     nodes.on("click", function(e) {
         if (d3.event.shiftKey) {
             // Toggle node collapsing
@@ -614,7 +617,18 @@ Controller.prototype.bindNodes = function(nodes) {
                 return d.getRadius() + 6;
             }
         });
-    });
+
+        tip.attr('class', 'd3-tip')
+            .offset([-14, 0])
+            .html(function(d) {
+                return "<span style='color:white'>" + d.getText() + "</span>";
+            });
+
+            nodes.call(tip);
+
+        tip.show(e);
+
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -629,6 +643,9 @@ Controller.prototype.bindNodes = function(nodes) {
  */
 Controller.prototype.bindEdges = function(edges) {
     var controller = this;
+    var tip = d3.tip();
+    edges.call(tip);
+
     edges.on("click", function(e) {
         controller.showEdgeDialog(e, this);
         controller.clearSidebarInfo();
@@ -639,6 +656,21 @@ Controller.prototype.bindEdges = function(edges) {
             return;
         }
 
+        // Calculate offset for tip
+        var height;
+        if(e.getSourceVisualNode().getNode().getHost() == e.getTargetVisualNode().getNode().getHost()) {
+            height = 10;
+        }
+        else {
+            height = (Math.abs(e.getSourceVisualNode().getY() - e.getTargetVisualNode().getY())) / 2 - 20;
+        }
+           
+        tip.attr('class', 'd3-tip')
+           .offset([height, 0])
+           .html(function(d) {
+                return "<strong>Time:</strong> <span style='color:white'>" + e.getTimeDifference() + "</span>";
+           });
+    
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "stroke-width": function(d) {
                 return d.getWidth() + 2;
@@ -657,7 +689,6 @@ Controller.prototype.bindEdges = function(edges) {
                 return d.getOpacity();
             }
         });
-
         d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
             "stroke-width": function(d) {
                 return d.getWidth() ;
@@ -672,7 +703,10 @@ Controller.prototype.bindEdges = function(edges) {
             "stroke": "dimgrey",
             "opacity": 1
         });
-    });
+
+        tip.show(e);
+
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -687,9 +721,16 @@ Controller.prototype.bindEdges = function(edges) {
  */
 Controller.prototype.bindHosts = function(hosts) {
     var controller = this;
+    var tip = d3.tip();
+    hosts.call(tip);
+
     hosts.on("mouseover", function(e) {
-        controller.clearSidebarInfo();
-        $(".event").find(".source").find(".name").text(e.getText());
+        tip.attr('class', 'd3-tip')
+           .offset([-14, 0])
+           .html(function(d) {
+                return "<span style='color:white'>" + e.getText() + "</span>";
+           });
+        tip.show(e);
     }).on("dblclick", function(e) {
         var views = controller.global.getViews();
 
@@ -704,10 +745,13 @@ Controller.prototype.bindHosts = function(hosts) {
         else {
             // Hide host
             controller.hideHost(e.getHost());
+            tip.hide(e);
         }
     }).on("click", function(e) {
         controller.showDialog(e, 1, this);
-    });
+        controller.clearSidebarInfo();
+        $(".event").find(".source").find(".name").text(e.getText());
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -735,6 +779,9 @@ Controller.prototype.bindLines = function(lines) {
  */
 Controller.prototype.bindHiddenHosts = function(host, node) {
     var controller = this;
+    var tip = d3.tip();
+    node.call(tip);
+
     node.on("dblclick", function(e) {
 
         $(window).unbind("scroll");
@@ -743,13 +790,20 @@ Controller.prototype.bindHiddenHosts = function(host, node) {
             view.getTransformer().unhideHost(host);
         });
         controller.global.drawAll();
+        tip.hide(e);
 
     }).on("mouseover", function(e) {
-        controller.clearSidebarInfo();
-        $(".event").find(".source").find(".name").text(host);
+        tip.attr('class', 'd3-tip')
+           .offset([-14, 0])
+           .html(function(d) {
+                return "<span style='color:white'>" + host + "</span>";
+           });
+        tip.show(e);
     }).on("click", function(e) {
         controller.showDialog(host, 2, this);
-    });
+        controller.clearSidebarInfo();
+        $(".event").find(".source").find(".name").text(host);
+    }).on("mouseout", tip.hide);
 };
 
 /**

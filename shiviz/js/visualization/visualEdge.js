@@ -201,3 +201,24 @@ VisualEdge.prototype.setOpacity = function(newOpacity) {
     this.opacity = newOpacity;
     this.$line.attr("opacity", newOpacity);
 };
+
+/**
+ * Calculates the time difference between this edge represents
+ *
+ * @returns {String} formatted with the correct time units
+ */
+VisualEdge.prototype.getTimeDifference = function() {
+    // Calculate time difference between source and target nodes
+    // Compress to fit in number type
+    var sourceTime = this.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    var targetTime = this.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    sourceTime = Number(sourceTime.slice(3, sourceTime.length));
+    targetTime = Number(targetTime.slice(3, targetTime.length));
+    
+    var difference = Math.abs(sourceTime - targetTime);
+
+    if($("#graphtimescaleviz").val().trim() == "ns") return difference + " ns";
+    else if($("#graphtimescaleviz").val().trim() == "us") return difference / 1000 + " μs";
+    else if($("#graphtimescaleviz").val().trim() == "ms") return difference / 1000000 + " ms";
+    else if($("#graphtimescaleviz").val().trim() == "s") return difference / 1000000000 + " s";
+}
