@@ -167,6 +167,7 @@ View.prototype.draw = function(viewPosition) {
     this.$svg.children("*").remove();
 
     this.$svg.attr({
+        "id": "graphSVG",
         "height": this.visualGraph.getHeight(),
         "width": this.visualGraph.getWidth()
     });
@@ -185,8 +186,6 @@ View.prototype.draw = function(viewPosition) {
     drawNodes();
     drawHosts();
     // drawLogLines();
-
-
 
     // Hide line highlight
     $(".highlight").hide();

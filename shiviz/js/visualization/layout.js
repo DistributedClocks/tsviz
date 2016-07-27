@@ -73,19 +73,25 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     var minDistPix = 50;
     var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
     var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
-    // console.log("in layout.start  " + typeof visualGraph.minDistance);
+    // console.log(visualGraph.timeRange);
 
     var rangeEnd = offset + (((timeEnd - timeStart)/visualGraph.minDistance) * minDistPix);
     var rangeStart = offset;
+    
+    var newRangeEnd = (timeEnd-timeStart)/visualGraph.minDistance;
 
     timeStart = Number(visualGraph.timeRange[0]);
     timeEnd = Number(visualGraph.timeRange[1]);
 
     this.timeScale = d3.scale.linear()
-        // .domain(visualGraph.timeRange)
         .domain([timeStart, timeEnd])
         .range([rangeStart,rangeEnd]);
 
+    
+    this.timeScale2 = d3.scale.linear()
+        .domain([0, newRangeEnd])
+        .range([rangeStart,rangeEnd]);
+        
     var nodeToNumParents = {};
     var nodeToChildren = {};
 

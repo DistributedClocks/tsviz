@@ -269,6 +269,21 @@ section.input .left {
 
 /* Ruler */
 
+.axis {
+  font-family: source code pro, "Arial Narrow", "Helvetica Neue", Helvetica, Arial, Veranda, sans-serif;
+  font-size: 12px;
+  line-height: 14px;
+  shape-rendering: crispEdges;
+}
+
+.y.axis line,
+.y.axis path {
+  z-index: 120;
+  stroke-width: 2px;
+  fill: none;
+  stroke: rgba(130,130,130,1);
+}
+
 #graph .ruler {
   background: rgba(255,255,255,1); /*White*/
   color: rgba(130,130,130,1); /*Gray*/
@@ -282,26 +297,21 @@ section.input .left {
 }
 
 #graph .vRule {
-  position: fixed;
-  min-height: 100%;
+  position: absolute;
+  /*min-height: 100%;*/
   left: 10px;
-  top: 172px;
+  top: 142px;
   /*border-left: 1px solid;*/
-  border-right: 1px solid;
-  z-index: 9;
+  /*border-right: 1px solid;*/
+  z-index: 2;
 
 }
 #graph .corner {
   position: fixed;
-  top: 139px;
-  left: 10px;
-  width: 30px;
-  height: 30px;
+  top: 97px;
+  left: 0;
+  height: 70px;
   color: rgba(130,130,130,1); /*Gray*/
-  /*border-top: 1px solid;
-  border-left: 1px solid;
-  border-right: 1px solid;
-  border-bottom: 1px solid;*/
   z-index: 10;
   text-indent: 1px;
 }
@@ -310,20 +320,10 @@ section.input .left {
   position: absolute;
 
   font-size: 12pt;
-  /*top: 0px;*/
   text-align: end;
   width: 30px;
   height: 30px;
   bottom: 0px;
-  /*right: 0px;*/
-  /*margin-right: 18px;*/
-
-  -/*webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg);
-  -o-transform: rotate(-90deg);
-  transform: rotate(-90deg);*/
-
   -webkit-transform-origin: top right;
   -moz-transform-origin: top right;
   -ms-transform-origin: top right;
@@ -816,6 +816,9 @@ section.input .left {
 }
 
 svg {
+  font: 10px sans-serif;
+  font-family: Helvetica;
+  color: black;
   user-select: none;
   -ms-user-select: none;
   -moz-user-select: none;
