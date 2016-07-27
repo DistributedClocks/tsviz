@@ -415,6 +415,7 @@ Controller.prototype.bindNodes = function(nodes) {
         if (d3.event.shiftKey) {
             // Toggle node collapsing
             controller.toggleCollapseNode(e.getNode());
+            tip.hide(e);
         }
         else {
             controller.showDialog(e, 0, this);
