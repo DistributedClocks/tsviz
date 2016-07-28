@@ -35,7 +35,6 @@ ShrinkTimelinesTransformation.prototype.setThreshold = function(threshold) {
     if (threshold < 2) {
         throw new Exception("CollapseNodesTransformation.prototype.setThreshold: Invalid threshold. Threshold must be greater than or equal to 2");
     }
-    console.log("got into setThreshold, threshold:  " + threshold);
 
     this.threshold = threshold;
 };
@@ -43,12 +42,11 @@ ShrinkTimelinesTransformation.prototype.setThreshold = function(threshold) {
 
 ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	
-	var graph = model;
-	var nodes = graph.graph.getAllNodes();
+	var nodes = model.graph.getAllNodes();
 	var longEdges = [];
 	var edge;
 	
-	console.log("threshold:  " + this.getThreshold());
+	console.log(model);
 
 	//Isolate edges that are longer than the screen
 	for(var i = 0; i < nodes.length; i++){
@@ -60,8 +58,8 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 		var prev = node.getPrev();
 
-		var linkId = graph.getEdgeId(node, prev);
-		edge = graph.links[linkId];
+		var linkId = model.getEdgeId(node, prev);
+		edge = model.links[linkId];
 		if(((edge.targetVisualNode.getY() - edge.sourceVisualNode.getY()) > this.getThreshold() && (edge.sourceVisualNode.getX() == edge.targetVisualNode.getX()))){
 			longEdges.push(edge);
 		}
@@ -69,23 +67,27 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 	//Sort edges by source's Y position
 	longEdges.sort(function(a,b){
-		// return (b.targetVisualNode.getY() - b.sourceVisualNode.getY()) - (a.targetVisualNode.getY() - a.sourceVisualNode.getY());
 		return a.sourceVisualNode.getY() - b.sourceVisualNode.getY();
 	});
 
 	//--------- SECOND DRAFT
 
 	function findInterval(longEdges, interval, edge, i, nhosts, threshold){
+
 		var windowStart = edge.sourceVisualNode.getY();
+		interval.maxSourceY = windowStart;
+		interval.minTargetY = Number.MAX_VALUE;
 		var windowEnd = windowStart + threshold;
 		interval.hosts.push(edge.sourceVisualNode.getHost());
 		interval.edges.push(edge);
 
 		for(var j = 0; j < longEdges.length && j != i; j++){
-			if(longEdges[j].sourceVisualNode.getY() >= windowStart || interval.hosts.length == nhosts){
+			if(longEdges[j].sourceVisualNode.getY() >= windowStart || interval.hosts.length == nhosts){ 
 				break;
 			}
-			if(longEdges[j].sourceVisualNode.getY() <= windowStart && longEdges[j].targetVisualNode.getY() > windowEnd){
+			if(longEdges[j].sourceVisualNode.getY() <= windowStart && longEdges[j].targetVisualNode.getY() > windowEnd){ //No nodes in the middle of interval
+				//Include edge
+				if(longEdges[j].targetVisualNode.getY() < interval.minTargetY) interval.minTargetY = longEdges[j].targetVisualNode.getY();
 				interval.hosts.push(longEdges[j].sourceVisualNode.getHost());
 				interval.edges.push(longEdges[j]);
 			}
@@ -94,22 +96,38 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 		return interval.hosts.length == nhosts;
 	}
 
+	function checkInterval(interval, hosts, visualGraph) {
+
+		for(var i = 0; i < hosts.length; i++){
+			if(interval.hosts.indexOf(hosts[i]) < 0){ //Host is not present in interval, check if activity has ended for this host
+				var node = visualGraph.graph.getLastValidNodebyHost(hosts[i]);
+				var visual = visualGraph.getVisualNodeByNode(node);
+				if(visual.getY() > interval.maxSourceY) return false;
+			}
+		}
+		return true;
+
+	}
+
 	var intervals = [];
 	var edgeCollection = [];
 	var interval = new Interval();
 	for(var i = 0; i < longEdges.length; i++){
 		if(findInterval(longEdges, interval, longEdges[i], i, model.graph.hosts.length, this.threshold)){ //Found an interval
-			interval.maxSourceY = 0;
-			interval.minTargetY = Number.MAX_VALUE;
 			for(var k = 0; k < interval.edges.length; k++){
-				if(interval.edges[k].sourceVisualNode.getY() > interval.maxSourceY) interval.maxSourceY = interval.edges[k].sourceVisualNode.getY();
-				if(interval.edges[k].targetVisualNode.getY() < interval.minTargetY) interval.minTargetY = interval.edges[k].targetVisualNode.getY();
 				if(edgeCollection.indexOf(interval.edges[k]) < 0) edgeCollection.push(interval.edges[k]);
-				// interval.edges[k].intervals.push(intervals.length);
 			}
 			intervals.push(interval);
 			interval = new Interval();
 		}else{ //Interval not found
+			//Check here if the interval was not found because some threads have finished
+			if(checkInterval(interval, model.getHosts(), model)){ 
+				// for(var k = 0; k < interval.edges.length; k++){
+				// 	if(edgeCollection.indexOf(interval.edges[k]) < 0) edgeCollection.push(interval.edges[k]);
+				// }
+				// intervals.push(interval);
+				console.log(interval);
+			}
 			interval = new Interval();
 		}
 
@@ -117,8 +135,6 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	//--------- END OF SECOND DRAFT
 
 	console.log(intervals);
-	// console.log(edgeCollection);
-
 
 	//COLLAPSE!
 
@@ -155,7 +171,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 		}
 		cumulativeShift += compression.shiftAmount;
 	}
-	
+	// console.log(cumulativeShift);
 	//Modify edges
 	for(var i = 0; i < edgeCollection.length; i++){
 		var e = edgeCollection[i];
