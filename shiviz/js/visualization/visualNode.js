@@ -105,10 +105,10 @@ function VisualNode(node) {
 
         var mouseOverRect = Util.svgElement("rect");
         mouseOverRect.attr({
-            "width": 12,
-            "height": 12,
-            "x": -6,
-            "y": -6
+            "width": 16,
+            "height": 16,
+            "x": -8,
+            "y": -8
         });
         this.$svg.append(mouseOverRect);
 

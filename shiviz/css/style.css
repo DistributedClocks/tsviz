@@ -707,8 +707,8 @@ section.input .left {
 }
 
 .visualization table.motifResults td line, #searchbar #panel line, #vizContainer svg line {
-  stroke: #999;
-  stroke-opacity: 0.6;
+  stroke: "lightgrey";
+  stroke-opacity: 1;
 }
 
 #searchbar #panel {
@@ -1028,6 +1028,17 @@ svg {
   text-overflow: ellipsis;
 }
 
+/* To help make the line connecting the two
+   circles on the sidebar info */
+#sidebar .info {
+  position: absolute;
+  width: 176px;
+  height: 192px;
+}
+#sidebar .nodeConnection {
+  position: relative;
+}
+
 #sidebar {
   width: 240px;
   height: 100%;
@@ -1065,6 +1076,54 @@ svg {
 #sidebar .hidden svg {
   float: left;
   margin-top: 1em;
+}
+
+#sidebar .chart {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+#sidebar .axis path, .axis line {
+  fill: none;
+  stroke-width: 1;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+#sidebar .axis text {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+#sidebar rect:hover {
+  fill: black;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-size: 14px;
+  padding: 7px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border-radius: 0px;
+  z-index: 10000;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 15px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.5);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -3px 0 0 0;
+  top: 100%;
+  left: 0;
 }
 
 svg#defs {

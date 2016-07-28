@@ -25,6 +25,8 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     this.$line = Util.svgElement("line");
 
+    this.$mouseOverLine = Util.svgElement("line");
+
     /** @private */
     this.sourceVisualNode = sourceVisualNode;
 
@@ -36,12 +38,15 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     /** @private */
     this.width;
+    
 
     /** @private */
     this.dashLength;
-    
+    this.setDashLength(0);
+
     /** @private */
     this.color;
+    
 
     /** @private */
     this.opacity;
@@ -58,13 +63,16 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     this.intervals = [];
     // This will help us detect a mouseover event
-    var mouseOverLine = Util.svgElement("line");
-    mouseOverLine.attr({
-        "fill": "transparent",
-        "stroke-width": this.getWidth() + 6,
-        "pointer-events": "none"
+    this.$mouseOverLine.attr({
+        "opacity": 0,
+        "stroke-width": 16,
+        "stroke": "white",
+        "x1": sourceVisualNode.getX(),
+        "y1": sourceVisualNode.getY(),
+        "x2": targetVisualNode.getX(),
+        "y2": targetVisualNode.getY()
     });
-    this.$svg.append(mouseOverLine);
+    this.$svg.append(this.$mouseOverLine);
     
 }
 
@@ -72,8 +80,8 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 VisualEdge.prototype.setDefaultAttributes = function() {
     this.setWidth(2);
     this.setDashLength(0);
-    this.setColor("#999");
-    this.setOpacity(0.6);
+    this.setColor("dimgrey");
+    this.setOpacity(0.25);
 }
 
 VisualEdge.prototype.getSVG = function() {
@@ -108,7 +116,13 @@ VisualEdge.prototype.updateCoords = function() {
 	// For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
     if (typeof attr !== typeof undefined && attr !== false) {
       // Element has this attribute
-      this.$line.attr({
+        this.$line.attr({
+            "x1": this.sourceVisualNode.getX(),
+            "y1": this.sourceVisualNode.getY(),
+            "x2": this.targetVisualNode.getX(),
+            "y2": this.targetVisualNode.getY()
+        });
+        this.$mouseOverLine.attr({
             "x1": this.sourceVisualNode.getX(),
             "y1": this.sourceVisualNode.getY(),
             "x2": this.targetVisualNode.getX(),
@@ -209,3 +223,25 @@ VisualEdge.prototype.setOpacity = function(newOpacity) {
     }
     
 };
+
+
+/**
+ * Calculates the time difference between this edge represents
+ *
+ * @returns {String} formatted with the correct time units
+ */
+VisualEdge.prototype.getTimeDifference = function() {
+    // Calculate time difference between source and target nodes
+    // Compress to fit in number type
+    var sourceTime = this.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    var targetTime = this.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    sourceTime = Number(sourceTime.slice(3, sourceTime.length));
+    targetTime = Number(targetTime.slice(3, targetTime.length));
+    
+    var difference = Math.abs(sourceTime - targetTime);
+
+    if($("#graphtimescaleviz").val().trim() == "ns") return difference + " ns";
+    else if($("#graphtimescaleviz").val().trim() == "us") return difference / 1000 + " μs";
+    else if($("#graphtimescaleviz").val().trim() == "ms") return difference / 1000000 + " ms";
+    else if($("#graphtimescaleviz").val().trim() == "s") return difference / 1000000000 + " s";
+}

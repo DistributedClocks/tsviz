@@ -51,7 +51,7 @@ HighlightMotifTransformation.prototype.getHighlighted = function() {
  */
 HighlightMotifTransformation.prototype.findMotifs = function(graph) {
     this.motifGroup = this.finder.find(graph);
-}
+};
 
 /**
  * Overrides {@link Transformation#transform}
@@ -63,11 +63,11 @@ HighlightMotifTransformation.prototype.transform = function(model) {
     model.getVisualNodes().forEach(function(node) {
         // Only fade out non-host nodes
         if (!node.isStart()) {
-            node.setOpacity(0.8);
+            node.setOpacity(0.7);
         }
     });
     model.getVisualEdges().forEach(function(edge) {
-        edge.setOpacity(0.8);
+        edge.setOpacity(0.25);
     });
 
     var nodes = this.motifGroup.getNodes();
@@ -76,7 +76,7 @@ HighlightMotifTransformation.prototype.transform = function(model) {
         var visualNode = model.getVisualNodeByNode(node);
 
         if(!visualNode.isCollapsed()) {
-            visualNode.setRadius(visualNode.getRadius() * 2);
+            visualNode.setRadius(visualNode.getRadius() * 1.5);
         }
 
         visualNode.setOpacity(1);
@@ -87,8 +87,8 @@ HighlightMotifTransformation.prototype.transform = function(model) {
         var edge = edges[i];
         var visualEdge = model.getVisualEdgeByNodes(edge[0], edge[1]);
 
-        visualEdge.setColor("#333");
-        visualEdge.setOpacity(1);
-        visualEdge.setWidth(visualEdge.getWidth() * 3);
+        visualEdge.setColor("dimgrey");
+        visualEdge.setOpacity(0.7);
+        visualEdge.setWidth(visualEdge.getWidth() * 2);
     }
 };

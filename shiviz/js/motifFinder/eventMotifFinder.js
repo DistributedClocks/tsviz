@@ -59,6 +59,10 @@ EventMotifFinder.prototype.find = function(graph) {
                             motif.addEdge(currNode, children[j]);
                         }
                     }
+                    // This is another branch so we separate the motif
+                    // incase the main path has more results
+                    motifGroup.addMotif(motif);
+                    motif = new Motif();
                 }
 
                 // Also add other nodes from the individual hosts if we don't 

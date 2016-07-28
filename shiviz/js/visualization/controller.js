@@ -31,6 +31,7 @@ function Controller(global) {
 
     $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
         if (e.which == 27) {
+            self.clearSidebarInfo();
             $(".dialog").hide();
             d3.selectAll("circle.sel").each(function(d) {
                 $(this).remove();
@@ -73,6 +74,7 @@ function Controller(global) {
         // remove the scrolling behavior for hiding/showing dialog boxes once we click outside the box
         $(window).unbind("scroll"); 
         
+        self.clearSidebarInfo();
 
         d3.selectAll("circle.sel").each(function(d) {
             $(this).remove();
@@ -412,13 +414,188 @@ Controller.prototype.hideDiff = function() {
  */
 Controller.prototype.bindNodes = function(nodes) {
     var controller = this;
+    var tip = d3.tip();
+    nodes.call(tip);
+    
     nodes.on("click", function(e) {
         if (d3.event.shiftKey) {
             // Toggle node collapsing
             controller.toggleCollapseNode(e.getNode());
+            tip.hide(e);
         }
         else {
             controller.showDialog(e, 0, this);
+
+            controller.clearSidebarInfo();
+
+            // Add name to the dialog and colour the circle
+            $(".event").find(".source").find(".name").text(e.getText());
+            d3.select(".source").select(".circle").select("svg")
+                .attr("width", 10)
+                .attr("height", 10)
+                .select("circle")
+                .attr("cx", 5)
+                .attr("cy", 5)
+                .attr("r", 5)
+                .style("fill", e.getFillColor());
+
+            if (!e.isCollapsed()) {
+                var fields = e.getNode().getLogEvents()[0].getFields();
+                for (var i in fields) {
+                    var $f = $("<tr>", {
+                        "class": "field"
+                    });
+                    var $t = $("<th>", {
+                        "class": "title"
+                    }).text(i + ":");
+                    var $v = $("<td>", {
+                        "class": "value"
+                    }).text(fields[i]);
+
+                    $f.append($t).append($v);
+                    $(".fields").append($f);
+                }
+            }
+
+            if(e.isCollapsed()){
+                var timestamps = [];
+                var stats = [];
+                var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range", "Minimum difference"];
+                var logEvents = e.getNode().getLogEvents();
+                for(var i = 0; i < logEvents.length; i++){
+                    timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
+                }
+
+                function getMedian(array){
+                    array.sort(function(a,b){
+                        return a - b;
+                    });
+
+                    var half = Math.floor(array.length/2);
+
+                    if(array.length % 2) return array[half];
+                    else return (array[half-1] + array[half]) / 2.0;
+                    
+                }
+
+                function minDiff(array){
+                    var diff = 0;
+                    var min = Math.pow(2, 54);
+                    for(var i = 0; i < array.length-1; i++){
+                        diff = Math.abs(array[i]-array[i+1]);
+                        if(diff<min) min = diff;
+                    }
+                    return min;
+                }
+                //Calculate everything
+                stats[0] = Math.min.apply(Math, timestamps);
+                stats[1] = Math.max.apply(Math, timestamps);
+                stats[2] = getMedian(timestamps).toString();
+                stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
+                stats[3] = stats[1] - stats[0]; //differece in nanoseconds
+                stats[4] = minDiff(timestamps);
+
+
+                //Convert to string and format
+                stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
+                stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
+                switch($("#graphtimescaleviz").val().trim()){
+                    case "ns":
+                    stats[3] = stats[3].toString() + " ns";
+                    stats[4] = stats[4].toString() + " ns"; 
+                    break;
+                    case "us":
+                    stats[3] /= 1000;
+                    stats[4] /= 1000;
+                    stats[3] = stats[3].toString() + " us";
+                    stats[4] = stats[4].toString() + " us";
+                    break;
+                    case "ms":
+                    stats[3] /= 1000000;
+                    stats[3] = stats[3].toString() + " ms";
+                    stats[4] /= 1000000;
+                    stats[4] = stats[4].toString() + " ms";
+                    break;
+                    case "s":
+                    stats[3] /=1000000000;
+                    stats[3] = stats[3].toString() + " s";
+                    stats[4] /=1000000000;
+                    stats[4] = stats[4].toString() + " s";
+                    break;
+                    default: 
+                    stats[3] = stats[3].toString() + " ns";
+                    stats[4] = stats[4].toString() + " ns";
+                    break;
+                }
+                
+                //Display
+                for(var i = 2; i <= 4; i++){
+                    var $f = $("<tr>", {
+                        "class": "field"
+                    });
+                    var $g = $("<tr>", {
+                        "class": "field"
+                    });
+                    var $t = $("<th>", {
+                        "class": "title"
+                    }).text(statsnames[i] + ":");
+                    var $v = $("<td>", {
+                        "class": "value"
+                    }).text(stats[i]);
+
+                    
+                    $f.append($t);
+                    $(".fields").append($f);
+                    $g.append($v);
+                    $(".fields").append($g);
+                }
+            }
+
+            $(".line.focus").css({
+                "color": $(".focus").data("fill"),
+                "background": "",
+                "width": "inherit"
+            }).removeClass("focus");
+
+            $(".reveal").removeClass("reveal");
+
+            var $line = $("#line" + e.getId());
+            var $parent = $line.parent(".line").addClass("reveal");
+
+            // Only highlight log lines on the Log Lines tab
+
+            if ($(".leftTabLinks li").first().hasClass("default")) {
+                
+                $line.addClass("focus").css({
+                    "background": "transparent",
+                    "color": "white",
+                    "width": "calc(" + $line.width() + "px - 1em)"
+                }).data("fill", e.getFillColor());
+
+                $(".highlight").css({
+                    "width": $line.width(),
+                    "height": $line.height(),
+                    "opacity": e.getOpacity()
+                });
+
+                var top = parseFloat($line.css("top")) || 0;
+                var ptop = parseFloat($parent.css("top")) || 0;
+                var margin = parseFloat($line.css("margin-top")) || 0;
+                var pmargin = parseFloat($parent.css("margin-top")) || 0;
+                var vleft = $(".visualization .left").offset().left;
+                var vtop = $(".visualization .left").offset().top;
+                var offset = $(".log").offset().top - vtop;
+
+                $(".highlight").css({
+                    "background": e.getFillColor(),
+                    "top": top + ptop + margin + pmargin + offset,
+                    "left": $line.offset().left - parseFloat($line.css("margin-left")) - vleft
+                }).attr({
+                    "data-ln": e.getLineNumber()
+                }).data({
+                    "id": e.getId()
+                }).show();
+            }
         }
 
         // Unhighlight any previously clicked edges
@@ -448,177 +625,17 @@ Controller.prototype.bindNodes = function(nodes) {
             }
         });
 
-        controller.clearSidebarInfo();
-
-        // Add name to the dialog and colour the circle
-        $(".event").find(".source").find(".name").text(e.getText());
-        d3.select(".source").select(".circle").select("svg")
-            .attr("width", 10)
-            .attr("height", 10)
-            .select("circle")
-            .attr("cx", 5)
-            .attr("cy", 5)
-            .attr("r", 5)
-            .style("fill", e.getFillColor());
-
-        if (!e.isCollapsed()) {
-            var fields = e.getNode().getLogEvents()[0].getFields();
-            for (var i in fields) {
-                var $f = $("<tr>", {
-                    "class": "field"
-                });
-                var $t = $("<th>", {
-                    "class": "title"
-                }).text(i + ":");
-                var $v = $("<td>", {
-                    "class": "value"
-                }).text(fields[i]);
-
-                $f.append($t).append($v);
-                $(".fields").append($f);
-            }
-        }
-
-        if(e.isCollapsed()){
-            var timestamps = [];
-            var stats = [];
-            var statsnames = ["Smallest timestamp", "Largest timestamp", "Median", "Range", "Minimum difference"];
-            var logEvents = e.getNode().getLogEvents();
-            for(var i = 0; i < logEvents.length; i++){
-                timestamps.push(Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length)));
-            }
-
-            function getMedian(array){
-                array.sort(function(a,b){
-                    return a - b;
-                });
-
-                var half = Math.floor(array.length/2);
-
-                if(array.length % 2) return array[half];
-                else return (array[half-1] + array[half]) / 2.0;
-                
-            }
-
-            function minDiff(array){
-                var diff = 0;
-                var min = Math.pow(2, 54);
-                for(var i = 0; i < array.length-1; i++){
-                    diff = Math.abs(array[i]-array[i+1]);
-                    if(diff<min) min = diff;
-                }
-                return min;
-            }
-            //Calculate everything
-            stats[0] = Math.min.apply(Math, timestamps);
-            stats[1] = Math.max.apply(Math, timestamps);
-            stats[2] = getMedian(timestamps).toString();
-            stats[2] = logEvents[0].fields.timestamp.slice(0, 3) + stats[2];
-            stats[3] = stats[1] - stats[0]; //differece in nanoseconds
-            stats[4] = minDiff(timestamps);
-
-
-            //Convert to string and format
-            stats[0] = logEvents[0].fields.timestamp.slice(0, 3) + stats[0];
-            stats[1] = logEvents[0].fields.timestamp.slice(0, 3) + stats[1];
-            switch($("#graphtimescaleviz").val().trim()){
-                case "ns":
-                stats[3] = stats[3].toString() + " ns";
-                stats[4] = stats[4].toString() + " ns"; 
-                break;
-                case "us":
-                stats[3] /= 1000;
-                stats[4] /= 1000;
-                stats[3] = stats[3].toString() + " us";
-                stats[4] = stats[4].toString() + " us";
-                break;
-                case "ms":
-                stats[3] /= 1000000;
-                stats[3] = stats[3].toString() + " ms";
-                stats[4] /= 1000000;
-                stats[4] = stats[4].toString() + " ms";
-                break;
-                case "s":
-                stats[3] /=1000000000;
-                stats[3] = stats[3].toString() + " s";
-                stats[4] /=1000000000;
-                stats[4] = stats[4].toString() + " s";
-                break;
-                default: 
-                stats[3] = stats[3].toString() + " ns";
-                stats[4] = stats[4].toString() + " ns";
-                break;
-            }
-            
-            //Display
-            for(var i = 2; i <= 4; i++){
-                var $f = $("<tr>", {
-                    "class": "field"
-                });
-                var $g = $("<tr>", {
-                    "class": "field"
-                });
-                var $t = $("<th>", {
-                    "class": "title"
-                }).text(statsnames[i] + ":");
-                var $v = $("<td>", {
-                    "class": "value"
-                }).text(stats[i]);
-
-                
-                $f.append($t);
-                $(".fields").append($f);
-                $g.append($v);
-                $(".fields").append($g);
-            }
-        }
-
-        $(".line.focus").css({
-            "color": $(".focus").data("fill"),
-            "background": "",
-            "width": "inherit"
-        }).removeClass("focus");
-
-        $(".reveal").removeClass("reveal");
-
-        var $line = $("#line" + e.getId());
-        var $parent = $line.parent(".line").addClass("reveal");
-
-        // Only highlight log lines on the Log Lines tab
-
-        if ($(".leftTabLinks li").first().hasClass("default")) {
-            
-            $line.addClass("focus").css({
-                "background": "transparent",
-                "color": "white",
-                "width": "calc(" + $line.width() + "px - 1em)"
-            }).data("fill", e.getFillColor());
-
-            $(".highlight").css({
-                "width": $line.width(),
-                "height": $line.height(),
-                "opacity": e.getOpacity()
+        tip.attr('class', 'd3-tip')
+            .offset([-14, 0])
+            .html(function(d) {
+                return "<span style='color:white'>" + d.getText() + "</span>";
             });
 
-            var top = parseFloat($line.css("top")) || 0;
-            var ptop = parseFloat($parent.css("top")) || 0;
-            var margin = parseFloat($line.css("margin-top")) || 0;
-            var pmargin = parseFloat($parent.css("margin-top")) || 0;
-            var vleft = $(".visualization .left").offset().left;
-            var vtop = $(".visualization .left").offset().top;
-            var offset = $(".log").offset().top - vtop;
+            nodes.call(tip);
 
-            $(".highlight").css({
-                "background": e.getFillColor(),
-                "top": top + ptop + margin + pmargin + offset,
-                "left": $line.offset().left - parseFloat($line.css("margin-left")) - vleft
-            }).attr({
-                "data-ln": e.getLineNumber()
-            }).data({
-                "id": e.getId()
-            }).show();
-        }
-    });
+        tip.show(e);
+
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -633,38 +650,71 @@ Controller.prototype.bindNodes = function(nodes) {
  */
 Controller.prototype.bindEdges = function(edges) {
     var controller = this;
+    var tip = d3.tip();
+    edges.call(tip);
+
     edges.on("click", function(e) {
         controller.showEdgeDialog(e, this);
+        controller.clearSidebarInfo();
+        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     }).on("mouseover", function(e) {
         // Don't update hover if the source node is null
         if(e.getSourceVisualNode().getNode().isHead()) {
             return;
         }
 
+        // Calculate offset for tip
+        var horizontalOffset = 0
+        if(e.getSourceVisualNode().getNode().getHost() == e.getTargetVisualNode().getNode().getHost()) {
+            horizontalOffset = 0;
+        }
+        else {
+            horizontalOffset = event.pageX - 45 - (e.getSourceVisualNode().getX() + e.getTargetVisualNode().getX()) / 2;
+        }
+           
+        tip.attr('class', 'd3-tip')
+           .offset([event.pageY - e.getSourceVisualNode().getY() - 155, horizontalOffset])
+           .html(function(d) {
+                return "<strong>Time:</strong> <span style='color:white'>" + e.getTimeDifference() + "</span>";
+           });
+    
         d3.selectAll("g.focus .sel").transition().duration(100).attr({
             "stroke-width": function(d) {
-                return d.getWidth() + 4;
-            }
+                return d.getWidth() + 2;
+            },
+            "stroke": "dimgrey",
+            "opacity": 1
         });
         d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
             "stroke-width": function(d) {
                 return d.getWidth();
-            }
-        });
-        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
-                return d.getWidth() + 2;
-            }
-        });
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "stroke-width": function(d) {
-                return d.getWidth() + 6;
+            },
+            "stroke": function(d) {
+                return d.getColor();
+            },
+            "opacity": function(d) {
+                return d.getOpacity();
             }
         });
 
-        controller.clearSidebarInfo();
-        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
-    });
+        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
+            "stroke-width": function(d) {
+                return d.getWidth() ;
+            },
+            "stroke": "dimgrey",
+            "opacity": 1
+        });
+        d3.selectAll("g.focus .sel").transition().duration(100).attr({
+            "stroke-width": function(d) {
+                return d.getWidth() + 4;
+            },
+            "stroke": "dimgrey",
+            "opacity": 1
+        });
+
+        tip.show(e);
+
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -679,9 +729,16 @@ Controller.prototype.bindEdges = function(edges) {
  */
 Controller.prototype.bindHosts = function(hosts) {
     var controller = this;
+    var tip = d3.tip();
+    hosts.call(tip);
+
     hosts.on("mouseover", function(e) {
-        controller.clearSidebarInfo();
-        $(".event").find(".source").find(".name").text(e.getText());
+        tip.attr('class', 'd3-tip')
+           .offset([-14, 0])
+           .html(function(d) {
+                return "<span style='color:white'>" + e.getText() + "</span>";
+           });
+        tip.show(e);
     }).on("dblclick", function(e) {
         var views = controller.global.getViews();
 
@@ -696,10 +753,13 @@ Controller.prototype.bindHosts = function(hosts) {
         else {
             // Hide host
             controller.hideHost(e.getHost());
+            tip.hide(e);
         }
     }).on("click", function(e) {
         controller.showDialog(e, 1, this);
-    });
+        controller.clearSidebarInfo();
+        $(".event").find(".source").find(".name").text(e.getText());
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -727,6 +787,9 @@ Controller.prototype.bindLines = function(lines) {
  */
 Controller.prototype.bindHiddenHosts = function(host, node) {
     var controller = this;
+    var tip = d3.tip();
+    node.call(tip);
+
     node.on("dblclick", function(e) {
 
         $(window).unbind("scroll");
@@ -735,13 +798,20 @@ Controller.prototype.bindHiddenHosts = function(host, node) {
             view.getTransformer().unhideHost(host);
         });
         controller.global.drawAll();
+        tip.hide(e);
 
     }).on("mouseover", function(e) {
-        controller.clearSidebarInfo();
-        $(".event").find(".source").find(".name").text(host);
+        tip.attr('class', 'd3-tip')
+           .offset([-14, 0])
+           .html(function(d) {
+                return "<span style='color:white'>" + host + "</span>";
+           });
+        tip.show(e);
     }).on("click", function(e) {
         controller.showDialog(host, 2, this);
-    });
+        controller.clearSidebarInfo();
+        $(".event").find(".source").find(".name").text(host);
+    }).on("mouseout", tip.hide);
 };
 
 /**
@@ -775,7 +845,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
         return;
     }
 
-    //Remove the dashed lines (if an exists)
+    //Remove the dashed lines (if any exists)
     d3.selectAll("line.dashed").remove();
 
     // Unhighlight any previously clicked edges
@@ -784,10 +854,11 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
     });
         
     // Add extra highlight to selected edge
-    var $selLine = d3.select(elem).insert("line", "line");
+    var $selLine = d3.select(elem).append("line", "line");
     $selLine.style({
-        "stroke": e.getColor(),
-        "stroke-width": e.getWidth() + 2
+        "stroke": "firebrick",
+        "stroke-width": e.getWidth(),
+        "opacity": 1
     });
     $selLine.attr({
         "class": "sel",
@@ -796,164 +867,7 @@ Controller.prototype.showEdgeDialog = function(e, elem) {
         "x2": e.getTargetVisualNode().getX(),
         "y2": e.getTargetVisualNode().getY(),
     });
-
-    var $dialog = $(".dialog");
-    var $svg = $(elem).parents("svg");
-    var $graph = $("#graph");
-
-    // Hide highlight button
-    $dialog.find(".filter").hide();
-
-    // Hide collapse button
-    $dialog.find(".collapse").hide();
-
-    // Display guides
-    var viz = $("#vizContainer");
-    if (e.getSourceVisualNode().getRadius() <= 5) {
-        var group = d3.select("#node" + e.getSourceVisualNode().getId());
-        group.append("line").attr("class", "dashed")
-            .attr("x1", -e.getSourceVisualNode().getX())
-            .attr("x2", viz.width())
-            .attr("y1", 0)
-            .attr("y2", 0)
-            .attr("stroke-dasharray", "5,5")
-            .attr("stroke-width", "2px")
-            .attr("stroke", "#000")
-            .attr("z-index", 120);
-    }
-
-    if (e.getTargetVisualNode().getRadius() <= 5) {
-        var group = d3.select("#node" + e.getTargetVisualNode().getId());
-        group.append("line").attr("class", "dashed")
-            .attr("x1", -e.getTargetVisualNode().getX())
-            .attr("x2", viz.width())
-            .attr("y1", 0)
-            .attr("y2", 0)
-            .attr("stroke-dasharray", "5,5")
-            .attr("stroke-width", "2px")
-            .attr("stroke", "#000")
-            .attr("z-index", 120);
-    }
-
-    // Set properties for dialog, and show
-    if (event.pageX - $(window).scrollLeft() > $graph.width() / 2)
-        $dialog.css({
-            "left": event.pageX - $dialog.width() - 40
-        }).removeClass("left").addClass("right").show();
-    else 
-        $dialog.css({
-            "left": event.pageX + 40
-        }).removeClass("right").addClass("left").show();
-
-    $dialog.css({
-        "top": event.pageY,
-        "margin-left": -$(window).scrollLeft(),
-        "background": e.getColor(),
-        "border-color": e.getColor()
-    }).data("element", e);
-
-    // Calculate time difference between source and target nodes
-    // Compress to fit in number type
-    var node1 = e.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-    var node2 = e.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-    node1 = Number(node1.slice(3, node1.length));
-    node2 = Number(node2.slice(3, node2.length));
-    
-    var difference = Math.abs(node1 - node2);
-
-    // Scale the difference
-    if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-    else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-    else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
-
-//Experimental dialog
-/*    $dialog.find(".name").text("");
-    $dialog.find(".info").children().remove();
-    $(".info").append($(".event"));
-
-    // Add info to the dialog
-    this.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".info"));
-*/
-
-    // Add info to the dialog
-    $dialog.find(".name").text(e.getSourceVisualNode().getText());
-    $dialog.find(".nameBottom").text(e.getTargetVisualNode().getText());
-    $dialog.find(".info").children().remove();
-
-    // Add source and target names
-    var fieldsSource = e.getSourceVisualNode().getNode().getLogEvents()[0].getFields();
-    var fieldsTarget = e.getTargetVisualNode().getNode().getLogEvents()[0].getFields();
-
-    // Add the source host
-    var $f = $("<tr>", {
-        "class": "field"
-    });
-    var $t = $("<th>", {
-        "class": "title"
-    }).text("Source host" + ":");
-    var $v = $("<td>", {
-        "class": "value"
-    }).text(fieldsSource.host);
-
-    $f.append($t).append($v);
-    $dialog.find(".info").append($f);
-
-    // Add time difference info
-    $f = $("<tr>", {
-        "class": "field"
-    });
-    $t = $("<th>", {
-        "class": "title"
-    }).text("Time difference" + ":");
-    $v = $("<td>", {
-        "class": "value"
-    }).text(difference + $("#graphtimescaleviz").val().trim());
-
-    $f.append($t).append($v);
-    $dialog.find(".info").append($f);
-
-    // Check if the two hosts are the same
-    if((fieldsSource.host != fieldsTarget.host)) {
-            // Add the target host
-        $f = $("<tr>", {
-            "class": "field"
-        });
-        $t = $("<th>", {
-            "class": "title"
-        }).text("Target host" + ":");
-        $v = $("<td>", {
-            "class": "value"
-        }).text(fieldsTarget.host);
-
-        $f.append($t).append($v);
-        $dialog.find(".info").append($f);
-    }
-
-
-    // keep a copy of the dialog box's top coordinate
-    var copyOfDialogTop = $dialog.offset().top;
-
-    $(window).scroll(function() {
-        // get the current top coordinate of the dialog box and the current bottom coordinate of the hostbar 
-        // (both values change with scrolling)
-        var dialogTop = $dialog.offset().top;
-        var hostBarBottom = $("#hostBar").offset().top + $("#hostBar").height();
-        // get the vertical position of the scrollbar (position = 0 when scrollbar at very top)
-        var scrollbarTop = $(window).scrollTop();
-        
-        // when a dialog box is hidden, its top coordinate is set to 0 so dialogTop starts having the same value as scrollbarTop
-        // we don't want it to be hidden forever after the first time it's hidden so we check for this condition below. We also check
-        // if we've scrolled past the distance between the dialog box and host bar, this is when we want to hide it. 
-        // Note: the 20 in the second condition is hardcoded for host dialog boxes so that they're never hidden when scrolling
-        if ((scrollbarTop != dialogTop) && (scrollbarTop - 20 > (dialogTop - (hostBarBottom - scrollbarTop)))) { 
-            $dialog.hide();
-        // otherwise, if we haven't scrolled past the distance, show the dialog. Note: we use copyOfDialogTop here
-        // because dialogTop has already changed with scrolling and we want the original distance
-        } else if ($(window).scrollTop() <= (copyOfDialogTop - (hostBarBottom - $(window).scrollTop()))){
-            $dialog.show();
-        }
-    });
-}
+};
 
 /**
  * Shows the node selection popup dialog
@@ -1243,6 +1157,7 @@ Controller.prototype.clearSidebarInfo = function() {
     sidebar.find(".source").find(".name").text("");
     sidebar.find(".target").find(".name").text("");
     sidebar.find(".fields").children().remove();
+    d3.select(".nodeConnection").select("svg").select("line").attr("opacity", 0);
 }
 
 /**
@@ -1322,25 +1237,36 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     $f.append($t).append($v);
     $fields.append($f);
 
-    // Check if the two hosts are the same if not add target node info
-    if((sourceNode.getHost() != targetNode.getHost())) {
-        $f = $("<tr>", {
-            "class": "field"
-        });
-        $t = $("<th>", {
-            "class": "title"
-        }).text("Target host" + ":");
-        $v = $("<td>", {
-            "class": "value"
-        }).text(targetNode.getHost());
-        $f.append($t).append($v);
-        $fields.append($f);
-    }
-}
+    // Target host info
+    $f = $("<tr>", {
+        "class": "field"
+    });
+    $t = $("<th>", {
+        "class": "title"
+    }).text("Target host" + ":");
+    $v = $("<td>", {
+        "class": "value"
+    }).text(targetNode.getHost());
+    $f.append($t).append($v);
+    $fields.append($f);
+
+    // Add the line to connect the two circles together
+    var positionTop = $("#sidebar .info .source .circle circle").offset().top - $(window).scrollTop();
+    var positionBottom = $("#sidebar .info .target .circle circle").offset().top - $(window).scrollTop();
+
+    d3.select(".nodeConnection").select("svg").select("line")
+                                .attr("stroke", "dimgrey")
+                                .attr("stroke-width", 2)
+                                .attr("opacity", 0.25)
+                                .attr("x1", 8)
+                                .attr("y1", positionTop - 22)
+                                .attr("x2", 8)
+                                .attr("y2", positionBottom - 32);
+};
 
 Controller.prototype.bindScroll = function (){
     var self = this;
     $(window).unbind("scroll");
     $(window).bind("scroll", self.onScroll);
     $(window).scroll();
-}
+};
