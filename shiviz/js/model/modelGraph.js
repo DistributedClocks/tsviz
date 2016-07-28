@@ -23,11 +23,7 @@ function ModelGraph(logEvents) {
     // Set of existing hosts
     var hostSet = {};
 
-    var mg = this;
-
-    initHosts();
-    initPrevNext();
-    initParentChild();
+    var mg = this;    
 
     if(logEvents.length == 0){
         this.timeRange = [0,1];
@@ -36,7 +32,8 @@ function ModelGraph(logEvents) {
         this.minTimestamp = logEvents[0].fields.timestamp;
         this.maxTimestamp = 0;
 
-        for (var i = 0; i < logEvents.length; i++) {      
+        for (var i = 0; i < logEvents.length; i++) {  
+            var timestamp = Number(logEvents[i].fields.timestamp.slice(3, logEvents[i].fields.timestamp.length));
             if(logEvents[i].fields.timestamp < this.minTimestamp){
                 this.minTimestamp = logEvents[i].fields.timestamp;
             }
@@ -45,15 +42,34 @@ function ModelGraph(logEvents) {
             }  
         }
         this.timeRange = [this.minTimestamp, this.maxTimestamp];
+
+        this.timeSpan = Number(this.maxTimestamp.slice(3, this.maxTimestamp.length)) - Number(this.minTimestamp.slice(3, this.minTimestamp.length));
+        // console.log(this.timeSpan);
     }
+
+    initHosts(this.minTimestamp, this.maxTimestamp, this.timeSpan);
+    initPrevNext();
+    initParentChild();
 
     /*
      * Create and add nodes to host arrays. Initialize hosts if undefined by
      * adding them to hostSet and assigning head and tail dummy nodes
      */
-    function initHosts() {
+    function initHosts(minTimestamp, maxTimestamp, timeSpan) {
+        // var timestart = Number(minTimestamp);
+        // var timeend = Number(maxTimestamp);
+        // console.log(timeSpan);
+        // var normalize = d3.scale.linear()
+        //                 .domain([timestart, timeend])
+        //                 .range([0, timeSpan]);
+        // console.log();
+        // console.log(normalize(logEvents[0].fields.timestamp));
+        // console.log(logEvents[0].fields.timestamp);
         for (var i = 0; i < logEvents.length; i++) {
             var logEvent = logEvents[i];
+            // console.log(this.normalize(logEvent.fields.timestamp));
+            // logEvents[i].relTimestamp = this.normalize(Number(logEvents[i].fields.timestamp));
+            // logEvents[i].relTimestamp = this.normalize(logEvents[i].fields.timestamp);
             var host = logEvent.getHost();
             var node = new ModelNode([ logEvent ]); //Array of logEvents?
             node.host = host;
@@ -86,6 +102,7 @@ function ModelGraph(logEvents) {
 
             hostToNodes[host].push(node);
         }
+        // console.log(logEvents);
     }
 
     // Generate linear linked list among nodes in same host
@@ -350,4 +367,13 @@ ModelGraph.prototype.clone = function() {
     }
 
     return newGraph;
+};
+
+/**
+ * Given a specific host name, returns the last valid node for that host
+ * 
+ * @returns {ModelNode} The last valid node for the host
+ */
+ModelGraph.prototype.getLastValidNodebyHost = function(host) {
+    return this.hostToTail[host].getPrev();
 };
