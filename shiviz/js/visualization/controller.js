@@ -752,7 +752,9 @@ Controller.prototype.bindHiddenHosts = function(host, node) {
  */
 Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll horizontally, since it has a fixed position
     var x = window.pageXOffset;
+    var y = window.pageYOffset;
     $("#hostBar, .dialog.host:not(.hidden)").css("margin-left", -x);
+    $("#graph .vRule").css("margin-top", -y);
     $(".log").css("margin-left", x);
 
     if ($(".line.focus").length)

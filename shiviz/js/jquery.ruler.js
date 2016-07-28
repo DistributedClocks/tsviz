@@ -11,12 +11,11 @@
 	$.fn.ruler = function(options) {
 	
 		var defaults = {
-			vRuleSize: 40,
+			vRuleSize: 45,
 			hRuleSize: 0, // maybe comment out or set to 0
 		};//defaults
 		var settings = $.extend({},defaults,options);
 		
-		// var hRule = '<div class="ruler hRule"></div>';
 		var vRule = '<div class="ruler vRule"></div>';
 		var corner = '<div class="ruler corner"></div>';
 				
@@ -25,8 +24,7 @@
 			// var $hRule = $('.hRule');
 			var $vRule = $('.vRule');
 			// $vRule.empty().height(0).outerHeight($vRule.parent().outerHeight()); // --GIVES IT THE WHOLE GRAPH SIZE
-			$vRule.empty().height(0).outerHeight($(window).height() - 171);
-			// $vRule.empty().height(0).outerHeight($("#graphSVG").height());
+			$vRule.empty().height(0).outerHeight($("#graphSVG").height());
 			
 			var userconstant = Number($("#timeunitviz").val().trim());
 			// console.log("userconstant" + userconstant.toString());
@@ -57,21 +55,9 @@
 			
 			// Attach rulers
 			
-			// Should not need 1 min padding-top of 1px but it does
-			// will figure it out some other time
-			// $this.css("padding-top", settings.hRuleSize + 1 + "px");
-			// if (settings.hRuleSize > 0) {				
-			// 	$(hRule).height(settings.hRuleSize).prependTo($this);
-			// }
-			
 			if (settings.vRuleSize > 0) {
 				var oldWidth = $this.outerWidth();
-				// $this.css("padding-left", settings.vRuleSize + 1 + "px").outerWidth(oldWidth);
-				// $(vRule).width(settings.vRuleSize).height($this.outerHeight()).prependTo($this);
-				// console.log($(window).height() - 171);
-				// $(vRule).width(settings.vRuleSize).height($(window).height() - 171).prependTo($this);
 				$(vRule).width(settings.vRuleSize).height($("#graphSVG").height()).prependTo($this);
-				//console.log($(window).height() - 171);
 			}
 			var $vRule = $this.children('.vRule');
 			if ( (settings.vRuleSize > 0) ) {
@@ -85,11 +71,9 @@
 				var $corner = $(".corner")
 				$corner.children().remove();
 				$(magnification).appendTo($corner);
-				
-				// console.log($corner);
 			}
 			var userconstant = Number($("#timeunitviz").val().trim()); 
-			// console.log("userconstant" + userconstant.toString());
+
 			// Vertical ruler ticks
 			tickLabelPos = settings.hRuleSize;
 			newTickLabel = "";

@@ -297,9 +297,9 @@ section.input .left {
 }
 
 #graph .vRule {
-  position: absolute;
+  position: fixed;
   /*min-height: 100%;*/
-  left: 10px;
+  left: 0;
   top: 142px;
   /*border-left: 1px solid;*/
   /*border-right: 1px solid;*/
