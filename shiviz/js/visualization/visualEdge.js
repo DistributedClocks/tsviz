@@ -39,17 +39,15 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     /** @private */
     this.width;
     
-
     /** @private */
     this.dashLength;
-    this.setDashLength(0);
 
     /** @private */
     this.color;
-    
 
     /** @private */
     this.opacity;
+    this.setOpacity(0.25);
 
     this.setDefaultAttributes();
     
@@ -212,15 +210,15 @@ VisualEdge.prototype.getOpacity = function() {
  */
 VisualEdge.prototype.setOpacity = function(newOpacity) {
     this.opacity = newOpacity;
-    var attr = $(this.$line).attr('x1');
+    // var attr = $(this.$line).attr('x1');
 
     // For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
-    if (typeof attr !== typeof undefined && attr !== false) {
+    // if (typeof attr !== typeof undefined && attr !== false) {
       // Element has this attribute
       this.$line.attr("opacity", newOpacity);  
-    }else{
-        this.$line.attr("stroke-opacity", newOpacity);
-    }
+    // }else{
+    //     this.$line.attr("stroke-opacity", newOpacity);
+    // }
     
 };
 
