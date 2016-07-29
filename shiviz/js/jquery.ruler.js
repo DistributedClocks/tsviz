@@ -1,53 +1,38 @@
-/**
- * jQuery.Ruler v1.1
- * Add Photoshop-like rulers and mouse position to a container element using jQuery.
- * http://ruler.hilliuse.com
- * 
- * Dual licensed under the MIT and GPL licenses.
- * Copyright 2013 Hillius Ettinoffe http://hilliuse.com
- */
+
 ;(function( $ ){
 
-	$.fn.ruler = function(options) {
+	$.fn.ruler = function(view) {
 	
 		var defaults = {
 			vRuleSize: 45,
 			hRuleSize: 0, // maybe comment out or set to 0
 		};//defaults
-		var settings = $.extend({},defaults,options);
+		var settings = $.extend({},defaults);
 		
 		var vRule = '<div class="ruler vRule"></div>';
 		var corner = '<div class="ruler corner"></div>';
-				
-		//resize
+		
+
+		//WINDOW RESIZE
 		$(window).resize(function(e){
-			// var $hRule = $('.hRule');
 			var $vRule = $('.vRule');
-			// $vRule.empty().height(0).outerHeight($vRule.parent().outerHeight()); // --GIVES IT THE WHOLE GRAPH SIZE
 			$vRule.empty().height(0).outerHeight($("#graphSVG").height());
+
+			var axis = view.layout.axis;
+	        var width = view.$svg.attr("width");
+	        var height = view.$svg.attr("height");
+
+	        //Draw ruler
+	        d3.selectAll(".ruler.vRule svg").remove();
+			var ruler = d3.selectAll(".ruler.vRule").append("svg")
+	        .attr("class", "axisSVG")
+	        .attr("height", height)
+	        .attr("width", "40px").append("g")
+	        .attr("class", "y axis")
+	        .attr("transform", "translate(30,0)")
+	        .call(axis);
 			
-			var userconstant = Number($("#timeunitviz").val().trim());
-			// console.log("userconstant" + userconstant.toString());
-			
-			// Vertical ruler ticks
-			// tickLabelPos = settings.hRuleSize;
-			// newTickLabel = "";
-			// var count = 0;
-			// while (tickLabelPos <= $vRule.height()) {
-			// 	if ((( tickLabelPos - settings.hRuleSize ) %50 ) == 0) {
-			// 		// newTickLabel = "<div class='tickLabel'><span>" + ( tickLabelPos - settings.hRuleSize ) + "</span></div>";
-			// 		newTickLabel = "<div class='tickLabel'><span>" + ( count ) + "</span></div>";
-			// 		count += userconstant;
-			// 		$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
-			// 	} else if (((tickLabelPos - settings.hRuleSize)%10) == 0) {
-			// 		newTickLabel = "<div class='tickMajor'></div>";
-			// 		$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
-			// 	} else if (((tickLabelPos - settings.hRuleSize)%5) == 0) {
-			// 		newTickLabel = "<div class='tickMinor'></div>";
-			// 		$(newTickLabel).css( "top", tickLabelPos+"px" ).appendTo($vRule);
-			// 	}
-			// 	tickLabelPos = ( tickLabelPos + 5 );			
-			// }//vert ticks
+
 		});//resize
 		
 		return this.each(function() {
@@ -60,6 +45,7 @@
 				$(vRule).width(settings.vRuleSize).height($("#graphSVG").height()).prependTo($this);
 			}
 			var $vRule = $this.children('.vRule');
+			//Set corner (ruler magnification)
 			if ( (settings.vRuleSize > 0) ) {
 				if($("#graphtimescaleviz option:selected").val().trim() == "us") var magnification = "<span> &mu;s </span>";
 				else var magnification = "<span> " + $("#graphtimescaleviz option:selected").val().trim() + "</span>";
@@ -72,27 +58,21 @@
 				$corner.children().remove();
 				$(magnification).appendTo($corner);
 			}
-			var userconstant = Number($("#timeunitviz").val().trim()); 
 
-			// Vertical ruler ticks
-			tickLabelPos = settings.hRuleSize;
-			newTickLabel = "";
-			var count = 0;
-			// while (tickLabelPos <= $vRule.height()) {
-			// 	if ((( tickLabelPos - settings.hRuleSize ) %50 ) == 0) {
-			// 		// newTickLabel = "<div class='tickLabel'><span>" + ( tickLabelPos - settings.hRuleSize ) + "</span></div>";
-			// 		newTickLabel = "<div class='tickLabel'><span>" + ( count ) + "</span></div>";
-			// 		count += userconstant;
-			// 		$(newTickLabel).css( "top", tickLabelPos + "px" ).appendTo($vRule);
-			// 	} else if (((tickLabelPos - settings.hRuleSize)%10) == 0) {
-			// 		newTickLabel = "<div class='tickMajor'></div>";
-			// 		$(newTickLabel).css( "top", tickLabelPos + "px" ).appendTo($vRule);
-			// 	} else if (((tickLabelPos - settings.hRuleSize)%5) == 0) {
-			// 		newTickLabel = "<div class='tickMinor'></div>";
-			// 		$(newTickLabel).css( "top", tickLabelPos + "px" ).appendTo($vRule);
-			// 	}
-			// 	tickLabelPos = ( tickLabelPos + 5 );
-			// }//vert ticks
+			var axis = view.layout.axis;
+	        var width = view.$svg.attr("width");
+	        var height = view.$svg.attr("height");
+
+	        //Draw ruler
+	        d3.selectAll(".ruler.vRule svg").remove();
+			var ruler = d3.selectAll(".ruler.vRule").append("svg")
+	        .attr("class", "axisSVG")
+	        .attr("height", height)
+	        .attr("width", "40px").append("g")
+	        .attr("class", "y axis")
+	        .attr("transform", "translate(30,0)")
+	        .call(axis);
+
 		});//each
 	};//ruler
 })( jQuery );

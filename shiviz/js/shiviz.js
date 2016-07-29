@@ -307,23 +307,11 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         global.setHostPermutation(hostPermutation);
         global.drawAll();
 
-        var axis = d3.svg.axis().scale(views[0].layout.timeScale2).ticks(4000).tickFormat(d3.format(".3d")).orient("left");
-        var width = views[0].$svg.attr("width");
-        var height = views[0].$svg.attr("height");
+        // //Draw ruler
+        $("#graph").ruler(views[0]);
 
-        //Draw ruler
-        $("#graph").ruler();
-        var ruler = d3.selectAll(".ruler.vRule").append("svg")
-        .attr("class", "axisSVG")
-        .attr("height", height)
-        .attr("width", "40px").append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(30,0)")
-        .call(axis);
-
-        // console.log(d3.selectAll(".ruler.vRule"))
         global.getController().bindScroll();
-        // $("body").ruler();
+
     }
     catch (err) {
         this.handleException(err);

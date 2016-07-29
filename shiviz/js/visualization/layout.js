@@ -73,12 +73,32 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     var minDistPix = 50;
     var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
     var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
-    // console.log(visualGraph.timeRange);
-
-    var rangeEnd = offset + (((timeEnd - timeStart)/visualGraph.minDistance) * minDistPix);
-    var rangeStart = offset;
     
-    var newRangeEnd = (timeEnd-timeStart)/visualGraph.minDistance;
+    var timeSpan = (timeEnd-timeStart);
+
+    var rangeEnd = offset + ((timeSpan / visualGraph.minDistance) * minDistPix);
+    var rangeStart = offset;
+
+    
+    var tempMindistance = visualGraph.minDistance;
+
+    switch($("#graphtimescaleviz").val().trim()){
+        case "ns":
+        break;
+        case "us":
+        timeSpan /= 1000; 
+        tempMindistance /= 1000;
+        break;
+        case "ms":
+        timeSpan /= 1000000; 
+        tempMindistance /= 1000000;
+        break;
+        case "s":
+        timeSpan /= 1000000000; 
+        tempMindistance /= 1000000000;
+        break;
+    }
+    var scale = d3.scale.ordinal().domain(d3.range(0, timeSpan, tempMindistance)).rangePoints([rangeStart,rangeEnd]);
 
     timeStart = Number(visualGraph.timeRange[0]);
     timeEnd = Number(visualGraph.timeRange[1]);
@@ -87,11 +107,10 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
         .domain([timeStart, timeEnd])
         .range([rangeStart,rangeEnd]);
 
+    var format = d3.format(".0d");
     
-    this.timeScale2 = d3.scale.linear()
-        .domain([0, newRangeEnd])
-        .range([rangeStart,rangeEnd]);
-        
+    this.axis = d3.svg.axis().scale(scale).orient("left");
+
     var nodeToNumParents = {};
     var nodeToChildren = {};
 
