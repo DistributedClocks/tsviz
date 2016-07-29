@@ -88,7 +88,7 @@ HighlightMotifTransformation.prototype.transform = function(model) {
         var visualEdge = model.getVisualEdgeByNodes(edge[0], edge[1]);
 
         visualEdge.setColor("dimgrey");
-        visualEdge.setOpacity(0.7);
+        visualEdge.setOpacity(0.5);
         visualEdge.setWidth(visualEdge.getWidth() * 2);
     }
 };

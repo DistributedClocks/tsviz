@@ -81,7 +81,14 @@ Motif.prototype.getNodes = function() {
  */
 Motif.prototype.addEdge = function(node1, node2) {
     this.edges[Motif.getEdgeId(node1, node2)] = [ node1, node2 ];
-    this.totalTime += Math.abs(node2.getFirstLogEvent().fields.timestamp - node1.getFirstLogEvent().fields.timestamp);
+    
+    var node1Time = node1.getFirstLogEvent().fields.timestamp;
+    node1Time = Number(node1Time.slice(3, node1Time.length));
+
+    var node2Time = node2.getFirstLogEvent().fields.timestamp;
+    node2Time = Number(node2Time.slice(3, node2Time.length));
+    
+    this.totalTime += Math.abs(node2Time - node1Time);
 };
 
 /**

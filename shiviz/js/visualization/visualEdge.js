@@ -39,11 +39,14 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     /** @private */
     this.width;
     
+
     /** @private */
     this.dashLength;
+    this.setDashLength(0);
 
     /** @private */
     this.color;
+    
 
     /** @private */
     this.opacity;
@@ -80,7 +83,7 @@ VisualEdge.prototype.setDefaultAttributes = function() {
     this.setDashLength(0);
     this.setColor("dimgrey");
     this.setOpacity(0.25);
-}
+};
 
 VisualEdge.prototype.getSVG = function() {
     return this.$svg;
