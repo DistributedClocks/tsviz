@@ -109,7 +109,7 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
 
     var format = d3.format(".0d");
     
-    this.axis = d3.svg.axis().scale(scale).orient("left");
+    this.axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
 
     var nodeToNumParents = {};
     var nodeToChildren = {};
