@@ -4,8 +4,6 @@ function ShrinkTimelinesTransformation(){
 	/** @private */
 	this.threshold = 0;
 
-	// console.log(($(window).height - 171));
-
 	this.setThreshold(($(window).height() - 171));
 }
 
@@ -45,8 +43,6 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	var nodes = model.graph.getAllNodes();
 	var longEdges = [];
 	var edge;
-	
-	console.log(model);
 
 	//Isolate edges that are longer than the screen
 	for(var i = 0; i < nodes.length; i++){
@@ -97,7 +93,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	}
 
 	function checkInterval(interval, hosts, visualGraph) {
-
+		//Check rejected intervals for the possibility of it being a incomplete interval
 		for(var i = 0; i < hosts.length; i++){
 			if(interval.hosts.indexOf(hosts[i]) < 0){ //Host is not present in interval, check if activity has ended for this host
 				var node = visualGraph.graph.getLastValidNodebyHost(hosts[i]);
@@ -120,21 +116,18 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 			intervals.push(interval);
 			interval = new Interval();
 		}else{ //Interval not found
-			//Check here if the interval was not found because some threads have finished
+			//Check here if the interval was rejected because some threads have finished
 			if(checkInterval(interval, model.getHosts(), model)){ 
-				// for(var k = 0; k < interval.edges.length; k++){
-				// 	if(edgeCollection.indexOf(interval.edges[k]) < 0) edgeCollection.push(interval.edges[k]);
-				// }
-				// intervals.push(interval);
-				console.log(interval);
+				for(var k = 0; k < interval.edges.length; k++){
+					if(edgeCollection.indexOf(interval.edges[k]) < 0) edgeCollection.push(interval.edges[k]);
+				}
+				intervals.push(interval);
 			}
 			interval = new Interval();
 		}
 
 	}
 	//--------- END OF SECOND DRAFT
-
-	console.log(intervals);
 
 	//COLLAPSE!
 
@@ -144,6 +137,10 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	//Shift nodes up and update common edges
 	for(var i = 0; i < intervals.length; i++){
 		var compression = {};
+		compression.original = {};
+		compression.original.start = intervals[i].maxSourceY;
+		compression.original.end = intervals[i].minTargetY;
+
 		intervals[i].maxSourceY -= cumulativeShift;
 		intervals[i].minTargetY -= cumulativeShift;
 
@@ -169,9 +166,9 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 			e.compressions.push(compression);
 	        
 		}
+		model.compressedParts.push(compression);
 		cumulativeShift += compression.shiftAmount;
 	}
-	// console.log(cumulativeShift);
 	//Modify edges
 	for(var i = 0; i < edgeCollection.length; i++){
 		var e = edgeCollection[i];

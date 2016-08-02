@@ -106,8 +106,6 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     this.timeScale = d3.scale.linear()
         .domain([timeStart, timeEnd])
         .range([rangeStart,rangeEnd]);
-
-    var format = d3.format(".0d");
     
     this.axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
 

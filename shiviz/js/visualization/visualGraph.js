@@ -43,6 +43,9 @@ function VisualGraph(graph, layout, hostPermutation, minDistance, collapseLocal)
 
     this.minDistance = minDistance;
 
+    /** @private */
+    this.compressedParts = [];
+
     this.graph.addObserver(AddNodeEvent, this, function(event, g) {
         g.addVisualNodeByNode(event.getNewNode());
         g.removeVisualEdgeByNodes(event.getPrev(), event.getNext());
