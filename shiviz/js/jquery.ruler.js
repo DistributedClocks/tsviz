@@ -64,13 +64,13 @@
 	        var height = view.$svg.attr("height");
 
 	        //Draw ruler
-	        d3.selectAll(".ruler.vRule svg").remove();
+	       	d3.selectAll(".ruler.vRule svg").remove();
 			var ruler = d3.selectAll(".ruler.vRule").append("svg")
 	        .attr("class", "axisSVG")
 	        .attr("height", height)
-	        .attr("width", "40px").append("g")
+	        .attr("width", "50px").append("g")
 	        .attr("class", "y axis")
-	        .attr("transform", "translate(30,0)")
+	        .attr("transform", "translate(40,0)")
 	        .call(axis);
 
 		});//each
