@@ -1025,7 +1025,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
             "left": e.getX() + $svg.offset().left - $dialog.width() - 40,
             "margin-left": type ? -$(window).scrollLeft() : 0
         }).removeClass("left").addClass("right").show();
-    else
+    else 
         $dialog.css({
             "left": e.getX() + $svg.offset().left + 40,
             "margin-left": type ? -$(window).scrollLeft() : 0
@@ -1057,12 +1057,12 @@ Controller.prototype.showDialog = function(e, type, elem) {
         $dialog.removeClass("host");
     }
 
-    // Add info to the dialog
+    // Add info to the sidebar
     $dialog.find(".name").text(type == 2 ? e : e.getText());
     $dialog.find(".info").children().remove();
 
     if (!type && !e.isCollapsed()) {
-        // Add fields, if normal node
+        //Add fields, if normal node
         var fields = e.getNode().getLogEvents()[0].getFields();
         for (var i in fields) {
             var $f = $("<tr>", {
@@ -1084,8 +1084,10 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
         // If node is collapsible then show collapse button
         // Else don't show button
-        if (!this.global.getViews()[0].getTransformer().collapseNodesTransformation.isCollapseable(e.getNode(), 2, this.global.getViews()[0].minDistance))
+        if (!this.global.getViews()[0].getTransformer().collapseNodesTransformation.isCollapseable(e.getNode(), 2, this.global.getViews()[0].minDistance)){
             $dialog.find(".collapse").hide();
+            $dialog.hide();
+        }
         else
             $dialog.find(".collapse").show().text("Collapse");
 

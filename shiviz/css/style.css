@@ -1134,7 +1134,7 @@ svg#defs {
 
 /* Popup dialog */
 .dialog {
-  width: 200px;
+  width: 100px;
   background: #eee;
   font-family: sans-serif;
   position: absolute;
@@ -1150,11 +1150,6 @@ svg#defs {
 }
 .dialog .hidden {
   z-index: 3;
-}
-.dialog .info {
-  margin: 1em;
-  color: white;
-  word-break: break-all;
 }
 .dialog .triangle {
   position: absolute;
@@ -1182,11 +1177,11 @@ svg#defs {
 }
 .dialog button {
   margin: 0;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0);
 }
 .dialog button:hover {
   margin: 0;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.1);
 }
 .dialog button:active {
   margin: 0;
