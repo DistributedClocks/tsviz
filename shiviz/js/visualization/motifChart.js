@@ -80,7 +80,8 @@ MotifChart.prototype.drawChart = function() {
   				.attr('class', 'd3-tip')
   				.offset([-14, 0])
   				.html(function(d) {
-    				return "<strong>Time:</strong> <span style='color:white'>" + d.formatTime() + "</span>";
+    				return "<span style='color:white'>" + d.formatTime() 
+                            + "<br><center>" + d.getHost() +"</center></span>";
   				});
 
    	// Insert an SVG which we will draw our chart and translate
