@@ -680,4 +680,14 @@ Global.prototype.drawSideBar = function() {
       global.controller.bindHiddenHosts(host, hiddenHost);     
   });
 
+    hiddenHosts = {};
+    hiddenHosts = this.viewL.getTransformer().getHiddenHosts();
+    
+    if (this.viewR != null && this.getPairwiseView()) 
+        hiddenHosts = hiddenHosts.concat(this.viewR.getTransformer().getHiddenHosts());
+
+    if(this.searchbar.getMotifChart() != null) {
+        this.searchbar.getMotifChart().redrawChart(hiddenHosts);
+    }
+
 };

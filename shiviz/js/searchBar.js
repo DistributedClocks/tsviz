@@ -709,6 +709,13 @@ SearchBar.prototype.createResultsChart = function() {
 };
 
 /**
+ * Gets the {@link MotifChart}
+ */
+SearchBar.prototype.getMotifChart = function () {
+    return this.motifChart;
+};
+
+/**
  * Clears the results in the motifs tab and uncheck all the checkboxes
  */
 SearchBar.prototype.clearMotifsTab = function() {

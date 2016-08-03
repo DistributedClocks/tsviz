@@ -15,6 +15,7 @@ function MotifChart(motifNavigator) {
 
 	/** @private */
 	this.motifPoints = [];
+    this.hiddenMotifPoints = [];
     this.motifNavigator = motifNavigator;
 	this.$chart = null;
     this.sortedByHost = false;
@@ -165,6 +166,39 @@ MotifChart.prototype.drawChart = function() {
 };
 
 /**
+ * Removes original chart and redraws the chart.
+ *
+ * @param {Array<String>} the hosts that have been hidden
+ */
+MotifChart.prototype.redrawChart = function(hiddenHosts) {
+    // Move all motifs into same place
+    var temp = this.motifPoints.concat(this.hiddenMotifPoints);
+    var hiddenMotifPoints = [];
+    var motifPoints = [];
+
+    this.removeChart();
+
+    // Remove motifs start start with the hidden hosts
+    for (var i = 0; i < this.motifPoints.length; i++) {
+        if(hiddenHosts.includes(temp[i].getHost())){
+            hiddenMotifPoints.push(temp[i]);
+        }
+        else {
+            motifPoints.push(temp[i]);
+        }
+    }
+
+    this.motifPoints = motifPoints;
+    this.hiddenMotifPoints = hiddenMotifPoints;
+
+    this.sortByHost();
+    this.drawChart();
+    
+    this.sortByTime(true);
+    this.drawChart();
+};
+
+/**
  * Sorts by host and descending time.
  */
 MotifChart.prototype.sortByHost = function() {
@@ -201,7 +235,6 @@ MotifChart.prototype.sortByHost = function() {
         });
 
         // Add sorted motifs with same host to final array
-        //allSorted = allSorted.concat(sort);
         allSorted.push(sort);
     }
 
