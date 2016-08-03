@@ -93,7 +93,7 @@ MotifChart.prototype.drawChart = function() {
 
     var tip = d3.tip()
   				.attr('class', 'd3-tip')
-  				.offset([-14, 0])
+  				.offset([-16, 0])
   				.html(function(d) {
     				return "<span style='color:white'>" + d.formatTime() 
                             + "<br><center>" + d.getHost() +"</center></span>";
