@@ -1085,7 +1085,7 @@ svg {
 #sidebar .axis path, .axis line {
   fill: none;
   stroke-width: 1;
-  stroke: black;
+  stroke: dimgrey;
   shape-rendering: crispEdges;
 }
 #sidebar .axis text {

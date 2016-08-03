@@ -188,10 +188,10 @@ MotifPoint.prototype.setLabel = function(newLabel) {
  * @returns {String} scaled time with unit
  */
 MotifPoint.prototype.formatTime = function() {
-    if($("#graphtimescaleviz").val().trim() == "ns") return this.getY() + " ns";
-    else if($("#graphtimescaleviz").val().trim() == "us") return this.getY() / 1000 + " μs";
-    else if($("#graphtimescaleviz").val().trim() == "ms") return this.getY() / 1000000 + " ms";
-    else if($("#graphtimescaleviz").val().trim() == "s") return this.getY() / 1000000000 + " s";
+    if($("#graphtimescaleviz").val().trim() == "ns") return this.getYScaled() + " ns";
+    else if($("#graphtimescaleviz").val().trim() == "us") return this.getYScaled()  + " μs";
+    else if($("#graphtimescaleviz").val().trim() == "ms") return this.getYScaled()  + " ms";
+    else if($("#graphtimescaleviz").val().trim() == "s") return this.getYScaled()  + " s";
 };
 
 /**
@@ -202,4 +202,17 @@ MotifPoint.prototype.formatTime = function() {
  */
 MotifPoint.prototype.getHost = function() {
     return  this.motif.getNodes()[0].getHost();
+};
+
+/**
+ * Gets the y coordinate of the MotifPoint scaled to the units selected by the user.
+ * 
+ * @returns {Number} The y-coordinate
+ * 
+ */
+MotifPoint.prototype.getYScaled = function() {
+    if($("#graphtimescaleviz").val().trim() == "ns") return this.getY();
+    else if($("#graphtimescaleviz").val().trim() == "us") return this.getY() / 1000;
+    else if($("#graphtimescaleviz").val().trim() == "ms") return this.getY() / 1000000;
+    else if($("#graphtimescaleviz").val().trim() == "s") return this.getY() / 1000000000;
 };

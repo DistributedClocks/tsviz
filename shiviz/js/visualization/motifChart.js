@@ -45,15 +45,26 @@ MotifChart.prototype.addMotif = function(visualGraph, motifGroup) {
 MotifChart.prototype.drawChart = function() {
 	var motifPoints = this.motifPoints;
     var sortedByHost = this.sortedByHost;
+    var motifNavigator = this.motifNavigator;
+    var visualGraph = this.visualGraph;
+
+    // Figure out how many whole digits are in the longest time
+    var temp = motifPoints[0].getYScaled();
+    var axisWidth = 1;
+
+    while (temp > 10) {
+        temp /= 10;
+        axisWidth++;
+        console.log(axisWidth);
+    }
+
+    axisWidth *= 12;
 
     // Chart sizes
     var barPadding = 0; // Padding between bars
-    var padding = {top: 0, right: 0, bottom: 2, left: 2};
+    var padding = {top: 0, right: 0, bottom: 2, left: axisWidth};
     var width = ((176 / 3 > motifPoints.length) ? 176 : motifPoints.length * 3);
     var height = 192 - padding.top - padding.bottom * 2;
-
-    var motifNavigator = this.motifNavigator;
-    var visualGraph = this.visualGraph;
 
     // Create a x scale for the axis
     var xScale = d3.scale.linear()
@@ -62,10 +73,12 @@ MotifChart.prototype.drawChart = function() {
 
     // Create a scale so that the data bars do not go above the chart height
    	var yScale = d3.scale.linear()
-   						 .domain([0, d3.max(motifPoints, function(d) { return d.getY(); })])
-   					     .range([0, height]);
+   						 .domain([0, d3.max(motifPoints, function(d) { return d.getYScaled(); })])
+   					     .range([height, 0]);
 
     // Setup the axes 
+    var formatY = d3.format(".0");
+
     var xAxis = d3.svg.axis()
     			  .scale(xScale)
 	    		  .orient("bottom")
@@ -74,7 +87,8 @@ MotifChart.prototype.drawChart = function() {
    	var yAxis = d3.svg.axis()
    				  .scale(yScale)
 			      .orient("left")
-    			  .ticks(0);				     
+                  .outerTickSize(0)
+                  .ticks(5);				     
 
     var tip = d3.tip()
   				.attr('class', 'd3-tip')
@@ -100,27 +114,25 @@ MotifChart.prototype.drawChart = function() {
     // Insert the x-axis into the graph and translate it down
     $svg.append("g")
     	.attr("class", "axis")
-    	.attr("transform", "translate(0," + (height - 1) +")")
+    	.attr("transform", "translate(" + (padding.left - 2) + "," + (height - 1) +")")
     	.call(xAxis);
-/*    	.append("text")
-    	.attr("x", 88)
-    	.attr("y", -14)
-    	.attr("dy", ".71em")
-    	.style("text-anchor", "middle")
-    	.text("Search results");*/	
     			
     // Insert the y-axis into the graph
     $svg.append("g")
     	.attr("class", "axis")
-    	.attr("transform", "translate(0,0)")
+    	.attr("transform", "translate(" + (padding.left - 2) + ",0)")
     	.call(yAxis)
     	.append("text")
-    	.attr("transform", "rotate(-90)")
-    	.attr("x", - height / 2)
-    	.attr("y", 4)
+    	.attr("x", -22)
+    	.attr("y", height - 12)
     	.attr("dy", ".71em")
-    	.style("text-anchor", "middle")
-    	.text("Time");
+    	.text($("#graphtimescaleviz").val().trim());
+
+    // Remove the "0" at the bottom of the y-axis
+    $svg.selectAll(".tick")
+        .filter(function (d) { 
+            return d == 0;  
+        }).remove();
 
     // Insert rectangles for each piece of data in the shifted bar area
     $svg.select(".barArea").selectAll("rect")
@@ -131,11 +143,11 @@ MotifChart.prototype.drawChart = function() {
     		return i * (width / motifPoints.length);
     	})
     	.attr("y", function(d) {
-    		return height - yScale(d.getY());
+    		return yScale(d.getYScaled());
     	})
     	.attr("width", width / motifPoints.length - barPadding)
     	.attr("height", function(d) {
-    		return yScale(d.getY());
+    		return yScale(0) - yScale(d.getYScaled());
     	})
     	.attr("fill", function(d){
             if(sortedByHost)
