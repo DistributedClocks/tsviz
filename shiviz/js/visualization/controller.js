@@ -1018,18 +1018,21 @@ Controller.prototype.showDialog = function(e, type, elem) {
     // Set properties for dialog, and show
     if (type == 2)
         $dialog.css({
-            "left": $(elem).offset().left - $dialog.width() - 40
-        }).removeClass("left").addClass("right").show();
+            "left": $(elem).offset().left - 38,
+            "margin-left": -$(window).scrollLeft()
+        }).addClass("top").show();
     else if (e.getX() - $(window).scrollLeft() > $graph.width() / 2)
         $dialog.css({
-            "left": e.getX() + $svg.offset().left - $dialog.width() - 40,
+            "left": e.getX() + $svg.offset().left - 50,
+            "margin-top": 35,
             "margin-left": type ? -$(window).scrollLeft() : 0
-        }).removeClass("left").addClass("right").show();
+        }).addClass("top").show();
     else 
         $dialog.css({
-            "left": e.getX() + $svg.offset().left + 40,
+            "left": e.getX() - 2,
+            "margin-top": 35,
             "margin-left": type ? -$(window).scrollLeft() : 0
-        }).removeClass("right").addClass("left").show();
+        }).addClass("top").show();
 
     // Set fill color, etc.
     if (type)
