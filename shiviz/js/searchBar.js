@@ -701,9 +701,11 @@ SearchBar.prototype.createResultsChart = function() {
         this.motifChart.addMotif(views[1].getVisualModel(), views[1].getTransformer().getHighlightedMotif());
     }
 
+    this.motifChart.logScale();
     this.motifChart.sortByHost();
     this.motifChart.drawChart();
     
+    this.motifChart.logScale();
     this.motifChart.sortByTime(true);
     this.motifChart.drawChart();
 };

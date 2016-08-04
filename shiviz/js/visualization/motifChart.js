@@ -20,6 +20,10 @@ function MotifChart(motifNavigator) {
 	this.$chart = null;
     this.sortedByHost = false;
 
+    this.xScale = null;
+    this.yScale = null;
+    this.xAxis = null;
+    this.yAxis = null;
 }
 
 /**
@@ -44,6 +48,10 @@ MotifChart.prototype.addMotif = function(visualGraph, motifGroup) {
  * Draws the graph based on the data constructed.
  */
 MotifChart.prototype.drawChart = function() {
+    if (this.xScale == null || this.yScale == null || this.xAxis == null || this.yAxis == null) {
+        console.log("Error: MotifChart scale not set.");
+        return;
+    }
 	var motifPoints = this.motifPoints;
     var sortedByHost = this.sortedByHost;
     var motifNavigator = this.motifNavigator;
@@ -65,38 +73,14 @@ MotifChart.prototype.drawChart = function() {
     var barPadding = 0; // Padding between bars
     var padding = {top: 0, right: 0, bottom: 2, left: axisWidth};
     var width = ((176 / 3 > motifPoints.length) ? 176 : motifPoints.length * 3);
-    var height = 192 - padding.top - padding.bottom * 2;
+    var height = 200 - padding.top - padding.bottom * 2;
 
-    // Create a x scale for the axis
-    var xScale = d3.scale.linear()
-    					 .domain([0, motifPoints.length])
-    					 .range([0, width]);
+    // Get the axes
+    var xScale = this.xScale.range([0, width]);
+   	var yScale = this.yScale.range([height, 0]);
 
-    // Create a scale so that the data bars do not go above the chart height
-   	var yScale = d3.scale.log()
-                         .base(10)
-   						 .domain([1, d3.max(motifPoints, function(d) { return d.getYScaled() + 1; })])
-   					     .range([height, 0]);
-/*    var yScale = d3.scale.linear()
-                         .domain([0, d3.max(motifPoints, function(d) { return d.getYScaled(); })])
-                         .range([height, 0]);*/
-
-
-    // Setup the axes 
-    var formatY = d3.format(".0");
-
-    var xAxis = d3.svg.axis()
-    			  .scale(xScale)
-	    		  .orient("bottom")
-	    		  .ticks(0);
-
-   	var yAxis = d3.svg.axis()
-   				  .scale(yScale)
-			      .orient("left")
-                  .ticks(7, ",.1s")
-                  .tickSize(6, 0);		
-/*                  .outerTickSize(0)
-                  .ticks(5);  	*/     
+    var xAxis = this.xAxis;
+   	var yAxis = this.yAxis;	  
 
     var tip = d3.tip()
   				.attr('class', 'd3-tip')
@@ -155,8 +139,8 @@ MotifChart.prototype.drawChart = function() {
     	})
     	.attr("width", width / motifPoints.length - barPadding)
     	.attr("height", function(d) {
-    		return yScale(1) - yScale(d.getYScaled());
-            //return yScale(0) - yScale(d.getYScaled());
+            // Really small value close to zero to satisfy both linear and log scales
+    		return yScale(0.00000000000000000001) - yScale(d.getYScaled());
     	})
     	.attr("fill", function(d){
             if(sortedByHost)
@@ -171,6 +155,57 @@ MotifChart.prototype.drawChart = function() {
         });
 
     this.$chart = $svg;
+};
+
+/**
+ * Sets up the axis with a linear scale
+ */
+MotifChart.prototype.linearScale = function() {
+    this.xScale = d3.scale.linear()
+                          .domain([0, this.motifPoints.length]);
+
+    // Create a scale so that the data bars do not go above the chart height
+    this.yScale = d3.scale.linear()
+                          .domain([0, d3.max(this.motifPoints, function(d) { return d.getYScaled(); })]);                 
+
+    // Set up the axes
+    this.xAxis = d3.svg.axis()
+                   .scale(this.xScale)
+                   .orient("bottom")
+                   .ticks(0);
+
+    this.yAxis = d3.svg.axis()
+                   .scale(this.yScale)
+                   .orient("left")
+                   .outerTickSize(0)
+                   .ticks(5);
+};
+
+
+/**
+ * Sets up the axis with a log scale
+ */
+MotifChart.prototype.logScale = function() {
+    // Create a x scale for the axis
+    this.xScale = d3.scale.linear()
+                          .domain([0, this.motifPoints.length]);
+
+    // Create a scale so that the data bars do not go above the chart height                          
+    this.yScale = d3.scale.log()
+                          .base(10)
+                          .domain([1, d3.max(this.motifPoints, function(d) { return d.getYScaled() + 1; })]);
+
+    // Set up the axes
+    this.xAxis = d3.svg.axis()
+                   .scale(this.xScale)
+                   .orient("bottom")
+                   .ticks(0);
+
+    this.yAxis = d3.svg.axis()
+                   .scale(this.yScale)
+                   .orient("left")
+                   .ticks(7, ",.1s")
+                   .tickSize(6, 0); 
 };
 
 /**
