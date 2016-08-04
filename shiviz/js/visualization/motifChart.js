@@ -73,9 +73,14 @@ MotifChart.prototype.drawChart = function() {
     					 .range([0, width]);
 
     // Create a scale so that the data bars do not go above the chart height
-   	var yScale = d3.scale.linear()
-   						 .domain([0, d3.max(motifPoints, function(d) { return d.getYScaled(); })])
+   	var yScale = d3.scale.log()
+                         .base(10)
+   						 .domain([1, d3.max(motifPoints, function(d) { return d.getYScaled() + 1; })])
    					     .range([height, 0]);
+/*    var yScale = d3.scale.linear()
+                         .domain([0, d3.max(motifPoints, function(d) { return d.getYScaled(); })])
+                         .range([height, 0]);*/
+
 
     // Setup the axes 
     var formatY = d3.format(".0");
@@ -88,8 +93,10 @@ MotifChart.prototype.drawChart = function() {
    	var yAxis = d3.svg.axis()
    				  .scale(yScale)
 			      .orient("left")
-                  .outerTickSize(0)
-                  .ticks(5);				     
+                  .ticks(7, ",.1s")
+                  .tickSize(6, 0);		
+/*                  .outerTickSize(0)
+                  .ticks(5);  	*/     
 
     var tip = d3.tip()
   				.attr('class', 'd3-tip')
@@ -132,7 +139,7 @@ MotifChart.prototype.drawChart = function() {
     // Remove the "0" at the bottom of the y-axis
     $svg.selectAll(".tick")
         .filter(function (d) { 
-            return d == 0;  
+            return d == 0 || d == 1;  
         }).remove();
 
     // Insert rectangles for each piece of data in the shifted bar area
@@ -148,7 +155,8 @@ MotifChart.prototype.drawChart = function() {
     	})
     	.attr("width", width / motifPoints.length - barPadding)
     	.attr("height", function(d) {
-    		return yScale(0) - yScale(d.getYScaled());
+    		return yScale(1) - yScale(d.getYScaled());
+            //return yScale(0) - yScale(d.getYScaled());
     	})
     	.attr("fill", function(d){
             if(sortedByHost)
