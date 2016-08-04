@@ -591,6 +591,17 @@ Global.prototype.drawSideBar = function() {
         });
     }
   
+    // Update search chart if there is one
+    var hideTheseHosts = {};
+    hideTheseHosts = this.viewL.getTransformer().getHiddenHosts();
+    
+    if (this.viewR != null && this.getPairwiseView()) 
+        hideTheseHosts = hiddenHosts.concat(this.viewR.getTransformer().getHiddenHosts());
+
+    if(this.searchbar.getMotifChart() != null) {
+        this.searchbar.getMotifChart().redrawChart(hideTheseHosts);
+    }
+
     var hh = Object.keys(hiddenHosts);
     if (hh.length <= 0) {
         return;
@@ -679,15 +690,4 @@ Global.prototype.drawSideBar = function() {
       // bind the hidden host nodes to user input
       global.controller.bindHiddenHosts(host, hiddenHost);     
   });
-
-    hiddenHosts = {};
-    hiddenHosts = this.viewL.getTransformer().getHiddenHosts();
-    
-    if (this.viewR != null && this.getPairwiseView()) 
-        hiddenHosts = hiddenHosts.concat(this.viewR.getTransformer().getHiddenHosts());
-
-    if(this.searchbar.getMotifChart() != null) {
-        this.searchbar.getMotifChart().redrawChart(hiddenHosts);
-    }
-
 };

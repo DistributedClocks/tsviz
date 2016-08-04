@@ -64,10 +64,9 @@ MotifChart.prototype.drawChart = function() {
     while (temp > 10) {
         temp /= 10;
         axisWidth++;
-        console.log(axisWidth);
     }
 
-    axisWidth *= 12;
+    axisWidth = axisWidth * 12 + 8;
 
     // Chart sizes
     var barPadding = 0; // Padding between bars
@@ -115,7 +114,7 @@ MotifChart.prototype.drawChart = function() {
     	.attr("transform", "translate(" + (padding.left - 2) + ",0)")
     	.call(yAxis)
     	.append("text")
-    	.attr("x", -22)
+    	.attr("x", -18)
     	.attr("y", height - 12)
     	.attr("dy", ".71em")
     	.text($("#graphtimescaleviz").val().trim());
@@ -135,12 +134,19 @@ MotifChart.prototype.drawChart = function() {
     		return i * (width / motifPoints.length);
     	})
     	.attr("y", function(d) {
-    		return yScale(d.getYScaled());
+    		var result = yScale(d.getYScaled());
+            if (result < 0 || result == "NaN" || result == "Infinity")
+                return 0;
+            else
+                return result;
     	})
     	.attr("width", width / motifPoints.length - barPadding)
-    	.attr("height", function(d) {
-            // Really small value close to zero to satisfy both linear and log scales
-    		return yScale(0.00000000000000000001) - yScale(d.getYScaled());
+    	.attr("height", function(d) { 
+    		var result = ((yScale.type == "LOG") ? yScale(1) : yScale(0)) - yScale(d.getYScaled());
+            if (result < 0 || result == "NaN" || result == "Infinity")
+                return 0;
+            else 
+                return result;
     	})
     	.attr("fill", function(d){
             if(sortedByHost)
@@ -178,7 +184,9 @@ MotifChart.prototype.linearScale = function() {
                    .scale(this.yScale)
                    .orient("left")
                    .outerTickSize(0)
-                   .ticks(5);
+                   .ticks(6);
+
+    this.yScale.type = "LINEAR";
 };
 
 
@@ -204,8 +212,9 @@ MotifChart.prototype.logScale = function() {
     this.yAxis = d3.svg.axis()
                    .scale(this.yScale)
                    .orient("left")
-                   .ticks(7, ",.1s")
-                   .tickSize(6, 0); 
+                   .ticks(7, ",.1s");
+
+    this.yScale.type = "LOG";
 };
 
 /**
@@ -221,8 +230,8 @@ MotifChart.prototype.redrawChart = function(hiddenHosts) {
 
     this.removeChart();
 
-    // Remove motifs start start with the hidden hosts
-    for (var i = 0; i < this.motifPoints.length; i++) {
+    // Remove motifs start with the hidden hosts
+    for (var i = 0; i < temp.length; i++) {
         if(hiddenHosts.includes(temp[i].getHost())){
             hiddenMotifPoints.push(temp[i]);
         }
@@ -234,9 +243,19 @@ MotifChart.prototype.redrawChart = function(hiddenHosts) {
     this.motifPoints = motifPoints;
     this.hiddenMotifPoints = hiddenMotifPoints;
 
+    this.linearScale();
     this.sortByHost();
     this.drawChart();
     
+    this.linearScale();
+    this.sortByTime(true);
+    this.drawChart();
+
+    this.logScale();
+    this.sortByHost();
+    this.drawChart();
+    
+    this.logScale();
     this.sortByTime(true);
     this.drawChart();
 };
@@ -246,9 +265,6 @@ MotifChart.prototype.redrawChart = function(hiddenHosts) {
  */
 MotifChart.prototype.sortByHost = function() {
     var motifPoints = this.motifPoints;
-
-    console.log("Number of motifs before sort: " + this.motifPoints.length);
-
     var allSorted = [];
     var i = 0;
 
@@ -281,10 +297,6 @@ MotifChart.prototype.sortByHost = function() {
         allSorted.push(sort);
     }
 
-    for (var x = 0; x < motifPoints.length; x++) {
-        console.log("Check hosts: " + motifPoints[x].getHost());
-    }
-
     allSorted.sort(function(a, b) {
         // Sort the individual host arrays by the longest motif in descending time
         return (b[0].getY() - a[0].getY());
@@ -302,8 +314,6 @@ MotifChart.prototype.sortByHost = function() {
 
     this.setXValues();
     this.sortedByHost = true;
-
-    console.log("Number of motifs: " + this.motifPoints.length);
 };
 
 /**
@@ -312,8 +322,6 @@ MotifChart.prototype.sortByHost = function() {
  * @param {boolean} true for descending, false for ascending
  */
 MotifChart.prototype.sortByTime = function(descending) {
-    console.log("Number of motifs before sort: " + this.motifPoints.length);
-
     this.motifPoints.sort(function(a, b) {
         // Descending order: largest y to smallest y
         return (descending ? b.getY() - a.getY() : a.getY() - b.getY());
@@ -321,8 +329,6 @@ MotifChart.prototype.sortByTime = function(descending) {
 
     this.setXValues();
     this.sortedByHost = false;
-
-    console.log("Number of motifs: " + this.motifPoints.length);
 };
 
 /**
