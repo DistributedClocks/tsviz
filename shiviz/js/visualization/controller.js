@@ -1005,7 +1005,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
                     .attr("y2", 0)
                     .attr("stroke-dasharray", "5,5")
                     .attr("stroke-width", "2px")
-                    .attr("stroke", "#000")
+                    .attr("stroke", "#999")
                     .attr("z-index", 120);
             }
         }
