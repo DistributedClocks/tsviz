@@ -249,26 +249,26 @@ MotifChart.prototype.sortByHost = function() {
 
     console.log("Number of motifs before sort: " + this.motifPoints.length);
 
-    motifPoints.sort(function(a, b) {
-        // Hosts must be the same
-        return (b.getHost() == a.getHost());
-    });
-
     var allSorted = [];
     var i = 0;
 
     // Separate motifs by host and sort them by descending time
-    while (i < motifPoints.length) {
+    while (motifPoints.length > 0) {
         var sort = [];
 
-        // Add the first motif of this host and then go to the next one
-        sort.push(motifPoints[i]);
-        i++;
+        var i = 0;
 
-        // Compare current motif's host with the previous one, if its the same add to the array
-        while (i < motifPoints.length && motifPoints[i - 1].getHost() == motifPoints[i].getHost()) {
-            sort.push(motifPoints[i]);
-            i++;
+        // Add the first motif of this host and then go to the next one
+        var host = motifPoints[i].getHost();
+        sort.push(motifPoints[i]);
+        motifPoints.splice(i, 1);
+
+        for (i; i < motifPoints.length; i ++) {
+            if (motifPoints[i].getHost() == host) {
+                sort.push(motifPoints[i]);
+                motifPoints.splice(i, 1);
+                i--;
+            }
         }
 
         // Sort the new array
@@ -279,6 +279,10 @@ MotifChart.prototype.sortByHost = function() {
 
         // Add sorted motifs with same host to final array
         allSorted.push(sort);
+    }
+
+    for (var x = 0; x < motifPoints.length; x++) {
+        console.log("Check hosts: " + motifPoints[x].getHost());
     }
 
     allSorted.sort(function(a, b) {
