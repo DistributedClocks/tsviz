@@ -654,9 +654,9 @@ Controller.prototype.bindEdges = function(edges) {
     edges.call(tip);
 
     edges.on("click", function(e) {
-        controller.showEdgeDialog(e, this);
+        controller.selectEdge(e, this);
         controller.clearSidebarInfo();
-        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
+        controller.formatEdgeInfo(e, $(".event"));
     }).on("mouseover", function(e) {
 
         // Calculate offset for tip
@@ -835,7 +835,7 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
  * @param {VisualEdge} e The VisualEdge that is selected
  * @param {DOMElement} elem The SVG edge element
  */
-Controller.prototype.showEdgeDialog = function(e, elem) {
+Controller.prototype.selectEdge = function(e, elem) {
     // Don't do anything if the source node is the head node
     if(e.getSourceVisualNode().getNode().isHead()) {
         return;
@@ -1164,26 +1164,14 @@ Controller.prototype.clearSidebarInfo = function() {
 /**
  * Formats the edge information for the container
  * 
- * @param {VisualNode} sourceNode 
- * @param {VisualNode} targetNode 
+ * @param {VisualEdge} edge
  * @param {infoContainer} either the sidebar or dialog 
  */
-Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoContainer) {
-    // Calculate time difference between source and target nodes
-    // Compress to fit in number type
-    
-    var node1 = sourceNode.getNode().getFirstLogEvent().fields.timestamp;
-    var node2 = targetNode.getNode().getFirstLogEvent().fields.timestamp;
-    node1 = Number(node1.slice(3, node1.length));
-    node2 = Number(node2.slice(3, node2.length));
+Controller.prototype.formatEdgeInfo = function(edge, infoContainer) {
+    var sourceNode = edge.getSourceVisualNode();
+    var targetNode = edge.getTargetVisualNode();
 
-    var difference = Math.abs(node2 - node1);
-
-    // Scale the difference
-    if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-    else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-    else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
-
+    var difference = edge.getTimeDifference();
 
     // Add names to the dialog and colour the circles
     infoContainer.find(".source").find(".name").text(sourceNode.getText());
@@ -1194,7 +1182,14 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
         .attr("cx", 5)
         .attr("cy", 5)
         .attr("r", 5)
-        .style("fill", sourceNode.getFillColor());
+        .style("fill", function(d) {
+            if(sourceNode.getNode().isHead()) {
+                return "white";
+            }
+            else {
+                return sourceNode.getFillColor();
+            }
+        });
 
     infoContainer.find(".target").find(".name").text(targetNode.getText());
     d3.select(".target").select(".circle").select("svg")
@@ -1233,7 +1228,7 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     }).text("Time:");
     $v = $("<td>", {
         "class": "value"
-    }).text(difference + $("#graphtimescaleviz").val().trim());
+    }).text(difference);
 
     $f.append($t).append($v);
     $fields.append($f);
@@ -1251,18 +1246,21 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     $f.append($t).append($v);
     $fields.append($f);
 
-    // Add the line to connect the two circles together
-    var positionTop = $("#sidebar .info .source .circle circle").offset().top - $(window).scrollTop();
-    var positionBottom = $("#sidebar .info .target .circle circle").offset().top - $(window).scrollTop();
 
-    d3.select(".nodeConnection").select("svg").select("line")
-                                .attr("stroke", "dimgrey")
-                                .attr("stroke-width", 2)
-                                .attr("opacity", 0.25)
-                                .attr("x1", 8)
-                                .attr("y1", positionTop - 22)
-                                .attr("x2", 8)
-                                .attr("y2", positionBottom - 32);
+    if(!sourceNode.getNode().isHead()) {
+        // Add the line to connect the two circles together
+        var positionTop = $("#sidebar .info .source .circle circle").offset().top - $(window).scrollTop();
+        var positionBottom = $("#sidebar .info .target .circle circle").offset().top - $(window).scrollTop();
+
+        d3.select(".nodeConnection").select("svg").select("line")
+                                    .attr("stroke", "dimgrey")
+                                    .attr("stroke-width", 2)
+                                    .attr("opacity", 0.25)
+                                    .attr("x1", 8)
+                                    .attr("y1", positionTop - 22)
+                                    .attr("x2", 8)
+                                    .attr("y2", positionBottom - 32);
+    }
 };
 
 Controller.prototype.bindScroll = function (){
