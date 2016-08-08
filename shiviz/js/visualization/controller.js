@@ -658,10 +658,6 @@ Controller.prototype.bindEdges = function(edges) {
         controller.clearSidebarInfo();
         controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     }).on("mouseover", function(e) {
-        // Don't update hover if the source node is null
-        if(e.getSourceVisualNode().getNode().isHead()) {
-            return;
-        }
 
         // Calculate offset for tip
         var horizontalOffset = 0

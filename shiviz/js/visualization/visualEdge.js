@@ -234,12 +234,19 @@ VisualEdge.prototype.setOpacity = function(newOpacity) {
 VisualEdge.prototype.getTimeDifference = function() {
     // Calculate time difference between source and target nodes
     // Compress to fit in number type
-    var sourceTime = this.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-    var targetTime = this.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-    sourceTime = Number(sourceTime.slice(3, sourceTime.length));
-    targetTime = Number(targetTime.slice(3, targetTime.length));
-    
-    var difference = Math.abs(sourceTime - targetTime);
+    var difference;
+
+    if (this.getSourceVisualNode().getNode().isHead()) {
+        difference = 0;
+    }
+    else {
+        var sourceTime = this.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+        var targetTime = this.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+        sourceTime = Number(sourceTime.slice(3, sourceTime.length));
+        targetTime = Number(targetTime.slice(3, targetTime.length));
+        
+        difference = Math.abs(sourceTime - targetTime);
+    }
 
     if($("#graphtimescaleviz").val().trim() == "ns") return difference + " ns";
     else if($("#graphtimescaleviz").val().trim() == "us") return difference / 1000 + " μs";
