@@ -66,11 +66,13 @@
 			var scaleEnd = 0;
 
 			height = svg.attr("height");
+
 			var ruler = d3.selectAll(".ruler.vRule").append("svg")
 	        .attr("class", "axisSVG")
 	        .attr("height", height)
-	        .attr("width", "50px")
+	        .attr("width", "50px");
 
+	        var graph = d3.select("#graphSVG");
 	        timeStart = 0;
 			for(var i = 0; i < numberOfCompressions + 1; i++){
 				//Calculate and adjust the time span and the minimum distance to the scale selected by the user
@@ -88,12 +90,16 @@
 			    scaleStart = scaleTime(scaleStart);
 			    scaleEnd = scaleTime(scaleEnd);
 			    scaleMinDistance = scaleTime(scaleMinDistance);
+			    timeSpan = scaleTime(timeSpan);
 
 			    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
 
 			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
 		        height = rangeEnd - rangeStart;
 
+		        // console.log(compressions);
+
+		        
 		        //Draw ruler
 				ruler.append("g")
 		        .attr("class", "y axis")
@@ -101,6 +107,32 @@
 		        .call(axis);
 
 		        if(i < numberOfCompressions){
+		        	scaleStart = (compressions[i].original.start/minDistPix) * minDistance;
+		        	scaleEnd = (compressions[i].original.end/minDistPix) * minDistance;
+		        	var compTime = scaleEnd - scaleStart;
+		        	console.log(compTime);
+		        	compTime = scaleTime(compTime);
+		        	console.log(compTime);
+		        	// var rect = graph.append("rect")
+			        // .attr("x", "20")
+			        // .attr("y", compressions[i].start + 45)
+			        // .attr("width", "50px")
+			        // .attr("height", "20px")
+			        // .attr("style", "fill:#999; ");
+
+			        // rect.append("text")
+			        // .attr("x", "50%")
+			        // .attr("y", "50%")
+			        // .attr("fill", "#FFF")
+			        // .text(timeSpan.toString() + $("#graphtimescaleviz").val().trim());
+
+			        var timedif = graph.append("text")
+			        .attr("x", "20")
+			        .attr("y", compressions[i].start + 45)
+			        .attr("fill", "#000")
+			        // .attr("style")
+			        .text(compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
+
 		        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
 		        	rangeStart = compressions[i].end;
 		     	}
