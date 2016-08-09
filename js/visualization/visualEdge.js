@@ -50,7 +50,6 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
     /** @private */
     this.opacity;
-    this.setOpacity(0.25);
 
     this.setDefaultAttributes();
     
@@ -58,8 +57,10 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
         "x1": sourceVisualNode.getX(),
         "y1": sourceVisualNode.getY(),
         "x2": targetVisualNode.getX(),
-        "y2": targetVisualNode.getY()
+        "y2": targetVisualNode.getY(),
+        "shape-rendering": "auto"
     }); 
+
     this.$svg.append(this.$line);
 
     this.intervals = [];
