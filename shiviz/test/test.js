@@ -293,7 +293,7 @@ testQuery("precedence query test 2", "a || (b && c)", "asdf", {}, true);
 function testQuery(description, query, log, fields, expected) {
     assert(description, function() {
         var vt = new VectorTimestamp({"a": 1}, "a");
-        var le = new LogEvent(log, vt, 1, fields, 0);
+        var le = new LogEvent(log, vt, 1, fields);
         
         try{
         var lem = new LogEventMatcher(query);

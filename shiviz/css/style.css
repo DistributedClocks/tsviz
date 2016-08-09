@@ -338,40 +338,27 @@ section.input .left {
   width: 70%;
   text-indent: 1px;
 }
-#graph .vRule .tickLabel span {
-  display: block;
-  position: absolute;
-  
-  top: 1px;
-  right: 0px;
-  margin-right: 18px;
-  
-  /*-webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg);
-  -o-transform: rotate(-90deg);
-  transform: rotate(-90deg);*/
-  
-  -webkit-transform-origin: top right;
-  -moz-transform-origin: top right;
-  -ms-transform-origin: top right;
-  -o-transform-origin: top right;
-  transform-origin: top right;
-  
-}
-#graph .vRule .tickMajor {
-  position: absolute;
-  right: 0px;
-  height: 1px;
-  /*width: 6px;*/
-  width: 35%;
-}
 
-#graph .vRule .tickMinor {
-  position: absolute;
+g .tick text{
+  /*display: block;*/
+  /*position: absolute;*/
+  
+  /*bottom: 10px;
   right: 0px;
-  height: 1px;
-  width: 17.5%;
+  margin-right: 18px;*/
+  
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  
+  /*-webkit-transform-origin: 0 5px 0;
+  -moz-transform-origin: 0 5px 0;
+  -ms-transform-origin: 0 5px 0;
+  -o-transform-origin: 0 5px 0;
+  transform-origin: 0 5px 0;*/
+  
 }
 
 /*   END OF RULER    */

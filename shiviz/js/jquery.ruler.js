@@ -1,6 +1,127 @@
 
 ;(function( $ ){
 
+	function drawRuler(visualGraph, layout, svg){
+
+		var compressions = visualGraph.compressedParts;
+		var numberOfCompressions = compressions.length;
+		var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
+		var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
+		var origTimeSpan = timeEnd - timeStart;
+		var timeSpan = 0;
+		var scaleMinDistance = 0;
+		var scale = {};
+		var axis = {};
+		var height = 0;
+
+		if(numberOfCompressions == 0){ //If there are no compressed intervals
+			//Calculate and adjust the time span and the minimum distance to the scale selected by the user
+			timeSpan = timeEnd - timeStart;
+			scaleMinDistance = visualGraph.minDistance;
+
+		    switch($("#graphtimescaleviz").val().trim()){
+		        case "ns":
+		        break;
+		        case "us":
+		        timeSpan /= 1000; 
+		        scaleMinDistance /= 1000;
+		        break;
+		        case "ms":
+		        timeSpan /= 1000000; 
+		        scaleMinDistance /= 1000000;
+		        break;
+		        case "s":
+		        timeSpan /= 1000000000; 
+		        scaleMinDistance /= 1000000000;
+		        break;
+		    }
+		    //Generate the axis scale
+		    scale = d3.scale.ordinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([layout.rangeStart,layout.rangeEnd]);
+		    //Generate the axis
+		    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
+	        height = svg.attr("height");
+
+	        //Draw ruler
+	       	d3.selectAll(".ruler.vRule svg").remove();
+			var ruler = d3.selectAll(".ruler.vRule").append("svg")
+	        .attr("class", "axisSVG")
+	        .attr("height", height)
+	        .attr("width", "50px").append("g")
+	        .attr("class", "y axis")
+	        .attr("transform", "translate(40,0)")
+	        .call(axis);
+
+		}else{ // If there are compressed intervals
+			d3.selectAll(".ruler.vRule svg").remove();
+
+			
+			var minDistPix = layout.minDistancePixels;
+			var minDistance = visualGraph.minDistance;
+			var rangeStart = layout.rangeStart;
+			var rangeEnd = 0;
+			var scaleStart = 0;
+			var scaleEnd = 0;
+
+			height = svg.attr("height");
+			var ruler = d3.selectAll(".ruler.vRule").append("svg")
+	        .attr("class", "axisSVG")
+	        .attr("height", height)
+	        .attr("width", "50px")
+
+	        timeStart = 0;
+			for(var i = 0; i < numberOfCompressions + 1; i++){
+				//Calculate and adjust the time span and the minimum distance to the scale selected by the user
+				if(i == numberOfCompressions) timeEnd = origTimeSpan;
+				else timeEnd = (compressions[i].original.start/minDistPix) * minDistance;
+
+				timeSpan = timeEnd - timeStart;
+				scaleStart = timeStart;
+				scaleEnd = timeStart + timeSpan;
+
+				scaleMinDistance = visualGraph.minDistance;
+				rangeEnd = rangeStart + ((timeSpan / minDistance) * minDistPix);
+
+			    switch($("#graphtimescaleviz").val().trim()){
+			        case "ns":
+			        break;
+			        case "us":
+			        if(scaleStart != 0) scaleStart /= 1000;
+			        scaleEnd /= 1000; 
+			        scaleMinDistance /= 1000;
+			        break;
+			        case "ms":
+			        if(scaleStart != 0) scaleStart /= 1000000;
+			        scaleEnd /= 1000000;
+			        scaleMinDistance /= 1000000;
+			        break;
+			        case "s":
+			        if(scaleStart != 0) scaleStart /= 1000000000;
+			        scaleEnd /= 1000000000;
+			        scaleMinDistance /= 1000000000;
+			        break;
+			    }
+			    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
+
+			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
+		        height = rangeEnd - rangeStart;
+
+		        //Draw ruler
+				ruler.append("g")
+		        .attr("class", "y axis")
+		        .attr("transform", "translate(40,0)")
+		        .call(axis);
+
+		        if(i == numberOfCompressions) timeStart = 0;
+		        else{
+		        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
+		        	rangeStart = compressions[i].end;
+		     	}
+
+			}
+
+		}
+	}
+
 	$.fn.ruler = function(view) {
 	
 		var defaults = {
@@ -15,127 +136,10 @@
 
 		//WINDOW RESIZE
 		$(window).resize(function(e){
+
 			var $vRule = $('.vRule');
 			$vRule.empty().height(0).outerHeight($("#graphSVG").height());
-
-			var timeStart = Number(view.getVisualModel().timeRange[0].slice(3, view.getVisualModel().timeRange[0].length));
-    		var timeEnd = Number(view.getVisualModel().timeRange[1].slice(3, view.getVisualModel().timeRange[1].length));
-    		var origTimeSpan = timeEnd - timeStart;
-    		var timeSpan = 0;
-    		var scaleMinDistance = 0;
-    		var scale = {};
-    		var axis = {};
-    		var height = 0;
-
-    		if(view.getVisualModel().compressedParts.length == 0){
-    			//Calculate and adjust the time span and the minimum distance to the scale selected by the user
-    			timeSpan = timeEnd - timeStart;
-    			scaleMinDistance = view.getVisualModel().minDistance;
-
-			    switch($("#graphtimescaleviz").val().trim()){
-			        case "ns":
-			        break;
-			        case "us":
-			        timeSpan /= 1000; 
-			        scaleMinDistance /= 1000;
-			        break;
-			        case "ms":
-			        timeSpan /= 1000000; 
-			        scaleMinDistance /= 1000000;
-			        break;
-			        case "s":
-			        timeSpan /= 1000000000; 
-			        scaleMinDistance /= 1000000000;
-			        break;
-			    }
-			    //Generate the axis scale
-			    scale = d3.scale.ordinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([view.layout.rangeStart,view.layout.rangeEnd]);
-			    //Generate the axis
-			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
-		        height = view.$svg.attr("height");
-
-		        //Draw ruler
-		       	d3.selectAll(".ruler.vRule svg").remove();
-				var ruler = d3.selectAll(".ruler.vRule").append("svg")
-		        .attr("class", "axisSVG")
-		        .attr("height", height)
-		        .attr("width", "50px").append("g")
-		        .attr("class", "y axis")
-		        .attr("transform", "translate(40,0)")
-		        .call(axis);
-
-    		}else{
-    			d3.selectAll(".ruler.vRule svg").remove();
-
-    			var nCompressions =view.getVisualModel().compressedParts.length;
-    			var compressions = view.getVisualModel().compressedParts;
-    			var minDistPix = view.layout.minDistancePixels;
-    			var minDistance = view.getVisualModel().minDistance;
-    			var rangeStart = view.layout.rangeStart;
-    			var rangeEnd = 0;
-    			var scaleStart = 0;
-    			var scaleEnd = 0;
-
-    			height = view.$svg.attr("height");
-    			var ruler = d3.selectAll(".ruler.vRule").append("svg")
-		        .attr("class", "axisSVG")
-		        .attr("height", height)
-		        .attr("width", "50px")
-
-		        timeStart = 0;
-    			for(var i = 0; i < nCompressions + 1; i++){
-    				//Calculate and adjust the time span and the minimum distance to the scale selected by the user
-    				if(i == nCompressions) timeEnd = origTimeSpan;
-    				else timeEnd = (compressions[i].original.start/minDistPix) * minDistance;
-
-    				timeSpan = timeEnd - timeStart;
-    				scaleStart = timeStart;
-    				scaleEnd = timeStart + timeSpan;
-
-	    			scaleMinDistance = view.getVisualModel().minDistance;
-	    			rangeEnd = rangeStart + ((timeSpan / minDistance) * minDistPix);
-
-				    switch($("#graphtimescaleviz").val().trim()){
-				        case "ns":
-				        break;
-				        case "us":
-				        if(scaleStart != 0) scaleStart /= 1000;
-				        scaleEnd /= 1000; 
-				        scaleMinDistance /= 1000;
-				        break;
-				        case "ms":
-				        if(scaleStart != 0) scaleStart /= 1000000;
-				        scaleEnd /= 1000000;
-				        scaleMinDistance /= 1000000;
-				        break;
-				        case "s":
-				        if(scaleStart != 0) scaleStart /= 1000000000;
-				        scaleEnd /= 1000000000;
-				        scaleMinDistance /= 1000000000;
-				        break;
-				    }
-				    			    
-				    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
-
-				    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
-			        height = rangeEnd - rangeStart;
-
-			        //Draw ruler
-					ruler.append("g")
-			        .attr("class", "y axis")
-			        .attr("transform", "translate(40,0)")
-			        .call(axis);
-
-			        if(i == nCompressions) timeStart = 0;
-			        else{
-			        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
-			        	rangeStart = compressions[i].end;
-			     	}
-
-    			}
-
-    		}
-			
+			drawRuler(view.getVisualModel(), view.layout, view.$svg);
 
 		});//resize
 		
@@ -143,7 +147,6 @@
 			var $this = $(this);
 
 			// Attach rulers
-			// console.log(view);
 			if (settings.vRuleSize > 0) {
 				var oldWidth = $this.outerWidth();
 				$(vRule).width(settings.vRuleSize).height($("#graphSVG").height()).prependTo($this);
@@ -163,126 +166,7 @@
 				$(magnification).appendTo($corner);
 			}
 
-			var timeStart = Number(view.getVisualModel().timeRange[0].slice(3, view.getVisualModel().timeRange[0].length));
-    		var timeEnd = Number(view.getVisualModel().timeRange[1].slice(3, view.getVisualModel().timeRange[1].length));
-    		var origTimeSpan = timeEnd - timeStart;
-    		var timeSpan = 0;
-    		var scaleMinDistance = 0;
-    		var scale = {};
-    		var axis = {};
-    		var height = 0;
-
-    		if(view.getVisualModel().compressedParts.length == 0){
-    			//Calculate and adjust the time span and the minimum distance to the scale selected by the user
-    			timeSpan = timeEnd - timeStart;
-    			scaleMinDistance = view.getVisualModel().minDistance;
-
-			    switch($("#graphtimescaleviz").val().trim()){
-			        case "ns":
-			        break;
-			        case "us":
-			        timeSpan /= 1000; 
-			        scaleMinDistance /= 1000;
-			        break;
-			        case "ms":
-			        timeSpan /= 1000000; 
-			        scaleMinDistance /= 1000000;
-			        break;
-			        case "s":
-			        timeSpan /= 1000000000; 
-			        scaleMinDistance /= 1000000000;
-			        break;
-			    }
-			    //Generate the axis scale
-			    scale = d3.scale.ordinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([view.layout.rangeStart,view.layout.rangeEnd]);
-			    //Generate the axis
-			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
-		        height = view.$svg.attr("height");
-
-		        //Draw ruler
-		       	d3.selectAll(".ruler.vRule svg").remove();
-				var ruler = d3.selectAll(".ruler.vRule").append("svg")
-		        .attr("class", "axisSVG")
-		        .attr("height", height)
-		        .attr("width", "50px").append("g")
-		        .attr("class", "y axis")
-		        .attr("transform", "translate(40,0)")
-		        .call(axis);
-
-    		}else{
-    			d3.selectAll(".ruler.vRule svg").remove();
-
-    			var nCompressions =view.getVisualModel().compressedParts.length;
-    			var compressions = view.getVisualModel().compressedParts;
-    			var minDistPix = view.layout.minDistancePixels;
-    			var minDistance = view.getVisualModel().minDistance;
-    			var rangeStart = view.layout.rangeStart;
-    			var rangeEnd = 0;
-    			var scaleStart = 0;
-    			var scaleEnd = 0;
-
-    			height = view.$svg.attr("height");
-    			var ruler = d3.selectAll(".ruler.vRule").append("svg")
-		        .attr("class", "axisSVG")
-		        .attr("height", height)
-		        .attr("width", "50px")
-
-		        timeStart = 0;
-    			for(var i = 0; i < nCompressions + 1; i++){
-    				//Calculate and adjust the time span and the minimum distance to the scale selected by the user
-    				if(i == nCompressions) timeEnd = origTimeSpan;
-    				else timeEnd = (compressions[i].original.start/minDistPix) * minDistance;
-
-    				timeSpan = timeEnd - timeStart;
-    				scaleStart = timeStart;
-    				scaleEnd = timeStart + timeSpan;
-
-	    			scaleMinDistance = view.getVisualModel().minDistance;
-	    			rangeEnd = rangeStart + ((timeSpan / minDistance) * minDistPix);
-
-				    switch($("#graphtimescaleviz").val().trim()){
-				        case "ns":
-				        break;
-				        case "us":
-				        if(scaleStart != 0) scaleStart /= 1000;
-				        scaleEnd /= 1000; 
-				        scaleMinDistance /= 1000;
-				        break;
-				        case "ms":
-				        if(scaleStart != 0) scaleStart /= 1000000;
-				        scaleEnd /= 1000000;
-				        scaleMinDistance /= 1000000;
-				        break;
-				        case "s":
-				        if(scaleStart != 0) scaleStart /= 1000000000;
-				        scaleEnd /= 1000000000;
-				        scaleMinDistance /= 1000000000;
-				        break;
-				    }
-				    			    
-				    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
-
-				    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
-			        height = rangeEnd - rangeStart;
-
-			        //Draw ruler
-					ruler.append("g")
-			        .attr("class", "y axis")
-			        .attr("transform", "translate(40,0)")
-			        .call(axis);
-
-			        if(i == nCompressions) timeStart = 0;
-			        else{
-			        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
-			        	rangeStart = compressions[i].end;
-			     	}
-
-    			}
-
-    		}
-
-			// var axis = view.layout.axis;
-	        
+			drawRuler(view.getVisualModel(), view.layout, view.$svg);
 
 		});//each
 	};//ruler

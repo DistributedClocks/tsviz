@@ -145,7 +145,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 		intervals[i].minTargetY -= cumulativeShift;
 
 		compression.start = intervals[i].maxSourceY;
-		compression.end = compression.start + 150;
+		compression.end = compression.start + 95;
 		compression.shiftAmount = ((intervals[i].minTargetY) - compression.end);
 
 		//Shift nodes that are positioned after the compression upwards
@@ -188,6 +188,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 		for(var k = 0; k < e.compressions.length; k++){
 
 			var lineBreak = {};
+			//Define stoppers for the intervall
 	        lineBreak.start = Util.svgElement("line");
 	        lineBreak.end = Util.svgElement("line");
 	        lineBreak.start.attr({

@@ -140,5 +140,4 @@ BuilderGraph.fromVectorTimestamps = function(vectorTimestamps, hostConstraints) 
     });
 
     return newGraph;
-
 };

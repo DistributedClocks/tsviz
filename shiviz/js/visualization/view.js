@@ -46,7 +46,7 @@ function View(model, hostPermutation, label, minDistance, collapseLocal) {
 
     /** @private */
     this.transformer = new Transformer(this.collapseLocal);
-    
+
     /** @private */
     this.controller = null;
 }
@@ -317,6 +317,5 @@ View.prototype.draw = function(viewPosition) {
                 view.logTable.append($div);
             }
         }
-
     }
 };
