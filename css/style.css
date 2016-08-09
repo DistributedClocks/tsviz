@@ -707,7 +707,7 @@ section.input .left {
 }
 
 .visualization table.motifResults td line, #searchbar #panel line, #vizContainer svg line {
-  stroke: "lightgrey";
+  stroke: lightgrey;
   stroke-opacity: 1;
 }
 
