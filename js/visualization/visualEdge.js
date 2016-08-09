@@ -79,10 +79,10 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
 
 
 VisualEdge.prototype.setDefaultAttributes = function() {
-    this.setWidth(2);
+    this.setWidth(1);
     this.setDashLength(0);
-    this.setColor("dimgrey");
-    this.setOpacity(0.25);
+    this.setColor("lightgrey");
+    this.setOpacity(1);
 };
 
 VisualEdge.prototype.getSVG = function() {
