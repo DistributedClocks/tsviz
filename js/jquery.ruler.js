@@ -1,6 +1,22 @@
 
 ;(function( $ ){
 
+	function scaleTime(number){
+		switch($("#graphtimescaleviz").val().trim()){
+	        case "ns":
+	        break;
+	        case "us":
+	        return number / 1000; 
+	        break;
+	        case "ms":
+	        return number / 1000000; 
+	        break;
+	        case "s":
+	        return number / 1000000000; 
+	        break;
+	    }
+	}
+
 	function drawRuler(visualGraph, layout, svg){
 
 		var compressions = visualGraph.compressedParts;
@@ -19,22 +35,9 @@
 			timeSpan = timeEnd - timeStart;
 			scaleMinDistance = visualGraph.minDistance;
 
-		    switch($("#graphtimescaleviz").val().trim()){
-		        case "ns":
-		        break;
-		        case "us":
-		        timeSpan /= 1000; 
-		        scaleMinDistance /= 1000;
-		        break;
-		        case "ms":
-		        timeSpan /= 1000000; 
-		        scaleMinDistance /= 1000000;
-		        break;
-		        case "s":
-		        timeSpan /= 1000000000; 
-		        scaleMinDistance /= 1000000000;
-		        break;
-		    }
+		    timeSpan = scaleTime(timeSpan);
+		    scaleMinDistance = scaleTime(scaleMinDistance);
+
 		    //Generate the axis scale
 		    scale = d3.scale.ordinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([layout.rangeStart,layout.rangeEnd]);
 		    //Generate the axis
@@ -79,27 +82,13 @@
 				scaleEnd = timeStart + timeSpan;
 
 				scaleMinDistance = visualGraph.minDistance;
-				rangeEnd = rangeStart + ((timeSpan / minDistance) * minDistPix);
+				if(i == 0) rangeEnd = ((timeSpan / minDistance) * minDistPix);
+				else rangeEnd = rangeStart + ((timeSpan / minDistance) * minDistPix);
 
-			    switch($("#graphtimescaleviz").val().trim()){
-			        case "ns":
-			        break;
-			        case "us":
-			        if(scaleStart != 0) scaleStart /= 1000;
-			        scaleEnd /= 1000; 
-			        scaleMinDistance /= 1000;
-			        break;
-			        case "ms":
-			        if(scaleStart != 0) scaleStart /= 1000000;
-			        scaleEnd /= 1000000;
-			        scaleMinDistance /= 1000000;
-			        break;
-			        case "s":
-			        if(scaleStart != 0) scaleStart /= 1000000000;
-			        scaleEnd /= 1000000000;
-			        scaleMinDistance /= 1000000000;
-			        break;
-			    }
+			    scaleStart = scaleTime(scaleStart);
+			    scaleEnd = scaleTime(scaleEnd);
+			    scaleMinDistance = scaleTime(scaleMinDistance);
+
 			    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
 
 			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
@@ -111,8 +100,7 @@
 		        .attr("transform", "translate(40,0)")
 		        .call(axis);
 
-		        if(i == numberOfCompressions) timeStart = 0;
-		        else{
+		        if(i < numberOfCompressions){
 		        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
 		        	rangeStart = compressions[i].end;
 		     	}
