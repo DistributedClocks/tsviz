@@ -57,8 +57,7 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
         "x1": sourceVisualNode.getX(),
         "y1": sourceVisualNode.getY(),
         "x2": targetVisualNode.getX(),
-        "y2": targetVisualNode.getY(),
-        "shape-rendering": "auto"
+        "y2": targetVisualNode.getY()
     }); 
 
     this.$svg.append(this.$line);

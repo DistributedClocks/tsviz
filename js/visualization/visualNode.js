@@ -177,7 +177,7 @@ VisualNode.prototype.getX = function() {
  */
 VisualNode.prototype.setX = function(newX) {
     var translateX = this.isStart() ? newX - (Global.HOST_SIZE / 2) : newX;
-    this.x = newX;
+    this.x = newX + 0.5;
     this.$svg.attr("transform", "translate(" + translateX + "," + this.getY() + ")");
 };
 
