@@ -599,7 +599,7 @@ Global.prototype.drawSideBar = function() {
         hideTheseHosts = hiddenHosts.concat(this.viewR.getTransformer().getHiddenHosts());
 
     if(this.searchbar.getMotifChart() != null) {
-        this.searchbar.getMotifChart().redrawChart(hideTheseHosts);
+        this.searchbar.getMotifChart().removeHosts(hideTheseHosts);
     }
 
     var hh = Object.keys(hiddenHosts);

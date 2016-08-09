@@ -19,6 +19,7 @@ function MotifChart(motifNavigator) {
     this.motifNavigator = motifNavigator;
 	this.$chart = null;
     this.sortedByHost = false;
+    this.scaleType = "linear";
 
     this.xScale = null;
     this.yScale = null;
@@ -218,11 +219,11 @@ MotifChart.prototype.logScale = function() {
 };
 
 /**
- * Removes original chart and redraws the chart.
+ * Removes original chart and redraws the chart without the hidden hosts.
  *
  * @param {Array<String>} the hosts that have been hidden
  */
-MotifChart.prototype.redrawChart = function(hiddenHosts) {
+MotifChart.prototype.removeHosts = function(hiddenHosts) {
     // Move all motifs into same place
     var temp = this.motifPoints.concat(this.hiddenMotifPoints);
     var hiddenMotifPoints = [];
@@ -243,6 +244,22 @@ MotifChart.prototype.redrawChart = function(hiddenHosts) {
     this.motifPoints = motifPoints;
     this.hiddenMotifPoints = hiddenMotifPoints;
 
+    if(this.scaleType == "linear") {
+        this.drawLinearChart();
+    }
+    else if(this.scaleType == "logarithmic") {
+        this.drawLogarithmicChart();
+    }
+};
+
+/**
+ * Removes original chart and redraws the linear chart.
+ */
+MotifChart.prototype.drawLinearChart = function() {
+    this.scaleType = "linear";
+
+    this.removeChart();
+
     this.linearScale();
     this.sortByHost();
     this.drawChart();
@@ -251,6 +268,17 @@ MotifChart.prototype.redrawChart = function(hiddenHosts) {
     this.sortByTime(true);
     this.drawChart();
 
+    this.addButtons();
+};
+
+/**
+ * Removes original chart and redraws the linear chart.
+ */
+MotifChart.prototype.drawLogarithmicChart = function() {
+    this.scaleType = "logarithmic";
+
+    this.removeChart();
+
     this.logScale();
     this.sortByHost();
     this.drawChart();
@@ -258,6 +286,29 @@ MotifChart.prototype.redrawChart = function(hiddenHosts) {
     this.logScale();
     this.sortByTime(true);
     this.drawChart();
+
+    this.addButtons();
+};
+
+/** 
+ * Adds radio buttons to chart area to change settings.
+ */
+MotifChart.prototype.addButtons = function() {
+
+    var chart = d3.select(".chart");
+    var motifChart = this;
+
+    button = chart.insert("button")
+        .text("Linear")
+        .on("click", function() {
+            motifChart.drawLinearChart();
+        });
+
+    button = chart.insert("button")
+        .text("Logarithmic")
+        .on("click", function() {
+            motifChart.drawLogarithmicChart();
+        });
 };
 
 /**
@@ -347,6 +398,8 @@ MotifChart.prototype.setXValues = function() {
  * Removes the chart.
  */
 MotifChart.prototype.removeChart = function() {
-	this.$chart.remove();
+	if(this.$chart != null) this.$chart.remove();
+
     d3.select(".chart").selectAll("svg").remove();
+    d3.select(".chart").selectAll("button").remove();
 };
