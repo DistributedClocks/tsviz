@@ -22,6 +22,7 @@
 		var compressions = visualGraph.compressedParts;
 		var numberOfCompressions = compressions.length;
 		var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
+		var smallTimestamp = timeStart;
 		var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
 		var origTimeSpan = timeEnd - timeStart;
 		var timeSpan = 0;
@@ -79,7 +80,7 @@
 				if(i == numberOfCompressions) timeEnd = origTimeSpan;
 				else timeEnd = (compressions[i].original.start/minDistPix) * minDistance;
 
-				timeSpan = timeEnd - timeStart;
+				timeSpan = Math.ceil(timeEnd - timeStart);
 				scaleStart = timeStart;
 				scaleEnd = timeStart + timeSpan;
 
@@ -95,10 +96,8 @@
 			    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
 
 			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
+			    // axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".4g")).orient("left");
 		        height = rangeEnd - rangeStart;
-
-		        // console.log(compressions);
-
 		        
 		        //Draw ruler
 				ruler.append("g")
@@ -107,27 +106,18 @@
 		        .call(axis);
 
 		        if(i < numberOfCompressions){
-		        	scaleStart = (compressions[i].original.start/minDistPix) * minDistance;
-		        	scaleEnd = (compressions[i].original.end/minDistPix) * minDistance;
-		        	var compTime = scaleEnd - scaleStart;
-		        	console.log(compTime);
-		        	compTime = scaleTime(compTime);
-		        	console.log(compTime);
-		        	// var rect = graph.append("rect")
-			        // .attr("x", "20")
-			        // .attr("y", compressions[i].start + 45)
-			        // .attr("width", "50px")
-			        // .attr("height", "20px")
-			        // .attr("style", "fill:#999; ");
+		        	// scaleStart = (compressions[i].original.start/minDistPix) * minDistance;
+		        	// scaleEnd = (compressions[i].original.end/minDistPix) * minDistance;
+		        	
+		        	scaleStart = Number(compressions[i].original.timestart.slice(3, compressions[i].original.timestart.length)) - smallTimestamp;
+		        	scaleEnd = Number(compressions[i].original.timeend.slice(3, compressions[i].original.timeend.length)) - smallTimestamp;
 
-			        // rect.append("text")
-			        // .attr("x", "50%")
-			        // .attr("y", "50%")
-			        // .attr("fill", "#FFF")
-			        // .text(timeSpan.toString() + $("#graphtimescaleviz").val().trim());
+		        	var compTime = scaleEnd - scaleStart;
+
+		        	compTime = scaleTime(compTime);
 
 			        var timedif = graph.append("text")
-			        .attr("x", "20")
+			        .attr("x", "50%")
 			        .attr("y", compressions[i].start + 45)
 			        .attr("fill", "#000")
 			        // .attr("style")

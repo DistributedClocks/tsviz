@@ -56,7 +56,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 		var linkId = model.getEdgeId(node, prev);
 		edge = model.links[linkId];
-		if(((edge.targetVisualNode.getY() - edge.sourceVisualNode.getY()) > this.getThreshold() && (edge.sourceVisualNode.getX() == edge.targetVisualNode.getX()))){
+		if(((edge.targetVisualNode.getY() - edge.sourceVisualNode.getY()) > (this.getThreshold()) && (edge.sourceVisualNode.getX() == edge.targetVisualNode.getX()))){
 			longEdges.push(edge);
 		}
 	}
@@ -72,18 +72,23 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 		var windowStart = edge.sourceVisualNode.getY();
 		interval.maxSourceY = windowStart;
+		interval.startNode = edge.sourceVisualNode;
 		interval.minTargetY = Number.MAX_VALUE;
 		var windowEnd = windowStart + threshold;
 		interval.hosts.push(edge.sourceVisualNode.getHost());
 		interval.edges.push(edge);
 
-		for(var j = 0; j < longEdges.length && j != i; j++){
+		for(var j = 0; j < longEdges.length; j++){
+		// for(var j = 0; j < longEdges.length && j != i; j++){
 			if(longEdges[j].sourceVisualNode.getY() >= windowStart || interval.hosts.length == nhosts){ 
 				break;
 			}
 			if(longEdges[j].sourceVisualNode.getY() <= windowStart && longEdges[j].targetVisualNode.getY() > windowEnd){ //No nodes in the middle of interval
 				//Include edge
-				if(longEdges[j].targetVisualNode.getY() < interval.minTargetY) interval.minTargetY = longEdges[j].targetVisualNode.getY();
+				if(longEdges[j].targetVisualNode.getY() < interval.minTargetY){ //If edge target node position is smaller than current minimum target Y, update
+					interval.minTargetY = longEdges[j].targetVisualNode.getY();
+					interval.endNode = longEdges[j].targetVisualNode;
+				}
 				interval.hosts.push(longEdges[j].sourceVisualNode.getHost());
 				interval.edges.push(longEdges[j]);
 			}
@@ -131,7 +136,6 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 	//COLLAPSE!
 
-
 	var cumulativeShift = 0;
 
 	//Shift nodes up and update common edges
@@ -148,7 +152,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 		compression.end = compression.start + 95;
 		compression.shiftAmount = ((intervals[i].minTargetY) - compression.end);
 
-		//Shift nodes that are positioned after the compression upwards
+		//Shift nodes that are positioned AFTER the compression upwards
 		model.getVisualNodes().forEach(function(visualNode){
 			if(visualNode.getY() > intervals[i].maxSourceY){
 				visualNode.setY(visualNode.getY() - compression.shiftAmount);
@@ -166,8 +170,15 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 			e.compressions.push(compression);
 	        
 		}
+		//Save timestamps delimiting compressed region
+		if(intervals[i].startNode.isCollapsed()) compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[intervals[i].startNode.getNode().getLogEvents().length-1].getFields().timestamp;
+		else compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[0].getFields().timestamp;
+		
+		compression.original.timeend = intervals[i].endNode.getNode().getLogEvents()[0].getFields().timestamp;
+
 		model.compressedParts.push(compression);
 		cumulativeShift += compression.shiftAmount;
+
 	}
 	//Modify edges
 	for(var i = 0; i < edgeCollection.length; i++){

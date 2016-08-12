@@ -823,13 +823,22 @@ svg {
 #vizContainer svg:last-child {
   padding-right: 240px;
 }
-#vizContainer svg g text {
+#vizContainer svg g text { /*TEXT INSIDE THE COLLAPSED NODES*/
   text-anchor: middle;
   font-size: 8pt;
   fill: #fff;
   dominant-baseline: central;
   pointer-events: none;
 }
+
+#vizContainer svg text { /*TEXT INSIDE THE COLLAPSED NODES*/
+  text-anchor: middle;
+  font-size: 12pt;
+  fill: #999;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
 #vizContainer svg g rect {
   fill: transparent;
 }
