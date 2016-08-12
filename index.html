@@ -346,70 +346,7 @@
                 <li class="active">a</li>
             </ul>
         </header>
-       <!-- <div class="left"> -->
-            <!-- <div class="bg"></div> -->
-            <!-- <header class="icon">
-                <ul class="tabs">
-                    <li>h</li>
-                    <li>i</li>
-                    <li class="active">a</li>
-                </ul>
-            </header>
-            <div id="tabs"></div>
-            <ul class="leftTabLinks">
-               <li class="default"><a href="logTab">Log lines</a></li>
-               <li><a href="motifsTab">Motifs</a></li>
-               <li><a href="clusterTab">Clusters</a></li>
-            </ul>
-            <div id="leftTabContent">
-                <div id="logTab">
-                    <table class="log">
-                        <tr></tr>
-                    </table>
-                </div>
-                <div id="clusterTab">
-                    <div id="clusterOption">
-                        <p>Cluster executions by:</p>
-                        <input id="clusterNumProcess" type="checkbox">
-                        <label>number of processes</label><br>
-                        <input id="clusterComparison" type="checkbox">
-                        <label>execution comparison</label>
-                    </div>
-                    <table class="clusterResults">
-                        <tr>
-                            <td><label id="baseLabel">Base execution:</label></td>
-                            <td>
-                                <select class="clusterBase">
-                                    <option id="placeholder" style="display:none" selected>Select a base execution</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <div id="motifsTab">
-                    <div id="motifOption">
-                        <p>Find network motifs:</p>
-                        <input id="twoEvents" type="checkbox">
-                        <label>2-event motifs</label><br>
-                        <input id="threeEvents" type="checkbox">
-                        <label>3-event motifs</label><br>
-                        <input id="fourEvents" type="checkbox">
-                        <label>4-event motifs</label>
-                    </div>
-                    <table class="motifResults">
-                        <tr></tr>
-                    </table>
-                </div>
-            </div> -->
-            <!-- <div class="highlight"></div> -->
-        <!-- </div> -->
-
-        
-            
-
-            <!-- <div id="hostBar"></div>
-            <div id="vizContainer"></div> -->
-        
+      
         <div id="graph">
 
             <div id="searchbar">
@@ -507,54 +444,64 @@
         <div id="sidebar">
             <button class="pairwiseButton">Pairwise</button>
             <button class="diffButton">Show Differences</button>
-            <div class="info">
-                <table class="event">
-                    <tr class="source">
-                        <th class="circle">
-                            <svg width="10" height="10">
-                                <circle cx="5" cy="5" r="5" fill="white" />
-                            </svg>
-                        </th>
-                        <td class="name"></td> 
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <td class="innerTable">
-                            <table class="fields"></table>
-                        </td>
-                    </tr>
-                    <tr class="target">
-                        <th class="circle">
-                            <svg width="10" height="10">
-                                <circle cx="5" cy="5" r="5" fill="white" />
-                            </svg>
-                        </th>
-                        <td class="name"></td> 
-                    </tr>
-                </table>
-            <table class="tdiff"></table>
+	        <div id="nodeInfoToggle" class="separator"><p>Node information</p><hr></div>
+	        <div id="nodeInfoTab">
+	        	<div class="info">
+	                <table class="event">
+	                    <tr class="source">
+	                        <th class="circle">
+	                            <svg width="10" height="10">
+	                                <circle cx="5" cy="5" r="5" fill="white" />
+	                            </svg>
+	                        </th>
+	                        <td class="name"></td> 
+	                    </tr>
+	                    <tr>
+	                        <th></th>
+	                        <td class="innerTable">
+	                            <table class="fields"></table>
+	                        </td>
+	                    </tr>
+	                    <tr class="target">
+	                        <th class="circle">
+	                            <svg width="10" height="10">
+	                                <circle cx="5" cy="5" r="5" fill="white" />
+	                            </svg>
+	                        </th>
+	                        <td class="name"></td> 
+	                    </tr>
+	                </table>
+	            <table class="tdiff"></table>
+	            </div>
+	            <div class="nodeConnection">
+	                <svg width="176px" height="192px">
+	                    <line></line>
+	                </svg>  
+	            </div>
+	        </div>
+            <div id="searchResults">
+	            <div id="searchResultsToggle" class="separator"><p>Search results</p><hr></div>
+	            <div class="chart">
+	            </div>	
             </div>
-            <div class="nodeConnection">
-                <svg width="176px" height="192px">
-                    <line></line>
-                </svg>  
-            </div>
-            <div class="chart">
-            </div>
-            <div class="option">
-                <label>Select a collapsing strategy for the graph:</label><br>
-                <label><input type="radio" id="coll_local_viz" name="coll_str_viz" value="local">local nodes</label><br>
-                <label><input type="radio" id="coll_time_viz" name="coll_str_viz" value="time">close in time</label>
-            </div>
-            <div class="option">
-                <label>Select a value for the smallest time difference in the graph: <input type="text" id="timeunitviz" name="timeunit" value="1"></label>
-                <select id="graphtimescaleviz">
-                    <option value="ns">nanoseconds</option>
-                    <option value="us" >microseconds</option>
-                    <option value="ms">milliseconds</option>
-                    <option value="s">seconds</option>
-                </select>
-                <button id="refreshgraph">Refresh Graph</button>
+            
+            <div id="graphOptionsToggle" class="separator"><p>Graph options</p><hr></div>
+            <div id="graphOptionsTab">
+	            <div class="option">
+	                <label>Select a collapsing strategy for the graph:</label><br>
+	                <label><input type="radio" id="coll_local_viz" name="coll_str_viz" value="local">local nodes</label><br>
+	                <label><input type="radio" id="coll_time_viz" name="coll_str_viz" value="time">close in time</label>
+	            </div>
+	            <div class="option">
+	                <label>Select a value for the smallest time difference in the graph: <input type="text" id="timeunitviz" name="timeunit" value="1"></label>
+	                <select id="graphtimescaleviz">
+	                    <option value="ns">nanoseconds</option>
+	                    <option value="us" >microseconds</option>
+	                    <option value="ms">milliseconds</option>
+	                    <option value="s">seconds</option>
+	                </select>
+	                <button id="refreshgraph">Refresh Graph</button>
+	            </div>
             </div>
         </div>
 

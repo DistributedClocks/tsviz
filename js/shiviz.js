@@ -309,9 +309,9 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
 
         // //Draw ruler
         $("#graph").ruler(views[0]);
-        
+        $("#searchResults").toggle();
         global.getController().bindScroll();
-
+        // console.log($("#gOpToggle"));
     }
     catch (err) {
         this.handleException(err);

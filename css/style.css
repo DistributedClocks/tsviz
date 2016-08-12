@@ -366,7 +366,8 @@ g .tick text{
 .visualization header {
   position: fixed;
   background: #fff;
-  padding: 24pt;
+  /*padding: 24pt;*/ /*ORIGINAL*/
+  padding: 18pt 24pt 30pt 24pt;
   top: 0;
   left: 0;
   z-index: 4;
@@ -579,8 +580,8 @@ g .tick text{
   /*width: calc(100% - 240px);*/
   position: fixed;
   top: 0;
-  height: 2em;
-  padding: 2em 9em 2em 0em; /* Changed here so it would cover graph timelines */
+  height: 4.5em;
+  padding: 1.5em 9em 0 0; /* Changed here so it would cover graph timelines */
   background: #fff;
   z-index: 4;
 }
@@ -982,6 +983,13 @@ svg {
 }
 
 /* Sidebar */
+#sidebar .separator p{
+  text-align: center;
+  font-family: Helvetica;
+  font-size: 9pt;
+  color: #999;
+}
+
 #sidebar .fields, .dialog .info {
   font-size: 10pt;
   border-spacing: 0;
@@ -1041,6 +1049,7 @@ svg {
   padding: 2em;
   box-sizing: border-box;
   position: fixed;
+  overflow-y: auto;
   right: 0;
   top: 0;
   background: #fff;

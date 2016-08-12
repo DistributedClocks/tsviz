@@ -103,6 +103,7 @@ function SearchBar() {
     });
 
     $("#searchButton").on("click", function(e) {
+        $("#searchResults").toggle();
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
             Shiviz.getInstance().visualize(context.getValue(), regexp, "", "order", false);
@@ -111,6 +112,7 @@ function SearchBar() {
             context.query();
         }
         context.hidePanel();
+        $("#graphOptionsTab").toggle();
     });
     
     $("#searchbar #bar .clear").on("click", function() {
@@ -120,6 +122,8 @@ function SearchBar() {
         context.update();
         context.updateLocked = false;
         context.clearMotifsTab();
+        $("#graphOptionsTab").toggle();
+        $("#searchResults").toggle();
         context.global.getController().bindScroll();
     });
 

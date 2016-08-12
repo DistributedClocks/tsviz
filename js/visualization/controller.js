@@ -247,6 +247,10 @@ function Controller(global) {
             $("#baseLabel, .clusterBase").hide();
         }
     });
+
+    $("#graphOptionsToggle").click(function(){
+        $("#graphOptionsTab").toggle("fast");
+    });
 }
 
 /**
@@ -1257,9 +1261,10 @@ Controller.prototype.formatEdgeInfo = function(edge, infoContainer) {
                                     .attr("stroke-width", 2)
                                     .attr("opacity", 0.25)
                                     .attr("x1", 8)
-                                    .attr("y1", positionTop - 22)
+                                    // .attr("y1", positionTop - 22)
+                                    .attr("y1", positionTop - 69)
                                     .attr("x2", 8)
-                                    .attr("y2", positionBottom - 32);
+                                    .attr("y2", positionBottom - 79);
     }
 };
 
