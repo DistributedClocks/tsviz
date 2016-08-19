@@ -74,7 +74,18 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
     var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
     
-    var timeSpan = (timeEnd-timeStart);
+    var timeSpan = (timeEnd - timeStart);
+
+    //CALCULATE MIN DISTANCE NECESSARY TO FIT WHOLE LOG IN ONE SCREEN
+    // var screenSize = $(window).height() - $("#searchbar").outerHeight() - $("#hostBar").outerHeight() - 30;
+    // console.log("Screen size:");
+    // console.log(screenSize);
+    // console.log("Original timespan:");
+    // console.log(timeSpan);
+
+    // var tempminDist = 1 / ((screenSize - 30) / 50) * timeSpan;
+    // console.log("min distance necessary to fit all in one scren:");
+    // console.log(tempminDist);
 
     this.rangeEnd = offset + ((timeSpan / visualGraph.minDistance) * this.minDistancePixels);
     this.rangeStart = offset;

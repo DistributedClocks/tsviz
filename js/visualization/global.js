@@ -447,7 +447,6 @@ Global.prototype.resize = function() {
     var headerWidth = $(".visualization header").outerWidth();
     var sidebarWidth = this.$sidebar.outerWidth();
     var globalWidth = $(window).width() - headerWidth - sidebarWidth;
-    
     $("#searchbar").width(globalWidth);
 
     var widthPerHost = Math.max(Global.MIN_HOST_WIDTH, globalWidth / visibleHosts);
