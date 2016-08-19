@@ -307,11 +307,10 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         global.setHostPermutation(hostPermutation);
         global.drawAll();
 
-        // //Draw ruler
+        //Draw ruler
         $("#graph").ruler(views[0]);
         $("#searchResults").toggle();
         global.getController().bindScroll();
-        // console.log($("#gOpToggle"));
     }
     catch (err) {
         this.handleException(err);

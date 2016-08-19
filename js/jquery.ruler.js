@@ -1,6 +1,55 @@
 
 ;(function( $ ){
 
+	function drawSlider() {
+		//DRAW SLIDER
+		$("#sliderGroup #sliderContainer #slider").labeledslider({
+          value: 100,
+          axis: true,
+          min: 0,
+          max: 500,
+          step: 50,
+        });
+
+        var left = d3.select("#sliderGroup #leftZoom");
+        var right = d3.select("#sliderGroup #rightZoom");
+
+        //DRAW ZOOM OUT SIGN "MINUS"
+        var svg = left.append("svg")
+        .attr("width", "25px")
+        .attr("height", "25px");
+
+        svg.append("line")
+        .attr("y1", "12.5")
+        .attr("y2", "12.5")
+        .attr("x1", "8")
+        .attr("x2", "18")
+        .attr("stroke-width", 2)
+        .attr("stroke", "#999");
+
+        //DRAW ZOOM IN SIGN "PLUS"
+        svg = right.append("svg")
+        .attr("width", "25px")
+        .attr("height", "25px");
+
+        svg.append("line")
+        .attr("y1", "13")
+        .attr("y2", "13")
+        .attr("x1", "8")
+        .attr("x2", "18")
+        .attr("stroke-width", 2)
+        .attr("stroke", "#999");
+
+        svg.append("line")
+        .attr("y1", "8")
+        .attr("y2", "18")
+        .attr("x1", "13")
+        .attr("x2", "13")
+        .attr("stroke-width", 2)
+        .attr("stroke", "#999");
+
+	}
+
 	function scaleTime(number){
 		switch($("#graphtimescaleviz").val().trim()){
 	        case "ns":
@@ -128,7 +177,6 @@
 		     	}
 
 			}
-
 		}
 	}
 
@@ -136,7 +184,6 @@
 	
 		var defaults = {
 			vRuleSize: 45,
-			hRuleSize: 0, // maybe comment out or set to 0
 		};//defaults
 		var settings = $.extend({},defaults);
 		
@@ -150,6 +197,7 @@
 			var $vRule = $('.vRule');
 			$vRule.empty().height(0).outerHeight($("#graphSVG").height());
 			drawRuler(view.getVisualModel(), view.layout, view.$svg);
+			drawSlider();
 
 		});//resize
 		
@@ -177,7 +225,7 @@
 			}
 
 			drawRuler(view.getVisualModel(), view.layout, view.$svg);
-
+			drawSlider();
 		});//each
 	};//ruler
 })( jQuery );

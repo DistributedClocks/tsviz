@@ -128,7 +128,8 @@ button:disabled {
 
 /* Icon nav */
 header.icon {
-  width: 9em;
+  /*width: 9em;*/ /*ORIGINAL*/
+  width: 6em;
   font-family: "Icon";
   font-size: 26pt;
   overflow: hidden;
@@ -582,6 +583,8 @@ g .tick text{
   top: 0;
   height: 4.5em;
   padding: 1.5em 9em 0 0; /* Changed here so it would cover graph timelines */
+  /*padding: 1.5em 0 0 0;*/
+  padding: 1.5em 1.5em 0 0;
   background: #fff;
   z-index: 4;
 }
@@ -621,7 +624,7 @@ g .tick text{
   position: absolute;
   margin-top: 1px;
   /*left: calc(100% - 76pt);*/ /*--ORIGINAL*/
-  left: calc(100% - 182pt);
+  left: calc(100% - 95pt);
   background: white;
   cursor: pointer;
 }
@@ -672,17 +675,18 @@ g .tick text{
 }
 
 #searchbar.results #bar input {
-  width: calc(100% - 140pt);
+  /*width: calc(100% - 140pt);*/
+  width: calc(100% - 52pt);
 }
 #searchbar.results #bar .clear {
   /*left: calc(100% - 180pt);*/ /*--ORIGINAL*/
-  left: calc(100% - 288pt);
+  left: calc(100% - 108pt);
 }
 #searchbar.results #bar .nav {
   display: initial;
 }
 #searchbar.results #panel {
-  width: calc(100% - 140pt + 1px);
+  width: calc(100% - 88px);
 }
 #searchbar.results #searchButton {
   display: none;
@@ -801,6 +805,30 @@ g .tick text{
 }
 #searchbar #panel .out dt {
   margin: 1em 0 .2em;
+}
+
+#searchbar #sliderGroup{
+  margin-top: 10px;
+}
+
+#searchbar #sliderGroup #leftZoom{
+  float: left;
+  text-align: center;
+  width: 5%;
+  height: 100%;
+}
+
+#searchbar  #sliderGroup #sliderContainer{
+  display: inline-block;
+  margin: 0 auto;
+  width: 90%;
+}
+
+#searchbar #sliderGroup #rightZoom{
+  float: right;
+  text-align: center;
+  width: 5%;
+  height: 100%;
 }
 
 svg {

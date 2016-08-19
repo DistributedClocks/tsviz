@@ -10,7 +10,16 @@
     <script src="local_scripts/3.4.11/d3.min.js"></script>
     <script src="local_scripts/d3-axis.v1.min.js"></script>
     <script src="local_scripts/d3.tip.v0.6.3.js"></script>
-    <script src="local_scripts/jquery.min.js"></script>
+    <script src="local_scripts/jquery-3.1.0.min.js"></script>
+    <!-- NON-LABELED SLIDER-->
+    <script src="local_scripts/jquery-ui-1.12.0/jquery-ui.js"></script>
+    <link rel="stylesheet" href="local_scripts/jquery-ui-1.12.0/jquery-ui.css">
+
+    <!-- LABELED SLIDER-->
+    <script src = "local_scripts/jquery.ui.labeledslider.js"></script>
+    <link rel = "stylesheet" href = "local_scripts/jquery.ui.labeledslider.css">
+   <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+   <!-- <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script> -->
 
 
     <!-- ONLINE VERSIONS -->
@@ -361,6 +370,7 @@
                     <span class="nav" id="numFound">3</span>
                     <button class="nav" id="nextButton">&gt;</button>
                 </div>
+                
                 <div id="panel">
                     <ul class="searchTabLinks">
                         <li class="default"><a href="textTab">Text Search</a></li>
@@ -434,6 +444,13 @@
                             </li>
                         </ul>
                     </div>
+                </div>
+                <div id = "sliderGroup">
+                	<div id = "leftZoom" ></div>
+                	<div id = "sliderContainer">
+	                	<div id = "slider" ></div>	            
+	                </div>
+	                <div id = "rightZoom" ></div>
                 </div>
             </div>
             
