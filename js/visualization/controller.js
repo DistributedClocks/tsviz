@@ -74,7 +74,14 @@ function Controller(global) {
         // remove the scrolling behavior for hiding/showing dialog boxes once we click outside the box
         $(window).unbind("scroll"); 
         
-        self.clearSidebarInfo();
+        // Remove event info if the sidebar area wasn't clicked
+        if($(event.target).closest('#sidebar').length) { 
+            // Leave sidebar info
+        }
+        else {
+            // Area other than the sidebar was clicked
+            self.clearSidebarInfo();
+        }
 
         d3.selectAll("circle.sel").each(function(d) {
             $(this).remove();
