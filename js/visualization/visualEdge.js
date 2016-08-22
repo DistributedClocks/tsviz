@@ -75,8 +75,22 @@ function VisualEdge(sourceVisualNode, targetVisualNode) {
     });
     this.$svg.append(this.$mouseOverLine);
     
+    // Find the minimum timestamp
+    if (sourceVisualNode.getNode().isHead()) {
+        // Do nothing
+    }
+    else if (sourceVisualNode.getNode().getFirstLogEvent().fields.timestamp < VisualEdge.minTimestamp) {
+        VisualEdge.minTimestamp = sourceVisualNode.getNode().getFirstLogEvent().fields.timestamp;
+    }
 }
 
+/**
+ * Global variable used to hold the earliest timestamp
+ * 
+ * @private
+ * @static
+ */
+VisualEdge.minTimestamp = Number.MAX_VALUE;
 
 VisualEdge.prototype.setDefaultAttributes = function() {
     this.setWidth(1);
@@ -114,7 +128,7 @@ VisualEdge.prototype.getTargetVisualNode = function() {
 VisualEdge.prototype.updateCoords = function() {
     var attr = $(this.$line).attr('x1');
 
-	// For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
+    // For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
     if (typeof attr !== typeof undefined && attr !== false) {
       // Element has this attribute
         this.$line.attr({
@@ -235,21 +249,23 @@ VisualEdge.prototype.getTimeDifference = function() {
     // Calculate time difference between source and target nodes
     // Compress to fit in number type
     var difference;
+    var sourceTime;
 
     if (this.getSourceVisualNode().getNode().isHead()) {
-        difference = 0;
+        sourceTime = VisualEdge.minTimestamp;
     }
     else {
-        var sourceTime = this.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-        var targetTime = this.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
-        sourceTime = Number(sourceTime.slice(3, sourceTime.length));
-        targetTime = Number(targetTime.slice(3, targetTime.length));
-        
-        difference = Math.abs(sourceTime - targetTime);
+        sourceTime = this.getSourceVisualNode().getNode().getFirstLogEvent().fields.timestamp;
     }
+    
+    var targetTime = this.getTargetVisualNode().getNode().getFirstLogEvent().fields.timestamp;
+    sourceTime = Number(sourceTime.slice(3, sourceTime.length));
+    targetTime = Number(targetTime.slice(3, targetTime.length));
+    
+    difference = Math.abs(sourceTime - targetTime);
 
     if($("#graphtimescaleviz").val().trim() == "ns") return difference + " ns";
     else if($("#graphtimescaleviz").val().trim() == "us") return difference / 1000 + " μs";
     else if($("#graphtimescaleviz").val().trim() == "ms") return difference / 1000000 + " ms";
     else if($("#graphtimescaleviz").val().trim() == "s") return difference / 1000000000 + " s";
-}
+};
