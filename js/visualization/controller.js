@@ -1260,18 +1260,18 @@ Controller.prototype.formatEdgeInfo = function(edge, infoContainer) {
 
     if(!sourceNode.getNode().isHead()) {
         // Add the line to connect the two circles together
-        var positionTop = $("#sidebar .info .source .circle circle").offset().top - $(window).scrollTop();
-        var positionBottom = $("#sidebar .info .target .circle circle").offset().top - $(window).scrollTop();
+        var positionTop = $("#sourceCircle").offset().top - $(window).scrollTop();
+        var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop();
 
         d3.select(".nodeConnection").select("svg").select("line")
                                     .attr("stroke", "dimgrey")
-                                    .attr("stroke-width", 2)
+                                    .attr("stroke-width", 1)
                                     .attr("opacity", 0.25)
                                     .attr("x1", 8)
                                     // .attr("y1", positionTop - 22)
-                                    .attr("y1", positionTop - 69)
+                                    .attr("y1", positionTop - 70)
                                     .attr("x2", 8)
-                                    .attr("y2", positionBottom - 79);
+                                    .attr("y2", positionBottom - 70);
     }
 };
 
