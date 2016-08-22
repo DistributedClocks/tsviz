@@ -81,24 +81,25 @@ function Controller(global) {
         else {
             // Area other than the sidebar was clicked
             self.clearSidebarInfo();
-        }
 
-        d3.selectAll("circle.sel").each(function(d) {
-            $(this).remove();
-            d.setSelected(false);
-        });
-        // Unhighlight any previously clicked edges
-        d3.selectAll("line.sel").each(function(d) {
-            $(this).remove();
-        });
-        d3.selectAll("line.dashed").remove();
-        // d3.selectAll("path.sel").each(function(d) {
-        //     $(this).remove();
-        // });
-        d3.select("polygon.sel").each(function(d) {
-            $(this).remove();
-            d.setSelected(false);
-        });
+            d3.selectAll("circle.sel").each(function(d) {
+                $(this).remove();
+                d.setSelected(false);
+            });
+            // Unhighlight any previously clicked edges
+            d3.selectAll("line.sel").each(function(d) {
+                $(this).remove();
+            });
+            d3.selectAll("line.dashed").remove();
+            // d3.selectAll("path.sel").each(function(d) {
+            //     $(this).remove();
+            // });
+            d3.select("polygon.sel").each(function(d) {
+                $(this).remove();
+                d.setSelected(false);
+            });
+        }
+        
         $(".tdiff").children().remove();
         self.bindScroll();
     });
