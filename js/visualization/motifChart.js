@@ -295,7 +295,7 @@ MotifChart.prototype.drawLogarithmicChart = function() {
  */
 MotifChart.prototype.addButtons = function() {
 
-    var chart = d3.select(".chart");
+    var chart = d3.select(".chartButtons");
     var motifChart = this;
 
     button = chart.insert("button")
@@ -401,5 +401,5 @@ MotifChart.prototype.removeChart = function() {
 	if(this.$chart != null) this.$chart.remove();
 
     d3.select(".chart").selectAll("svg").remove();
-    d3.select(".chart").selectAll("button").remove();
+    d3.select(".chartButtons").selectAll("button").remove();
 };
