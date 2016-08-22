@@ -435,8 +435,6 @@ Controller.prototype.bindNodes = function(nodes) {
             tip.hide(e);
         }
         else {
-            controller.showDialog(e, 0, this);
-
             controller.clearSidebarInfo();
 
             // Add name to the dialog and colour the circle
@@ -562,6 +560,8 @@ Controller.prototype.bindNodes = function(nodes) {
                 }
             }
 
+            controller.showDialog(e, 0, this);
+
             $(".line.focus").css({
                 "color": $(".focus").data("fill"),
                 "background": "",
@@ -667,7 +667,7 @@ Controller.prototype.bindEdges = function(edges) {
     edges.on("click", function(e) {
         controller.selectEdge(e, this);
         controller.clearSidebarInfo();
-        controller.formatEdgeInfo(e, $(".event"));
+        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     }).on("mouseover", function(e) {
 
         // Calculate offset for tip
@@ -894,31 +894,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
         var node2 = e;
         
         if(!node1.isCollapsed() && !node2.isCollapsed()){    
-            //Compress to fit in number type
-            node1 = d3.selectAll("circle.sel").data()[0].getNode().getFirstLogEvent().fields.timestamp;
-            node2 = e.getNode().getFirstLogEvent().fields.timestamp;
-            node1 = Number(node1.slice(3, node1.length));
-            node2 = Number(node2.slice(3, node2.length));
-            //Calculate the difference
-            var difference = Math.abs(node1 - node2);
-
-            //Scale the difference
-            if($("#graphtimescaleviz").val().trim() == "us") difference /= 1000;
-            else if($("#graphtimescaleviz").val().trim() == "ms") difference /= 1000000;
-            else if($("#graphtimescaleviz").val().trim() == "s") difference /= 1000000000;
-
-            var $f = $("<tr>", {
-                "class": "field"
-            });
-            var $t = $("<th>", {
-                "class": "title"
-            }).text("Time difference" + ":");
-            var $v = $("<td>", {
-                "class": "value"
-            }).text(difference + $("#graphtimescaleviz").val().trim());
-
-            $f.append($t).append($v);
-            $(".tdiff").append($f);
+            this.formatEdgeInfo(node1, node2, $(".event"));
         }
 
     }
@@ -1178,11 +1154,8 @@ Controller.prototype.clearSidebarInfo = function() {
  * @param {VisualEdge} edge
  * @param {infoContainer} either the sidebar or dialog 
  */
-Controller.prototype.formatEdgeInfo = function(edge, infoContainer) {
-    var sourceNode = edge.getSourceVisualNode();
-    var targetNode = edge.getTargetVisualNode();
-
-    var difference = edge.getTimeDifference();
+Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoContainer) {
+    var difference = this.getTimeDifference(sourceNode, targetNode);
 
     // Add names to the dialog and colour the circles
     infoContainer.find(".source").find(".name").text(sourceNode.getText());
@@ -1257,8 +1230,31 @@ Controller.prototype.formatEdgeInfo = function(edge, infoContainer) {
     $f.append($t).append($v);
     $fields.append($f);
 
+    // Figure out whether or not to draw connecting line between two node circles
+    var drawLine = false;
 
-    if(!sourceNode.getNode().isHead()) {
+    if ((sourceNode.getNode().getNext().getId() == targetNode.getNode().getId()) ||
+        (sourceNode.getNode().getPrev().getId() == targetNode.getNode().getId())) {
+        drawLine = true;
+    }
+
+    if(drawLine === false) {
+        var parents = sourceNode.getNode().getParents();
+        for (var i in parents) {
+            if(parents[i].getId() === targetNode.getNode().getId()) {
+                drawLine = true;
+            }
+        }
+
+        var children = sourceNode.getNode().getChildren();
+        for (var i in children) {
+            if(children[i].getId() === targetNode.getNode().getId()) {
+                drawLine = true;
+            }
+        }
+    }
+
+    if(!sourceNode.getNode().isHead() && drawLine === true){
         // Add the line to connect the two circles together
         var positionTop = $("#sourceCircle").offset().top - $(window).scrollTop();
         var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop();
@@ -1273,6 +1269,36 @@ Controller.prototype.formatEdgeInfo = function(edge, infoContainer) {
                                     .attr("x2", 8)
                                     .attr("y2", positionBottom - 70);
     }
+};
+
+/**
+ * Calculates the time difference between this edge represents
+ *
+ * @returns {String} formatted with the correct time units
+ */
+Controller.prototype.getTimeDifference = function(sourceNode, targetNode) {
+    // Calculate time difference between source and target nodes
+    // Compress to fit in number type
+    var difference;
+    var sourceTime;
+
+    if (sourceNode.getNode().isHead()) {
+        sourceTime = VisualEdge.minTimestamp;
+    }
+    else {
+        sourceTime = sourceNode.getNode().getFirstLogEvent().fields.timestamp;
+    }
+    
+    var targetTime = targetNode.getNode().getFirstLogEvent().fields.timestamp;
+    sourceTime = Number(sourceTime.slice(3, sourceTime.length));
+    targetTime = Number(targetTime.slice(3, targetTime.length));
+    
+    difference = Math.abs(sourceTime - targetTime);
+
+    if($("#graphtimescaleviz").val().trim() == "ns") return difference + " ns";
+    else if($("#graphtimescaleviz").val().trim() == "us") return difference / 1000 + " μs";
+    else if($("#graphtimescaleviz").val().trim() == "ms") return difference / 1000000 + " ms";
+    else if($("#graphtimescaleviz").val().trim() == "s") return difference / 1000000000 + " s";
 };
 
 Controller.prototype.bindScroll = function (){

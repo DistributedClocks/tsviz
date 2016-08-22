@@ -239,7 +239,6 @@ VisualEdge.prototype.setOpacity = function(newOpacity) {
     
 };
 
-
 /**
  * Calculates the time difference between this edge represents
  *
