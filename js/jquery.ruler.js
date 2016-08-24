@@ -94,8 +94,9 @@
 		    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
 	        height = svg.attr("height");
 
-	        //Draw ruler
+	        //Remove old ruler if it exists
 	       	d3.selectAll(".ruler.vRule svg").remove();
+	       	//Draw ruler
 			var ruler = d3.selectAll(".ruler.vRule").append("svg")
 	        .attr("class", "axisSVG")
 	        .attr("height", height)
@@ -105,6 +106,7 @@
 	        .call(axis);
 
 		}else{ // If there are compressed intervals
+			//Remove old ruler if it exists
 			d3.selectAll(".ruler.vRule svg").remove();
 
 			
@@ -165,11 +167,11 @@
 
 		        	compTime = scaleTime(compTime);
 
+		        	//Add time difference to interval
 			        var timedif = graph.append("text")
 			        .attr("x", "50%")
 			        .attr("y", compressions[i].start + 45)
 			        .attr("fill", "#000")
-			        // .attr("style")
 			        .text(compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
 
 		        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
@@ -216,7 +218,7 @@
 				else var magnification = "<span> " + $("#graphtimescaleviz option:selected").val().trim() + "</span>";
 				
 				$(corner).css({
-					width: settings.vRuleSize+5,
+					width: settings.vRuleSize,
 					height: 70
 				}).prependTo($this);
 				var $corner = $(".corner")

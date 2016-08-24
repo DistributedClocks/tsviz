@@ -196,54 +196,66 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 		lineData.push({x: x, y: y})
 
-		for(var k = 0; k < e.compressions.length; k++){
-
-			var lineBreak = {};
-			//Define stoppers for the intervall
-	        lineBreak.start = Util.svgElement("line");
-	        lineBreak.end = Util.svgElement("line");
-	        lineBreak.start.attr({
-	        	"stroke-width": "2px",
-	        	"opacity": 1,
-	        	"stroke": "#999"
-	        });
-	        lineBreak.end.attr({
-	        	"stroke-width": "2px",
-	        	"opacity": 1,
-	        	"stroke": "#999"
-	        });
-        	y = e.compressions[k].start + 20;
-        	lineData.push({x: x, y: y});
-        	//Add line break
-        	lineBreak.start.attr({"x1": x-5,
-        					"x2": x+5,
-        					"y1": y,
-        					"y2": y
-        				});
-        	e.$svg.append(lineBreak.start);
-        	lineData.push(null);
-        	y = e.compressions[k].end - 20;
-        	lineData.push({x: x, y: y});
-        	//Add line break
-        	lineBreak.end.attr({"x1": x-5,
-        					"x2": x+5,
-        					"y1": y,
-        					"y2": y
-        				})
-        	e.$svg.append(lineBreak.end);
-        	y = e.compressions[k].end;
-        	lineData.push({x: x, y: y});
-        }
-
-
-        y = e.targetVisualNode.getY();
-        lineData.push({x: x, y: y})
-        
-        var lineFunction = d3.svg.line()
+		var lineFunction = d3.svg.line()
         .defined(function(d) { return d; })
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; });
 
+		for(var k = 0; k < e.compressions.length; k++){
+
+			var lineBreak = {};
+			var lineBreakData = {};
+			// var lineBreakFunction = d3.svg.line()
+	  //       .x(function(d) { return d.x; })
+	  //       .y(function(d) { return d.y; });	        
+	        
+        	y = e.compressions[k].start + 20;
+        	lineData.push({x: x, y: y});
+        	//Add line break (start of gap)
+        	lineBreak.start = Util.svgElement("path");
+	        lineBreak.start.attr({
+	        	"stroke-width": "1px",
+	        	"opacity": 0.6,
+	        	"stroke-dasharray": 0,
+	        	"stroke": "lightgrey"
+	        });
+	        lineBreakData = [];
+	        lineBreakData.push({x: x-5, y: y+5});
+	        lineBreakData.push({x: x, y: y});
+	        lineBreakData.push({x: x+5, y: y+5});
+
+        	lineBreak.start.attr("d", lineFunction(lineBreakData));
+        	e.$svg.append(lineBreak.start);
+
+        	//Add empty gap
+        	lineData.push(null);
+        	y = e.compressions[k].end - 20;
+        	lineData.push({x: x, y: y});
+
+
+        	//Add line break (end of gap)
+        	lineBreak.end = Util.svgElement("path");
+        	lineBreak.end.attr({
+	        	"stroke-width": "1px",
+	        	"opacity": 0.6,
+	        	"stroke-dasharray": 0,
+	        	"stroke": "lightgrey"
+	        });
+        	lineBreakData = [];
+        	lineBreakData.push({x: x-5, y: y-5});
+	        lineBreakData.push({x: x, y: y});
+	        lineBreakData.push({x: x+5, y: y-5});        	    
+        	lineBreak.end.attr("d", lineFunction(lineBreakData));
+        	e.$svg.append(lineBreak.end);
+
+        	//Set end of gap
+        	y = e.compressions[k].end;
+        	lineData.push({x: x, y: y});
+        }
+
+        y = e.targetVisualNode.getY();
+        lineData.push({x: x, y: y})
+        
         e.$line.attr("d", lineFunction(lineData));
         e.$svg.append(e.$line);
         
