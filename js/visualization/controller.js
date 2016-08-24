@@ -1005,6 +1005,12 @@ Controller.prototype.showDialog = function(e, type, elem) {
             "left": $(elem).offset().left - 38,
             "margin-left": -$(window).scrollLeft()
         }).addClass("top").show();
+    else if (type == 1) 
+        $dialog.css({
+            "left": e.getX() + $svg.offset().left - 50,
+            "margin-top": 145,
+            "margin-left": type ? -$(window).scrollLeft() : 0
+        }).addClass("top").show();
     else if (e.getX() - $(window).scrollLeft() > $graph.width() / 2)
         $dialog.css({
             "left": e.getX() + $svg.offset().left - 50,
