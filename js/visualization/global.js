@@ -52,10 +52,6 @@ function Global($vizContainer, $sidebar, $hostBar, $logTable, views) {
 
     /** @private */
     this.pairwiseView = false;
-
-    this.$sidebar.css({
-        width: Global.SIDE_BAR_WIDTH + "px"
-    });
     
     var context = this;
     views.forEach(function(view) {
@@ -282,6 +278,13 @@ Global.prototype.drawAll = function() {
         this.controller.bindLines(this.viewR.getLogTable().find(".line:not(.more)"));
     }
 
+    this.setSidebarWidth();
+
+    var headerWidth = $(".visualization header").outerWidth();
+    var sidebarWidth = this.$sidebar.outerWidth();
+    var globalWidth = $(window).width() - headerWidth - sidebarWidth;
+    $("#searchbar").width(globalWidth);
+    
     this.$vizContainer.height("auto");
     $(".dialog").hide();
     $(".hostConstraintDialog").hide();
@@ -422,6 +425,31 @@ Global.prototype.setView = function(position, anchorHref) {
 }
 
 /**
+  * Sets the width of the sidebar.
+  */
+Global.prototype.setSidebarWidth = function() { 
+    var windowWidth = $(window).width();
+    var graphSVGWidth = $("#graphSVG").width();
+    var vizContainerPadding = $("#vizContainer svg:last-child").css("padding-right");
+    var sidebarWidth = 0;
+
+    console.log(windowWidth);
+    console.log(graphSVGWidth);
+    console.log(vizContainerPadding);
+
+    if(windowWidth > graphSVGWidth + parseInt(vizContainerPadding)) {
+        sidebarWidth = windowWidth - (graphSVGWidth + 40);
+    }    
+    else {
+        sidebarWidth = parseInt(vizContainerPadding);
+    }
+    
+    this.$sidebar.css({
+        width: sidebarWidth + "px"
+    });
+};
+
+/**
  * Gets the {@link Controller}
  * @returns {Controller} The controller
  */
@@ -433,7 +461,7 @@ Global.prototype.getController = function() {
  * Resizes the graph
  */
 Global.prototype.resize = function() {
-    
+
     var viewLNumHosts = getNumVisibleHosts(this.viewL.getHosts(), this.viewL.getTransformer().getSpecifiedHiddenHosts());
     
     var viewRNumHosts = 0;
@@ -442,6 +470,8 @@ Global.prototype.resize = function() {
     }
     
     var visibleHosts = viewLNumHosts + viewRNumHosts;
+
+    this.setSidebarWidth();
 
     // TODO: rename to sidebarLeft sidebarRight middleWidth
     var headerWidth = $(".visualization header").outerWidth();
