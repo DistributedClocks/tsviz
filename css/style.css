@@ -368,7 +368,7 @@ g .tick text{
   position: fixed;
   background: #fff;
   /*padding: 24pt;*/ /*ORIGINAL*/
-  padding: 18pt 24pt 30pt 24pt;
+  padding: 18pt 6pt 30pt 24pt;
   top: 0;
   left: 0;
   z-index: 4;
@@ -577,6 +577,7 @@ g .tick text{
 
 /* Searchbar */
 #searchbar {
+  width: auto;
   margin-left: 150pt;
   /*width: calc(100% - 240px);*/
   position: fixed;
@@ -591,7 +592,7 @@ g .tick text{
 
 #searchbar #bar {
   height: 24pt;
-  width: 100%;
+  width: auto;
   z-index: 1;
 }
 #searchbar #bar input {
@@ -1064,8 +1065,10 @@ svg {
    circles on the sidebar info */
 #sidebar .info {
   position: absolute;
-  width: 176px;
-  height: 192px;
+  padding: 0 2em 0 0;
+  height: auto;
+  overflow: auto;
+  z-index: 4;
 }
 #sidebar .nodeConnection {
   position: relative;
@@ -1073,7 +1076,6 @@ svg {
 }
 
 #sidebar {
-  width: 240px;
   height: 100%;
   padding: 2em;
   box-sizing: border-box;
@@ -1095,11 +1097,6 @@ svg {
   padding: 0;
   margin-top: 0;
   margin-bottom: 1em;
-}
-#sidebar .info {
-  height: 12em;
-  overflow: auto;
-  z-index: 4;
 }
 #sidebar .event {
   word-break: break-all;
