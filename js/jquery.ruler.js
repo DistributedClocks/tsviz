@@ -14,6 +14,8 @@
         var left = d3.select("#sliderGroup #leftZoom");
         var right = d3.select("#sliderGroup #rightZoom");
 
+        //Remove signs (if existent)
+        d3.selectAll("#sliderGroup #leftZoom svg").remove();
         //DRAW ZOOM OUT SIGN "MINUS"
         var svg = left.append("svg")
         .attr("width", "25px")
@@ -27,6 +29,8 @@
         .attr("stroke-width", 2)
         .attr("stroke", "#999");
 
+        //Remove signs (if existent)
+        d3.selectAll("#sliderGroup #rightZoom svg").remove();
         //DRAW ZOOM IN SIGN "PLUS"
         svg = right.append("svg")
         .attr("width", "25px")
