@@ -240,6 +240,36 @@ VisualEdge.prototype.setOpacity = function(newOpacity) {
 };
 
 /**
+ * Adds an additional highlight over the VisualEdge
+ */
+VisualEdge.prototype.selectEdge = function() {
+    //Remove the dashed lines (if any exists)
+    d3.selectAll("line.dashed").remove();
+
+    // Unhighlight any previously clicked edges
+    d3.selectAll("line.sel").each(function(d) {
+        $(this).remove();
+    });
+        
+    // Add extra highlight to selected edge
+    var $selLine = d3.select(this.$svg[0]).append("line", "line");
+
+    $selLine.style({
+        "stroke": "firebrick",
+        "stroke-width": this.getWidth(),
+        "opacity": 1
+    });
+    
+    $selLine.attr({
+        "class": "sel",
+        "x1": this.getSourceVisualNode().getX(),
+        "y1": this.getSourceVisualNode().getY(),
+        "x2": this.getTargetVisualNode().getX(),
+        "y2": this.getTargetVisualNode().getY(),
+    });
+};
+
+/**
  * Calculates the time difference between this edge represents
  *
  * @returns {String} formatted with the correct time units

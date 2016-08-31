@@ -433,10 +433,6 @@ Global.prototype.setSidebarWidth = function() {
     var vizContainerPadding = $("#vizContainer svg:last-child").css("padding-right");
     var sidebarWidth = 0;
 
-    console.log(windowWidth);
-    console.log(graphSVGWidth);
-    console.log(vizContainerPadding);
-
     if(windowWidth > graphSVGWidth + parseInt(vizContainerPadding)) {
         sidebarWidth = windowWidth - (graphSVGWidth + 40);
     }    

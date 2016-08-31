@@ -666,7 +666,7 @@ Controller.prototype.bindEdges = function(edges) {
     edges.call(tip);
 
     edges.on("click", function(e) {
-        controller.selectEdge(e, this);
+        e.selectEdge();
         controller.clearSidebarInfo();
         controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     }).on("mouseover", function(e) {
@@ -839,42 +839,6 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
         $(".highlight").css({
             "left": $(".line.focus").offset().left - parseFloat($(".line.focus").css("margin-left")) - $(".visualization .left").offset().left
         });
-};
-
-/**
- * Shows the edge selection popup dialog
- * 
- * @param {VisualEdge} e The VisualEdge that is selected
- * @param {DOMElement} elem The SVG edge element
- */
-Controller.prototype.selectEdge = function(e, elem) {
-    // Don't do anything if the source node is the head node
-    if(e.getSourceVisualNode().getNode().isHead()) {
-        return;
-    }
-
-    //Remove the dashed lines (if any exists)
-    d3.selectAll("line.dashed").remove();
-
-    // Unhighlight any previously clicked edges
-    d3.selectAll("line.sel").each(function(d) {
-        $(this).remove();
-    });
-        
-    // Add extra highlight to selected edge
-    var $selLine = d3.select(elem).append("line", "line");
-    $selLine.style({
-        "stroke": "firebrick",
-        "stroke-width": e.getWidth(),
-        "opacity": 1
-    });
-    $selLine.attr({
-        "class": "sel",
-        "x1": e.getSourceVisualNode().getX(),
-        "y1": e.getSourceVisualNode().getY(),
-        "x2": e.getTargetVisualNode().getX(),
-        "y2": e.getTargetVisualNode().getY(),
-    });
 };
 
 /**
