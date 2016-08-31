@@ -668,7 +668,7 @@ Controller.prototype.bindEdges = function(edges) {
     edges.on("click", function(e) {
         e.selectEdge(true);
         controller.clearSidebarInfo();
-        controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
+        controller.formatSidebarInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), 0);
     }).on("mouseover", function(e) {
 
         // Calculate offset for tip
@@ -859,7 +859,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
         var node2 = e;
         
         if(!node1.isCollapsed() && !node2.isCollapsed()){    
-            this.formatEdgeInfo(node1, node2, $(".event"));
+            this.formatSidebarInfo(node1, node2, 0);
         }
 
     }
@@ -1120,12 +1120,14 @@ Controller.prototype.clearSidebarInfo = function() {
 }
 
 /**
- * Formats the edge information for the container
+ * Formats the sidebar for up to two nodes
  * 
  * @param {VisualEdge} edge
  * @param {infoContainer} either the sidebar or dialog 
+ * @param {Integer} number of nodes between sourceNode and targetNode
  */
-Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoContainer) {
+Controller.prototype.formatSidebarInfo = function(sourceNode, targetNode, numberOfNodes) {
+    var infoContainer = $(".event");
     var difference = this.getTimeDifference(sourceNode, targetNode);
 
     // Add names to the dialog and colour the circles
@@ -1166,7 +1168,7 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     });
     var $t = $("<th>", {
         "class": "title"
-    }).text("Source host" + ":");
+    }).text("Source host:");
     var $v = $("<td>", {
         "class": "value"
     }).text(sourceNode.getHost());
@@ -1188,13 +1190,29 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
     $f.append($t).append($v);
     $fields.append($f);
 
+    if(numberOfNodes > 0) {
+        // Add number of nodes info
+        $f = $("<tr>", {
+            "class": "field"
+        });
+        $t = $("<th>", {
+            "class": "title"
+        }).text("# of events:");
+        $v = $("<td>", {
+            "class": "value"
+        }).text(numberOfNodes);
+
+        $f.append($t).append($v);
+        $fields.append($f);
+    }
+
     // Target host info
     $f = $("<tr>", {
         "class": "field"
     });
     $t = $("<th>", {
         "class": "title"
-    }).text("Target host" + ":");
+    }).text("Target host:");
     $v = $("<td>", {
         "class": "value"
     }).text(targetNode.getHost());
@@ -1231,15 +1249,35 @@ Controller.prototype.formatEdgeInfo = function(sourceNode, targetNode, infoConta
         var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop();
 
         d3.select(".nodeConnection").select("svg").select("line")
+                                    .attr("stroke-dasharray", "0,0")
                                     .attr("stroke", "dimgrey")
                                     .attr("stroke-width", 1)
-                                    .attr("opacity", 0.25)
+                                    .attr("opacity", 0.5)
                                     .attr("x1", 8)
                                     // .attr("y1", positionTop - 22)
                                     .attr("y1", positionTop - 70)
                                     .attr("x2", 8)
                                     .attr("y2", positionBottom - 70);
     }
+};
+
+Controller.prototype.formatSidebarMultipleNodes = function(visualNodes, time) {
+    this.formatSidebarInfo(visualNodes[0], visualNodes[visualNodes.length - 1], visualNodes.length);
+
+    // Add the line to connect the two circles together
+    var positionTop = $("#sourceCircle").offset().top - $(window).scrollTop();
+    var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop();
+
+    d3.select(".nodeConnection").select("svg").select("line")
+                                .attr("stroke-dasharray", "4,4")
+                                .attr("stroke", "dimgrey")
+                                .attr("stroke-width", 1)
+                                .attr("opacity", 0.5)
+                                .attr("x1", 8)
+                                // .attr("y1", positionTop - 22)
+                                .attr("y1", positionTop - 70)
+                                .attr("x2", 8)
+                                .attr("y2", positionBottom - 70);
 };
 
 /**
@@ -1266,10 +1304,20 @@ Controller.prototype.getTimeDifference = function(sourceNode, targetNode) {
     
     difference = Math.abs(sourceTime - targetTime);
 
-    if($("#graphtimescaleviz").val().trim() == "ns") return difference + " ns";
-    else if($("#graphtimescaleviz").val().trim() == "us") return difference / 1000 + " μs";
-    else if($("#graphtimescaleviz").val().trim() == "ms") return difference / 1000000 + " ms";
-    else if($("#graphtimescaleviz").val().trim() == "s") return difference / 1000000000 + " s";
+    return this.formatTime(difference);
+};
+
+/*
+ * Formats the provided integer time with correct time units currently selected
+ * 
+ * @param {Integer} time
+ * @returns {String} formatted time
+ */
+Controller.prototype.formatTime = function(time) {
+    if($("#graphtimescaleviz").val().trim() == "ns") return time + " ns";
+    else if($("#graphtimescaleviz").val().trim() == "us") return time / 1000 + " μs";
+    else if($("#graphtimescaleviz").val().trim() == "ms") return time / 1000000 + " ms";
+    else if($("#graphtimescaleviz").val().trim() == "s") return time / 1000000000 + " s";
 };
 
 Controller.prototype.bindScroll = function (){

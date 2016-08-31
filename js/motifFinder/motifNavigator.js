@@ -182,6 +182,17 @@ MotifNavigator.prototype.handleCurrent = function() {
         var visualEdge = visualGraph.getVisualEdgeByNodes(motifEdges[i][0], motifEdges[i][1]);
         visualEdge.selectEdge(i == 0);
     }
+
+    //Add info to the sidebar
+    var controller = Global.getInstance().getController();
+    var nodes = motif.getNodes();
+    var visualNodes = []; 
+
+    for (i = 0; i < nodes.length; i++) {
+        visualNodes.push(visualGraph.getVisualNodeByNode(nodes[i]));
+    }
+
+    controller.formatSidebarMultipleNodes(visualNodes);
 };
 
 /**
