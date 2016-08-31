@@ -666,7 +666,7 @@ Controller.prototype.bindEdges = function(edges) {
     edges.call(tip);
 
     edges.on("click", function(e) {
-        e.selectEdge();
+        e.selectEdge(true);
         controller.clearSidebarInfo();
         controller.formatEdgeInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), $(".event"));
     }).on("mouseover", function(e) {

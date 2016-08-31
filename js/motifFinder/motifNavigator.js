@@ -172,6 +172,16 @@ MotifNavigator.prototype.handleCurrent = function() {
     var position = motifData.getTop() - MotifNavigator.TOP_SPACING;
     position = Math.max(0, position);
     $(window).scrollTop(position);
+
+    //Highlight motif edges
+    var motif = motifData.getMotif();
+    var visualGraph = motifData.getVisualGraph();
+    var motifEdges = motif.getEdges();
+
+    for(var i = 0; i < motifEdges.length; i++) {
+        var visualEdge = visualGraph.getVisualEdgeByNodes(motifEdges[i][0], motifEdges[i][1]);
+        visualEdge.selectEdge(i == 0);
+    }
 };
 
 /**

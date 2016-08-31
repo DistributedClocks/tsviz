@@ -241,15 +241,19 @@ VisualEdge.prototype.setOpacity = function(newOpacity) {
 
 /**
  * Adds an additional highlight over the VisualEdge
+ *
+ * @param {boolean} clears previous highlights if true
  */
-VisualEdge.prototype.selectEdge = function() {
+VisualEdge.prototype.selectEdge = function(clear) {
     //Remove the dashed lines (if any exists)
     d3.selectAll("line.dashed").remove();
 
     // Unhighlight any previously clicked edges
-    d3.selectAll("line.sel").each(function(d) {
-        $(this).remove();
-    });
+    if(clear) {
+        d3.selectAll("line.sel").each(function(d) {
+            $(this).remove();
+        });
+    }
         
     // Add extra highlight to selected edge
     var $selLine = d3.select(this.$svg[0]).append("line", "line");
@@ -259,7 +263,7 @@ VisualEdge.prototype.selectEdge = function() {
         "stroke-width": this.getWidth(),
         "opacity": 1
     });
-    
+
     $selLine.attr({
         "class": "sel",
         "x1": this.getSourceVisualNode().getX(),
