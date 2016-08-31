@@ -21,14 +21,12 @@
         .attr("width", "25px")
         .attr("height", "25px");
 
-        svg.append("line")
-        .attr("y1", "12.5")
-        .attr("y2", "12.5")
-        .attr("x1", "8")
-        .attr("x2", "18")
-        .attr("stroke-width", 2)
-        .attr("stroke", "#999");
-
+        svg.append("polygon")
+        .attr("points", "5,12.5 20,5 20,20")
+        .attr("fill", "#999")
+        .attr("stroke", "#999")
+        .attr("stroke-width", 1);
+        
         //Remove signs (if existent)
         d3.selectAll("#sliderGroup #rightZoom svg").remove();
         //DRAW ZOOM IN SIGN "PLUS"
@@ -36,21 +34,11 @@
         .attr("width", "25px")
         .attr("height", "25px");
 
-        svg.append("line")
-        .attr("y1", "13")
-        .attr("y2", "13")
-        .attr("x1", "8")
-        .attr("x2", "18")
-        .attr("stroke-width", 2)
-        .attr("stroke", "#999");
-
-        svg.append("line")
-        .attr("y1", "8")
-        .attr("y2", "18")
-        .attr("x1", "13")
-        .attr("x2", "13")
-        .attr("stroke-width", 2)
-        .attr("stroke", "#999");
+        svg.append("polygon")
+        .attr("points", "5,5 5,20 20,12.5")
+        .attr("fill", "#999")
+        .attr("stroke", "#999")
+        .attr("stroke-width", 1);
 
 	}
 
