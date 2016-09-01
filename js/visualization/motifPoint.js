@@ -21,14 +21,7 @@ function MotifPoint(visualGraph, motif) {
     this.x = 0;
     
     /** @private */
-    this.$svg = Util.svgElement("g");
-    
-    this.$title = $("<title></title>");
-
-    this.$rect = Util.svgElement("rect");
-
-    this.$highlightRect = Util.svgElement("rect");
-
+    this.$svgElements = [];
 
     /** @private */
     this.fillColor = "#000";
@@ -41,23 +34,32 @@ function MotifPoint(visualGraph, motif) {
     /** @private */
     this.label = "";
     this.setLabel("");
-
-    this.$title.text(this.val);
-    this.$svg.append(this.$title);
-
-    var mouseOverRect = Util.svgElement("rect");
-    mouseOverRect.attr({
-        "width": 12,
-        "height": 12,
-        "x": -6,
-        "y": -6
-    });
-    this.$svg.append(mouseOverRect);
 }
 
-MotifPoint.prototype.getSVG = function() {
-    return this.$svg;
+/*
+ * Gets all of the SVG Elements associated with this MotifPoint
+ * 
+ * @returns {SVGElement[]}
+ */
+MotifPoint.prototype.getSVGElements = function() {
+    var $elems = [];
+
+    for(var i = 0; i < this.$svgElements.length; i++) {
+        $elems[i] = this.$svgElements[i];
+    }
+
+    return $elems;
 };
+
+/*
+ * Adds an SVG element to this MotifPoint
+ * 
+ * @param {SVGElement} 
+ */
+MotifPoint.prototype.addSVGElement = function(elem) {
+    this.$svgElements.push(elem);
+}
+
 
 /**
  * Gets the underlying {@link Motif} that this MotifPoint is a visualization
@@ -133,7 +135,6 @@ MotifPoint.prototype.getFillColor = function() {
  */
 MotifPoint.prototype.setFillColor = function(newFillColor) {
     this.fillColor = newFillColor;
-    this.$rect.attr("fill", newFillColor);
 };
 
 /**
@@ -152,7 +153,6 @@ MotifPoint.prototype.getOpacity = function() {
  */
 MotifPoint.prototype.setOpacity = function(opacity) {
     this.opacity = opacity;
-    this.$rect.attr("opacity", opacity);
 };
 
 /**

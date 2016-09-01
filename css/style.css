@@ -1124,9 +1124,6 @@ svg {
   font-family: sans-serif;
   font-size: 14px;
 }
-#sidebar rect:hover {
-  fill: black;
-}
 
 .d3-tip, .toolTip{
   line-height: 1;

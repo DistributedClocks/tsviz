@@ -1306,7 +1306,6 @@ Controller.prototype.displayTooltip = function(visualNode, information) {
             return "<span style='color:white'>" + information + "</span>";
         });
 
-
     tip.show(visualNode.getSVG()[0]);
 }
 

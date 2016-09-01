@@ -131,6 +131,14 @@ MotifChart.prototype.drawChart = function() {
     	.data(motifPoints)
     	.enter()
     	.append("rect")
+        .attr("class", function() {
+            // Since we're using the same MotifPoints for two graphs, we should
+            // classify the rectangle elements added to the different graphs
+            if(sortedByHost) 
+                return "hosts";
+            else 
+                return "times"
+        })
     	.attr("x", function(d, i) {
     		return i * (width / motifPoints.length);
     	})
@@ -150,13 +158,37 @@ MotifChart.prototype.drawChart = function() {
                 return result;
     	})
     	.attr("fill", function(d){
+            d.addSVGElement($(this)); // Add the rect element to the MotifPoint
+
             if(sortedByHost)
                 return d.getFillColor();
             else
                 return "#04a";
         })
-    	.on("mouseover", tip.show)
-        .on("mouseout", tip.hide)
+    	.on("mouseover", function(d) {
+            tip.show(d);
+
+            // Highlight all the rectangles corresponding to this MotifPoint black
+            var $elements = d.getSVGElements();
+            for(var i = 0; i < $elements.length; i++) {
+                $elements[i].attr("fill", "black");
+            }
+        })
+        .on("mouseout", function(d) {
+            tip.hide(d);
+
+            // Restore initial colors for all rectangles corresponding to the current MotifPoint
+            var $elements = d.getSVGElements();
+            for(var i = 0; i < $elements.length; i++) {
+                var color; 
+                // Use the rectangle classifications to recolour
+                if($elements[i].attr("class") == "hosts")
+                    color = d.getFillColor();
+                else
+                    color = "#04a";
+                $elements[i].attr("fill", color);
+            }
+        })
         .on("click", function(d) {
             motifNavigator.jumpTo(d.getMotif());
         });
