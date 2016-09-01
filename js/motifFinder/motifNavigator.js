@@ -193,6 +193,7 @@ MotifNavigator.prototype.handleCurrent = function() {
     }
 
     controller.formatSidebarMultipleNodes(visualNodes);
+    controller.displayTooltip(visualNodes[0], "Time: " + controller.formatTime(motif.getTotalTime()));
 };
 
 /**

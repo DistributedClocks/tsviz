@@ -82,6 +82,8 @@ function Controller(global) {
             // Area other than the sidebar was clicked
             self.clearSidebarInfo();
 
+            d3.selectAll(".toolTip").remove();
+
             d3.selectAll("circle.sel").each(function(d) {
                 $(this).remove();
                 d.setSelected(false);
@@ -1254,14 +1256,18 @@ Controller.prototype.formatSidebarInfo = function(sourceNode, targetNode, number
                                     .attr("stroke-width", 1)
                                     .attr("opacity", 0.5)
                                     .attr("x1", 8)
-                                    // .attr("y1", positionTop - 22)
                                     .attr("y1", positionTop - 70)
                                     .attr("x2", 8)
                                     .attr("y2", positionBottom - 70);
     }
 };
 
-Controller.prototype.formatSidebarMultipleNodes = function(visualNodes, time) {
+/*
+ * Formats the sidebar information box with a set of VisualNodes.
+ * 
+ * @param {VisualNode[]} at least 2 or more nodes
+ */
+Controller.prototype.formatSidebarMultipleNodes = function(visualNodes) {
     this.formatSidebarInfo(visualNodes[0], visualNodes[visualNodes.length - 1], visualNodes.length);
 
     // Add the line to connect the two circles together
@@ -1274,11 +1280,35 @@ Controller.prototype.formatSidebarMultipleNodes = function(visualNodes, time) {
                                 .attr("stroke-width", 1)
                                 .attr("opacity", 0.5)
                                 .attr("x1", 8)
-                                // .attr("y1", positionTop - 22)
                                 .attr("y1", positionTop - 70)
                                 .attr("x2", 8)
                                 .attr("y2", positionBottom - 70);
 };
+
+/*
+ * Displays a tooltip with some information specified above a node
+ * 
+ * @param {VisualNode} the tooltip will be displayed above this node
+ * @param {String} the information contained in the tooltip
+ */
+Controller.prototype.displayTooltip = function(visualNode, information) {
+    //Remove all other tooltips before displaying a new one.
+    d3.selectAll(".toolTip").remove();
+    
+    var tip = d3.tip();
+
+    d3.selectAll("line", "circle", "path").call(tip);
+
+    tip.attr('class', "toolTip")
+        .attr('z-index', 1000)
+        .offset([-14, 0])
+        .html(function(d) {
+            return "<span style='color:white'>" + information + "</span>";
+        });
+
+
+    tip.show(visualNode.getSVG()[0]);
+}
 
 /**
  * Calculates the time difference between this edge represents

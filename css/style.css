@@ -1128,7 +1128,7 @@ svg {
   fill: black;
 }
 
-.d3-tip {
+.d3-tip, .toolTip{
   line-height: 1;
   font-size: 14px;
   padding: 7px;
@@ -1139,7 +1139,7 @@ svg {
 }
 
 /* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
+.d3-tip:after, .toolTip:after{
   box-sizing: border-box;
   display: inline;
   font-size: 15px;
@@ -1152,7 +1152,7 @@ svg {
 }
 
 /* Style northward tooltips differently */
-.d3-tip.n:after {
+.d3-tip.n:after, .toolTip:after{
   margin: -3px 0 0 0;
   top: 100%;
   left: 0;
