@@ -164,7 +164,7 @@
 			        .attr("x", "50%")
 			        .attr("y", compressions[i].start + 45)
 			        .attr("fill", "#000")
-			        .text(compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
+			        .text("Elapsed time: " + compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
 
 		        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
 		        	rangeStart = compressions[i].end;
