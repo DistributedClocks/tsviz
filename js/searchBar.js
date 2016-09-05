@@ -593,6 +593,7 @@ SearchBar.prototype.query = function() {
         $("#searchbar").addClass("results");
         this.countMotifs();
         this.createResultsChart();
+        this.global.drawAll();
     }
 
     function handleMotifResponse(response) {

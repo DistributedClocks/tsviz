@@ -93,6 +93,10 @@ MotifChart.prototype.drawChart = function() {
    	// Insert an SVG which we will draw our chart and translate
     var $svg = d3.select(".chart")
     			 .append("svg")
+                 .attr("id", function() {
+                     if(sortedByHost) return "hostChart";
+                     else return "timeChart";
+                 })
     			 .attr("width", width)
     			 .attr("height", height);
 
