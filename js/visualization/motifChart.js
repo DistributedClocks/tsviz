@@ -171,7 +171,7 @@ MotifChart.prototype.drawChart = function() {
             // Highlight all the rectangles corresponding to this MotifPoint black
             var $elements = d.getSVGElements();
             for(var i = 0; i < $elements.length; i++) {
-                $elements[i].attr("fill", "black");
+                $elements[i].attr("fill", "#ccff00");
             }
         })
         .on("mouseout", function(d) {
