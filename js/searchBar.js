@@ -103,7 +103,6 @@ function SearchBar() {
     });
 
     $("#searchButton").on("click", function(e) {
-        $("#searchResults").show();
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
             Shiviz.getInstance().visualize(context.getValue(), regexp, "", "order", false);
@@ -113,6 +112,13 @@ function SearchBar() {
         }
         context.hidePanel();
         $("#graphOptionsTab").toggle();
+        $("#searchResults").show();
+    });
+
+    $("#searchbar").keypress(function(e) {
+        if (e.which == 13 && context.motifChart == null) { 
+            $('#searchButton').click(); 
+        }
     });
     
     $("#searchbar #bar .clear").on("click", function() {
