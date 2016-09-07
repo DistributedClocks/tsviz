@@ -357,7 +357,6 @@
         </header>
       
         <div id="graph">
-
             <div id="searchbar">
                 <div id="bar">
                     <input type="text" class="mono" placeholder="Search the visualization">
@@ -452,17 +451,15 @@
 	                </div>
 	                <div id = "rightZoom" ></div>
                 </div>
-            </div>
-            
-
+            </div>            
             <div id="hostBar"></div>
             <div id="vizContainer"></div>
         </div>
         <div id="sidebar">
             <button class="pairwiseButton">Pairwise</button>
             <button class="diffButton">Show Differences</button>
-	        <div id="nodeInfoToggle" class="separator"><p>Node information</p><hr></div>
-	        <div id="nodeInfoTab">
+	        <div id="nodeInfoToggle" class="separator" title="Click to toggle node information"> Node information </div>
+	        <div id="nodeInfoTab" class="sidebarTab">
 	        	<div class="info">
 	                <table class="event">
 	                    <tr class="source">
@@ -496,14 +493,14 @@
 	                </svg>  
 	            </div>
 	        </div>
-            <div id="searchResults">
-	            <div id="searchResultsToggle" class="separator"><p>Search results</p><hr></div>
+	        <div id="searchResultsToggle" class="separator" title="Click to toggle search results"> Search results </div>
+            <div id="searchResults" class="sidebarTab">
 	            <div class="chart"></div>	
                 <div class="chartButtons"></div>
             </div>
             
-            <div id="graphOptionsToggle" class="separator"><p>Graph options</p><hr></div>
-            <div id="graphOptionsTab">
+            <div id="graphOptionsToggle" class="separator" title="Click to toggle graph options"> Graph options </div>
+            <div id="graphOptionsTab" class="sidebarTab">
 	            <div class="option">
 	                <label>Select a collapsing strategy for the graph:</label><br>
 	                <label><input type="radio" id="coll_local_viz" name="coll_str_viz" value="local">local nodes</label><br>

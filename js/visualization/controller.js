@@ -29,9 +29,12 @@ function Controller(global) {
         }
     });
 
+    //User pressed ESC
     $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
         if (e.which == 27) {
             self.clearSidebarInfo();
+            //Collapse node info tab
+            if($("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
             $(".dialog").hide();
             d3.selectAll("circle.sel").each(function(d) {
                 $(this).remove();
@@ -47,9 +50,11 @@ function Controller(global) {
             d3.selectAll("line.dashed").remove();
             $(".tdiff").children().remove();
         }
+        
         self.bindScroll();
     });
 
+    //User clicks somewhere
     $(window).unbind("click.dialog").on("click.dialog", function(e) {
         var $target = $(e.target);
         var tn = $target.prop("tagName");
@@ -258,8 +263,10 @@ function Controller(global) {
         }
     });
 
-    $("#graphOptionsToggle").click(function(){
-        $("#graphOptionsTab").toggle("fast");
+    //Set the behavior for the saparators on the sidebar
+    $("#sidebar .separator").on("click", function() {
+       this.classList.toggle("active");
+       this.nextElementSibling.classList.toggle("show");
     });
 }
 
@@ -432,6 +439,9 @@ Controller.prototype.bindNodes = function(nodes) {
     nodes.call(tip);
     
     nodes.on("click", function(e) {
+        //If the node info tab is hidden, unhide it
+        if(! $("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
+
         if (d3.event.shiftKey) {
             // Toggle node collapsing
             controller.toggleCollapseNode(e.getNode());
@@ -668,6 +678,8 @@ Controller.prototype.bindEdges = function(edges) {
     edges.call(tip);
 
     edges.on("click", function(e) {
+        //If the node info tab is hidden, unhide it
+        if(! $("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
         e.selectEdge(true);
         controller.clearSidebarInfo();
         controller.formatSidebarInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), 0);
@@ -1354,4 +1366,10 @@ Controller.prototype.bindScroll = function (){
     $(window).unbind("scroll");
     $(window).bind("scroll", self.onScroll);
     $(window).scroll();
+};
+
+Controller.prototype.resetSidebar = function(){
+    if($("#graphOptionsToggle").hasClass("active")) $("#graphOptionsToggle").click();
+    if($("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
+    if($("#searchResultsToggle").hasClass("active")) $("#searchResultsToggle").click();
 };

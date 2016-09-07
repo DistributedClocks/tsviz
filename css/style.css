@@ -1012,11 +1012,61 @@ svg {
 }
 
 /* Sidebar */
-#sidebar .separator p{
+
+#sidebar .sidebarTab{
+  border: 2px solid #EEEEEE;
+  padding: 2px;
+  display: none; /*Hidden by default*/
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: 0.6s ease-in-out;
+  -webkit-transition: 0.6s ease-in-out;
+  -moz-transition: 0.6s ease-in-out;
+  -o-transition: 0.6s ease-in-out;
+  /*background: #EEEEEE;*/
+}
+
+#sidebar .sidebarTab.show{
+  opacity: 1;
+  max-height: 800px;
+  display: block; /*Show on click*/
+}
+
+#sidebar .separator{
+  background: #FFF;
+  border-top:2px solid #777777;
+  border-right:2px solid #333333;
+  border-bottom:2px solid #444444;
+  border-left:2px solid #777777;
+  cursor: pointer;
   text-align: center;
   font-family: Helvetica;
   font-size: 9pt;
+  padding: 1em 0;
+  margin: 3px 0;
   color: #999;
+  transition: 0.4s;
+  -webkit-transition: 0.4s;
+  -moz-transition: 0.4s;
+  -o-transition: 0.4s;
+}
+
+#sidebar .separator:after {
+  content: "\227B"; /*> Mathematical sign Unicode character*/
+  /*content: "\2228";*/ /*v Mathematical sign*/
+  /*content: "\2796";*/ /* Unicode character for "minus" sign (-) */
+  font-size: 13px;
+  color: #777;
+  /*vertical-align: center;*/
+  /*float: right;*/
+  float: left;
+  margin-left: 5px;
+}
+
+#sidebar .separator.active:after {
+  content: "\22CE"; /*another v Mathematical sign*/
+  /*content: '\02795';*/ /* Unicode character for "plus" sign (+) */
 }
 
 #sidebar .fields, .dialog .info {
