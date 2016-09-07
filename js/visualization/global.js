@@ -293,13 +293,8 @@ Global.prototype.drawAll = function() {
         this.controller.bindLines(this.viewR.getLogTable().find(".line:not(.more)"));
     }
 
-    this.setSidebarWidth();
+    this.resize();
 
-    var headerWidth = $(".visualization header").outerWidth();
-    var sidebarWidth = this.$sidebar.outerWidth();
-    var globalWidth = $(window).width() - headerWidth - sidebarWidth;
-    $("#searchbar").width(globalWidth);
-    
     this.$vizContainer.height("auto");
     $(".dialog").hide();
     $(".hostConstraintDialog").hide();
@@ -442,14 +437,24 @@ Global.prototype.setView = function(position, anchorHref) {
 /**
   * Sets the width of the sidebar.
   */
-Global.prototype.setSidebarWidth = function() { 
+Global.prototype.setSidebarWidth = function(minimumGraphWidth) { 
     var windowWidth = $(window).width();
     var graphSVGWidth = $("#graphSVG").width();
     var vizContainerPadding = $("#vizContainer svg:last-child").css("padding-right");
     var sidebarWidth = 0;
 
-    if(windowWidth > graphSVGWidth + parseInt(vizContainerPadding)) {
-        sidebarWidth = windowWidth - (graphSVGWidth + 40);
+    if(($("#hostChart")).width() > 0) {
+        var chartWidth = ($("#hostChart")).width();
+
+        if(windowWidth - minimumGraphWidth > chartWidth + 65) {
+            sidebarWidth = chartWidth + 65;
+        }
+        // else if(windowWidth - minimumGraphWidth > parseInt(vizContainerPadding)) {
+        //     sidebarWidth = windowWidth - graphSVGWidth - 65;
+        // }
+        else {
+            sidebarWidth = parseInt(vizContainerPadding);
+        }
     }    
     else {
         sidebarWidth = parseInt(vizContainerPadding);
@@ -482,13 +487,13 @@ Global.prototype.resize = function() {
     
     var visibleHosts = viewLNumHosts + viewRNumHosts;
 
-    this.setSidebarWidth();
+    this.setSidebarWidth(Global.MIN_HOST_WIDTH * (viewRNumHosts + viewLNumHosts + 1));
 
     // TODO: rename to sidebarLeft sidebarRight middleWidth
     var headerWidth = $(".visualization header").outerWidth();
     var sidebarWidth = this.$sidebar.outerWidth();
-    var globalWidth = $(window).width() - headerWidth - sidebarWidth;
-    $("#searchbar").width(globalWidth);
+    var globalWidth = $(window).width() - sidebarWidth - 50; //50 is the width of the ruler
+    $("#searchbar").width(globalWidth - headerWidth + 50);
 
     var widthPerHost = Math.max(Global.MIN_HOST_WIDTH, globalWidth / visibleHosts);
     var logTableWidth = this.viewR != null && this.getPairwiseView() ? (Global.SIDE_BAR_WIDTH - 12) / 2 : Global.SIDE_BAR_WIDTH;

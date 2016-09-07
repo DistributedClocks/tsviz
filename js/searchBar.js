@@ -103,6 +103,7 @@ function SearchBar() {
     });
 
     $("#searchButton").on("click", function(e) {
+        $("#searchResults").toggle();
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
             Shiviz.getInstance().visualize(context.getValue(), regexp, "", "order", false);
@@ -112,6 +113,12 @@ function SearchBar() {
         }
         context.hidePanel();
         if(! $("#searchResultsToggle").hasClass("active") ) $("#searchResultsToggle").click();
+    });
+
+    $("#searchbar").keypress(function(e) {
+        if (e.which == 13 && context.motifChart == null) { 
+            $('#searchButton').click(); 
+        }
     });
     
     $("#searchbar #bar .clear").on("click", function() {
@@ -123,6 +130,7 @@ function SearchBar() {
         context.clearMotifsTab();
         context.global.getController().resetSidebar();
         context.global.getController().bindScroll();
+        $("#searchResults").hide();
     });
 
     $("#searchbar .predefined button").on("click", function() {
@@ -136,12 +144,14 @@ function SearchBar() {
         context.clearStructure();
         context.clearResults();
         context.setValue("#event");
+        $("#searchResults").hide();
     });
 
     $("#searchbar .eventbased #endbar input").on("input", function() {
         context.clearStructure();
         context.clearResults();
         context.setValue("#event");
+        $("#searchResults").hide();
     });
 
     $("#searchbar .eventbased #onlyCommunication").on("change", function() {
@@ -583,6 +593,7 @@ SearchBar.prototype.query = function() {
         $("#searchbar").addClass("results");
         this.countMotifs();
         this.createResultsChart();
+        this.global.drawAll();
     }
 
     function handleMotifResponse(response) {

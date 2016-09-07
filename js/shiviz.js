@@ -309,7 +309,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
 
         //Draw ruler
         $("#graph").ruler(views[0]);
-        $("#searchResults").toggle();
+        $("#searchResults").hide();
         global.getController().bindScroll();
     }
     catch (err) {
