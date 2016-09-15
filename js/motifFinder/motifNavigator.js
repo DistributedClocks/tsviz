@@ -184,7 +184,7 @@ MotifNavigator.prototype.handleCurrent = function() {
     }
 
     //Add info to the sidebar
-    var controller = Global.getInstance().getController();
+    var controller = SearchBar.getInstance().getGlobal().getController();
     var nodes = motif.getNodes();
     var visualNodes = []; 
 

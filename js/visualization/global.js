@@ -16,7 +16,6 @@ function Global($vizContainer, $sidebar, $hostBar, $logTable, views) {
     if (!!Global.instance) {
         throw new Exception("Global is a singleton - use getInstance() instead.");
     }
-    Global.instance = this;
 
     /** @private */
     this.views = views.slice();
@@ -82,21 +81,6 @@ Global.HIDDEN_EDGE_LENGTH = 40;
  * @const
  */
 Global.MIN_HOST_WIDTH = 40;
-
-/**
- * @private
- * @static
- */
-Global.instance = null;
-
-/**
- * Gets the instance of the Shiviz singleton
- * 
- * @returns {Shiviz} The singleton instance
- */
-Global.getInstance = function() {
-    return Global.instance;
-};
 
 /**
  * Redraws the global.
