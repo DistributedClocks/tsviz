@@ -736,7 +736,21 @@ Controller.prototype.bindEdges = function(edges) {
 
         tip.show(e);
 
-    }).on("mouseout", tip.hide);
+    }).on("mouseout", function(e){
+        tip.hide(e);
+       
+        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
+            "stroke-width": function(d) {
+                return d.getWidth();
+            },
+            "stroke": function(d) {
+                return d.getColor();
+            },
+            "opacity": function(d) {
+                return d.getOpacity();
+            }
+        });        
+    });
 };
 
 /**
