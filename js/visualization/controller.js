@@ -22,7 +22,7 @@ function Controller(global) {
     $(window).unbind("resize");
     $(window).on("resize", function() {
         try {
-            self.global.drawAll();
+            self.global.redrawAll();
         }
         catch (exception) {
             Shiviz.getInstance().handleException(exception);
@@ -297,7 +297,7 @@ Controller.prototype.clearHighlight = function() {
         view.getTransformer().unhighlightMotif();
     });
 
-    this.global.drawAll();
+    this.global.redrawAll();
     // this.bindScroll();
 };
 
@@ -342,7 +342,7 @@ Controller.prototype.hideHost = function(host) {
         view.getTransformer().hideHost(host);
     });
 
-    this.global.drawAll();
+    this.global.redrawAll();
     // this.bindScroll();
 };
 
@@ -358,7 +358,7 @@ Controller.prototype.unhideHost = function(host) {
         view.getTransformer().unhideHost(host);
     });
 
-    this.global.drawAll();
+    this.global.redrawAll();
     // this.bindScroll();
 };
 
@@ -388,7 +388,7 @@ Controller.prototype.toggleCollapseNode = function(node) {
         view.getTransformer().toggleCollapseNode(node);
     });
 
-    this.global.drawAll();
+    this.global.redrawAll();
 };
 
 /**
@@ -833,7 +833,7 @@ Controller.prototype.bindHiddenHosts = function(host, node) {
         views.forEach(function(view) {
             view.getTransformer().unhideHost(host);
         });
-        controller.global.drawAll();
+        controller.global.redrawAll();
         tip.hide(e);
 
     }).on("mouseover", function(e) {

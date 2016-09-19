@@ -293,6 +293,16 @@ Global.prototype.drawAll = function() {
 };
 
 /**
+ * Redraws the global, also does the previous search if there was one. 
+ */
+Global.prototype.redrawAll = function() {
+    if (this.searchbar.getMode() != SearchBar.MODE_EMPTY) {
+        this.searchbar.clearResults();  
+        this.searchbar.query();
+    }
+};
+
+/**
   * This function returns the height of the view with the larger/taller visualModel
   * 
   * @returns {Number} the max height between the two active views
