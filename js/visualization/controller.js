@@ -621,7 +621,7 @@ Controller.prototype.bindNodes = function(nodes) {
                 }).show();
             }
         }
-
+        
         // Unhighlight any previously clicked edges
         d3.selectAll("line.sel").each(function(d) {
             $(this).remove();
@@ -649,6 +649,7 @@ Controller.prototype.bindNodes = function(nodes) {
             }
         });
 
+        //Draws the tooltip
         tip.attr('class', 'd3-tip')
             .offset([-14, 0])
             .html(function(d) {
@@ -659,7 +660,16 @@ Controller.prototype.bindNodes = function(nodes) {
 
         tip.show(e);
 
-    }).on("mouseout", tip.hide);
+    }).on("mouseout", function(e){
+        //Return nodes to their original side on hover off
+        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100).attr({
+            "r": function(d) {
+                return d.getRadius();
+            }
+        });
+        tip.hide();
+
+    });
 };
 
 /**
