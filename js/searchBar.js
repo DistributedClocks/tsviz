@@ -103,7 +103,7 @@ function SearchBar() {
     });
 
     $("#searchButton").on("click", function(e) {
-        $("#searchResults").toggle();
+        $("#searchResults").show();
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
             Shiviz.getInstance().visualize(context.getValue(), regexp, "", "order", false);
@@ -593,7 +593,6 @@ SearchBar.prototype.query = function() {
         $("#searchbar").addClass("results");
         this.countMotifs();
         this.createResultsChart();
-        this.global.drawAll();
     }
 
     function handleMotifResponse(response) {
