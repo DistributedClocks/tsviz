@@ -881,6 +881,7 @@ svg {
   position: fixed; /*--ORIGINAL*/
   background: white;
   z-index: 2;
+  padding-top: 2%;
 }
 
 #hostBarSeparator {
