@@ -54,6 +54,7 @@ function HostPermutation(reverse) {
 
     /** @private */
     this.color = d3.scale.category20();
+    this.color2 = d3.scale.category20b();
 
     /** @private */
     this.hostColors = {};
@@ -175,7 +176,13 @@ HostPermutation.prototype.update = function() {
         for (var j = 0; j < hosts.length; j++) {
             var host = hosts[j];
             if (!this.hostColors[host]) {
-                this.hostColors[host] = this.color(host);
+                /*TODO Change this implementation */
+                if(hostColorisUnique(hosts, this.hostColors, this.color(host))){
+                    this.hostColors[host] = this.color(host);
+                }
+                else{
+                    this.hostColors[host] = this.color2(host); 
+                }
             }
         }
     }
@@ -299,3 +306,21 @@ LogOrderPermutation.prototype.update = function() {
         }
     }
 };
+
+/**
+ * Determines if a host color is unique and has not been assigned to another host 
+ * 
+ * @param {Array<hosts>} hosts list of all the hosts
+ * @param {Array<hostColors>} hostColors list of all host colors
+ * @param {Color} currentColor the current color to check if already assigned
+ * @returns {Boolean} true if host color is unique 
+ */
+function hostColorisUnique(hosts, hostColors, currentColor){
+
+    for (var j = 0; j < hosts.length; j++) {
+        var host = hosts[j];
+        console.log(hostColors[host]);
+        if(hostColors[host] == currentColor) return false; 
+    }
+    return true;
+}
