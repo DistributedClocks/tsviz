@@ -271,10 +271,12 @@ function Controller(global) {
 
     //If user presses backspace, confirm that they want to go away
     $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
-        if (e.which == 8) {                
-            if (confirm("Are you sure you want to navigate away?") == true) {
-                window.history.back();
-            }   
+        if (e.which == 8) {
+            if (!($(document.activeElement).attr("type") == "text" || $(document.activeElement).attr("type") == "textarea")) {
+                if (confirm("Are you sure you want to navigate away?") == true) {
+                    window.history.back();
+                }                  
+            }     
     }
 });    
     
