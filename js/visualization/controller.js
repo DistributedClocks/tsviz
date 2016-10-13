@@ -53,7 +53,7 @@ function Controller(global) {
         
         self.bindScroll();
     });
-
+    
     //User clicks somewhere
     $(window).unbind("click.dialog").on("click.dialog", function(e) {
         var $target = $(e.target);
@@ -268,6 +268,16 @@ function Controller(global) {
        this.classList.toggle("active");
        this.nextElementSibling.classList.toggle("show");
     });
+
+    //If user presses backspace, confirm that they want to go away
+    $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
+        if (e.which == 8) {                
+            if (confirm("Are you sure you want to navigate away?") == true) {
+                window.history.back();
+            }   
+    }
+});    
+    
 }
 
 /**
