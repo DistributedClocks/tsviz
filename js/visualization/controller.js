@@ -475,6 +475,28 @@ Controller.prototype.bindNodes = function(nodes) {
 
             if (!e.isCollapsed()) {
                 var fields = e.getNode().getLogEvents()[0].getFields();
+                var scaledTimeStamp = fields.timestamp - VisualEdge.minTimestamp;
+                    switch($("#graphtimescaleviz").val().trim()){
+                        case "ns":                        
+                        scaledTimeStamp = (fields.timestamp - VisualEdge.minTimestamp);
+                        break;
+                        
+                        case "us":                        
+                        scaledTimeStamp = ((fields.timestamp - VisualEdge.minTimestamp)/1000);
+                        break;
+                        
+                        case "ms":
+                        scaledTimeStamp = ((fields.timestamp - VisualEdge.minTimestamp)/1000000);
+                        break;
+
+                        case "s":
+                        scaledTimeStamp = ((fields.timestamp - VisualEdge.minTimestamp)/100000000);
+                        break; 
+
+                        default:
+                        break;
+                    }
+                
                 for (var i in fields) {
                     var $f = $("<tr>", {
                         "class": "field"
@@ -482,9 +504,16 @@ Controller.prototype.bindNodes = function(nodes) {
                     var $t = $("<th>", {
                         "class": "title"
                     }).text(i + ":");
-                    var $v = $("<td>", {
-                        "class": "value"
-                    }).text(fields[i]);
+                    if (i == 'timestamp'){
+                        var $v = $("<td>", {
+                            "class": "value"
+                        }).text(scaledTimeStamp + ($("#graphtimescaleviz").val().trim()));                        
+                    }
+                    else {
+                        var $v = $("<td>", {
+                            "class": "value"
+                        }).text(fields[i]);
+                    }
 
                     $f.append($t).append($v);
                     $(".fields").append($f);

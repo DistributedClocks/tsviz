@@ -54,7 +54,7 @@ function HostPermutation(reverse) {
 
     /** @private */
     this.color = d3.scale.category20();
-    this.color2 = d3.scale.category20b();
+    this.color2 = d3.scale.category10();
 
     /** @private */
     this.hostColors = {};
@@ -319,7 +319,6 @@ function hostColorisUnique(hosts, hostColors, currentColor){
 
     for (var j = 0; j < hosts.length; j++) {
         var host = hosts[j];
-        console.log(hostColors[host]);
         if(hostColors[host] == currentColor) return false; 
     }
     return true;
