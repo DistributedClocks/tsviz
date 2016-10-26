@@ -102,6 +102,10 @@ function Shiviz() {
     $("#refreshgraph").on("click", function() {
         context.go(2, true, true, true);
     });
+    
+    $("#zoomSlider").on("input change", function(){
+        console.log("Change");
+    });
 
     // Clears the file input value whenever 'Choose File' is clicked
     $("#file").on("click", function() {

@@ -2,6 +2,7 @@
 ;(function( $ ){
 
 	function drawSlider() {
+		console.log("Yeeeee");
 		//DRAW SLIDER
 		$("#sliderGroup #sliderContainer #slider").labeledslider({
           value: 100,
@@ -217,7 +218,8 @@
 				$corner.children().remove();
 				$(magnification).appendTo($corner);
 			}
-
+			var $vRule = $('.vRule');
+			$vRule.empty().height(0).outerHeight($("#graphSVG").height());
 			drawRuler(view.getVisualModel(), view.layout, view.$svg);
 			drawSlider();
 		});//each
