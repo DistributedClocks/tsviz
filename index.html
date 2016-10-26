@@ -445,11 +445,13 @@
                     </div>
                 </div>
                 <div id = "sliderGroup">
-                	<div id = "leftZoom" ></div>
+
                 	<div id = "sliderContainer">
-	                	<div id = "slider" ></div>	            
+                    <p class="range-field">
+                    <input type = "range" name = "zoomSlider" id = "zoomSlider" value = "50" min = "0" max = "100">
+                    </p>                    	                                        
+
 	                </div>
-	                <div id = "rightZoom" ></div>
                 </div>
             </div>            
             <div id="hostBar"></div>
@@ -515,7 +517,6 @@
 	                    <option value="s">seconds</option>
 	                </select>
 	                <button id="refreshgraph">Refresh Graph</button>
-                    <input type = "range" name = "zoomSlider" id = "zoomSlider" value = "50" min = "0" max = "100">
 	            </div>
             </div>
         </div>
