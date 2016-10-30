@@ -16,24 +16,20 @@ ScaleTransformation.prototype.setScale = function(scale) {
 }
 
 ScaleTransformation.prototype.transform = function(visualModel) {
-    var graph = visualModel.getGraph();
-    var nodes = graph.getNodes();
-    var visualNodes = visualModel.getVisualNodes();
+    var visualNodes = visualModel.getNonStartVisualNodes();
     var visualEdges = visualModel.getVisualEdges();
 
     var originY = Number.MAX_VALUE;
     visualNodes.forEach(function(visualNode) {
-        if(!visualNode.isStart() && visualNode.getY() <= originY) {
+        if(visualNode.getY() <= originY) {
             originY = visualNode.getY();
         }
     });
-    console.log(originY);
+
     visualNodes.forEach(function(visualNode) {
-        if(!visualNode.isStart()) {
-            var currentY = visualNode.getY();
-            var relativeY = currentY - originY;
-            visualNode.setY(originY + (relativeY / 2));
-        }
+        var currentY = visualNode.getY();
+        var relativeY = currentY - originY;
+        visualNode.setY(originY + (relativeY / 2));
     });
 
     visualEdges.forEach(function(visualEdge) {
