@@ -37,4 +37,5 @@ ScaleTransformation.prototype.transform = function(visualModel) {
     visualEdges.forEach(function(visualEdge) {
         visualEdge.updateCoords();
     });
+    console.log("Done scaling");
 };

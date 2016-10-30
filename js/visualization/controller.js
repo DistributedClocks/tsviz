@@ -453,6 +453,20 @@ Controller.prototype.bindNodes = function(nodes) {
     var viewL = views[0];
     var viewR = views[1];
     // var scaleTransformation = new ScaleTransformation();
+
+    //     var visualModel = this.getVisualModel(); 
+    // var transformer = this.getTransformer();
+    var scaleTransformation = new ScaleTransformation();
+    $("#zoomSlider").on("input", function(){
+        var scale = $("#zoomSlider")[0].value;
+        //transformer.setScale(scale);
+        scaleTransformation.setScale(scale);        
+        views.forEach(function(view) {
+            // view.getTransformer().setScale(scale);
+            // view.getTransformer().transform(view.getVisualModel());
+            scaleTransformation.transform(view.getVisualModel());
+        });
+    });
     
     nodes.on("click", function(e) {
         
@@ -462,7 +476,7 @@ Controller.prototype.bindNodes = function(nodes) {
         // }
 
         views.forEach(function(view) {
-            view.getTransformer().setScale(5);
+            //view.getTransformer().setScale(5);
         });
 
         //If the node info tab is hidden, unhide it
