@@ -45,6 +45,9 @@ function Transformer(collapseLocal) {
     this.highlightHostTransformation = new HighlightHostTransformation();
 
     /** @private */
+    this.scaleTransformation = new ScaleTransformation();
+    
+    /** @private */
     this.shrinkTimelinesTransformation = new ShrinkTimelinesTransformation();
 
     /** @private */
@@ -318,6 +321,10 @@ Transformer.prototype.setHighlightMotifTransformation = function(hmt) {
     }
 }
 
+Transformer.prototype.setScale = function(scale) {
+    this.scaleTransformation.setScale(scale);
+};
+
 /**
  * Transforms the specified {@link VisualGraph} and the underlying
  * {@link ModelGraph} based on the settings of this transformer. Note that this
@@ -327,6 +334,8 @@ Transformer.prototype.transform = function(visualModel) {
     var originalHosts = visualModel.getHosts();
     // get the underlying modelGraph
     var graph = visualModel.getGraph();
+
+    this.scaleTransformation.transform(visualModel);
 
     this.collapseNodesTransformation.transform(visualModel);
 

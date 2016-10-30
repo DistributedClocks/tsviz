@@ -452,14 +452,18 @@ Controller.prototype.bindNodes = function(nodes) {
         var views = this.global.getActiveViews();
     var viewL = views[0];
     var viewR = views[1];
-    var scaleTransformation = new ScaleTransformation();
+    // var scaleTransformation = new ScaleTransformation();
     
     nodes.on("click", function(e) {
         
-        scaleTransformation.transform(viewL.getVisualModel());
-        if(viewR != null) {
-            scaleTransformation.transform(viewR.getVisualModel());
-        }
+        // scaleTransformation.transform(viewL.getVisualModel());
+        // if(viewR != null) {
+        //     scaleTransformation.transform(viewR.getVisualModel());
+        // }
+
+        views.forEach(function(view) {
+            view.getTransformer().setScale(5);
+        });
 
         //If the node info tab is hidden, unhide it
         if(! $("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();

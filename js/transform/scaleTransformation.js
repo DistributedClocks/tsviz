@@ -1,7 +1,7 @@
 function ScaleTransformation() {
     /** @private */    
     this.baseScale = 1;
-    this.currentScale = 1;
+    this.scale = 1;
 }
 
 ScaleTransformation.prototype = Object.create(Transformation.prototype);
@@ -12,10 +12,12 @@ ScaleTransformation.prototype.setBaseScale = function(baseScale) {
 };
 
 ScaleTransformation.prototype.setScale = function(scale) {
-    this.currentScale = scale;
+    this.scale = scale;
 }
 
 ScaleTransformation.prototype.transform = function(visualModel) {
+    var scale = this.scale;
+    visualModel.setScale(scale);
     var visualNodes = visualModel.getNonStartVisualNodes();
     var visualEdges = visualModel.getVisualEdges();
 
@@ -29,7 +31,7 @@ ScaleTransformation.prototype.transform = function(visualModel) {
     visualNodes.forEach(function(visualNode) {
         var currentY = visualNode.getY();
         var relativeY = currentY - originY;
-        visualNode.setY(originY + (relativeY / 2));
+        visualNode.setY(originY + (relativeY / scale));
     });
 
     visualEdges.forEach(function(visualEdge) {

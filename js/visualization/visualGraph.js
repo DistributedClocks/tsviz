@@ -41,6 +41,8 @@ function VisualGraph(graph, layout, hostPermutation, minDistance, collapseLocal)
 
     this.timeRange = graph.timeRange;
 
+    this.scale = 1;
+
     this.minDistance = minDistance;
 
     /** @private */
@@ -283,6 +285,14 @@ VisualGraph.prototype.getWidth = function() {
  */
 VisualGraph.prototype.getHeight = function() {
     return this.layout.getHeight();
+};
+
+VisualGraph.prototype.getScale = function() {
+    return this.scale;
+};
+
+VisualGraph.prototype.setScale = function(scale) {
+    this.scale = scale;
 };
 
 // ---------- Private methods below ----------

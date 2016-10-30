@@ -66,7 +66,6 @@ SpaceTimeLayout.prototype.constructor = SpaceTimeLayout;
  * @param {HostPermutation} hostPermutation
  */
 SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
-
     this.height = 0;
 
     var offset = 30;
@@ -93,9 +92,10 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     timeStart = Number(visualGraph.timeRange[0]);
     timeEnd = Number(visualGraph.timeRange[1]);
 
+    var visualGraphScale = visualGraph.getScale();
     this.timeScale = d3.scale.linear()
         .domain([timeStart, timeEnd])
-        .range([this.rangeStart,this.rangeEnd]);
+        .range([this.rangeStart,this.rangeEnd/visualGraphScale]);
     
 
     var nodeToNumParents = {};
