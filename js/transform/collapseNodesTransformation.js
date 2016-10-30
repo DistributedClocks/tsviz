@@ -84,7 +84,6 @@ CollapseNodesTransformation.prototype.setThreshold = function(threshold) {
  * @param {ModelNode} node The node whose LogEvents will be added as exemptions
  */
 CollapseNodesTransformation.prototype.addExemption = function(node) {
-    // console.log("got here");
     // console.trace();
     var logEvents = node.getLogEvents();
     for ( var i = 0; i < logEvents.length; i++) {

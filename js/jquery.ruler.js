@@ -2,7 +2,6 @@
 ;(function( $ ){
 
 	function drawSlider() {
-		console.log("Yeeeee");
 		//DRAW SLIDER
 		$("#sliderGroup #sliderContainer #slider").labeledslider({
           value: 100,
@@ -136,7 +135,6 @@
 			    scaleEnd = scaleTime(scaleEnd);
 			    scaleMinDistance = scaleTime(scaleMinDistance);
 			    timeSpan = scaleTime(timeSpan);
-
 			    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
 
 			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");

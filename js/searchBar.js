@@ -374,7 +374,6 @@ SearchBar.prototype.update = function() {
 
     default:
         throw new Exception("Invalid mode in SearchBar");
-        break;
     }
 
     this.updateLocked = false;
@@ -578,7 +577,6 @@ SearchBar.prototype.query = function() {
 
         default:
             throw new Exception("SearchBar.prototype.query: invalid mode");
-            break;
         }
     }
     catch (e) {

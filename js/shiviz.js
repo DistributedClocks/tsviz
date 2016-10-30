@@ -104,7 +104,7 @@ function Shiviz() {
     });
     
     $("#zoomSlider").on("input change", function(){
-        console.log("Change");
+        //Do something on change of slider
     });
 
     // Clears the file input value whenever 'Choose File' is clicked
@@ -396,7 +396,7 @@ Shiviz.prototype.go = function(index, store, force, viz) {
                     }
                     scaleadjust = scaleadjust.toString();
                     $("#timeunitviz").val(scaleadjust).change();
-                    $("#graphtimescaleviz").val(timescale);
+                    $("#graphtimescaleviz").val(timescale);                    
                     this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, collapseLocal);
                 }
             } catch(e) {

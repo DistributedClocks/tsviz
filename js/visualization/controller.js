@@ -34,7 +34,7 @@ function Controller(global) {
         if (e.which == 27) {
             self.clearSidebarInfo();
             //Collapse node info tab
-            if($("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
+            if($("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();            
             $(".dialog").hide();
             d3.selectAll("circle.sel").each(function(d) {
                 $(this).remove();
@@ -58,7 +58,7 @@ function Controller(global) {
     $(window).unbind("click.dialog").on("click.dialog", function(e) {
         var $target = $(e.target);
         var tn = $target.prop("tagName");
-
+        
         // Test for click inside dialog
         if ($target.is(".dialog") || $target.parents(".dialog").length)
             return;
@@ -81,7 +81,7 @@ function Controller(global) {
         
         // Remove event info if the sidebar area wasn't clicked
         if($(event.target).closest('#sidebar').length) { 
-            // Leave sidebar info
+            // Leave sidebar info     
         }
         else {
             // Area other than the sidebar was clicked
@@ -478,19 +478,18 @@ Controller.prototype.bindNodes = function(nodes) {
                 var scaledTimeStamp = fields.timestamp - VisualEdge.minTimestamp;
                     switch($("#graphtimescaleviz").val().trim()){
                         case "ns":                        
-                        scaledTimeStamp = (fields.timestamp - VisualEdge.minTimestamp);
                         break;
                         
                         case "us":                        
-                        scaledTimeStamp = ((fields.timestamp - VisualEdge.minTimestamp)/1000);
+                        scaledTimeStamp /= 1000;
                         break;
                         
                         case "ms":
-                        scaledTimeStamp = ((fields.timestamp - VisualEdge.minTimestamp)/1000000);
+                        scaledTimeStamp /=1000000;
                         break;
 
                         case "s":
-                        scaledTimeStamp = ((fields.timestamp - VisualEdge.minTimestamp)/100000000);
+                        scaledTimeStamp /= 100000000;
                         break; 
 
                         default:
@@ -1447,4 +1446,12 @@ Controller.prototype.resetSidebar = function(){
     if($("#graphOptionsToggle").hasClass("active")) $("#graphOptionsToggle").click();
     if($("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
     if($("#searchResultsToggle").hasClass("active")) $("#searchResultsToggle").click();
+};
+
+
+Controller.prototype.hideSidebarElements = function(){
+    //Attaches clicks to active sidebar elements
+    if($("#nodeInfoToggle").hasClass("active") && $("#nodeInfoTab").hasClass("show")) $("#nodeInfoToggle").click();
+    if($("#graphOptionsToggle").hasClass("active") && $("#graphOptionsTab").hasClass("show")) $("#graphOptionsToggle").click();
+    if($("#searchResultsToggle").hasClass("active") && $("#searchOptions").hasClass("show")) $("#searchResultsToggle").click();
 };
