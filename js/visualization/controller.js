@@ -449,8 +449,18 @@ Controller.prototype.bindNodes = function(nodes) {
     var controller = this;
     var tip = d3.tip();
     nodes.call(tip);
+        var views = this.global.getActiveViews();
+    var viewL = views[0];
+    var viewR = views[1];
+    var scaleTransformation = new ScaleTransformation();
     
     nodes.on("click", function(e) {
+        
+        scaleTransformation.transform(viewL.getVisualModel());
+        if(viewR != null) {
+            scaleTransformation.transform(viewR.getVisualModel());
+        }
+
         //If the node info tab is hidden, unhide it
         if(! $("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
 
