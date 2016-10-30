@@ -103,7 +103,7 @@ function SearchBar() {
     });
 
     $("#searchButton").on("click", function(e) {
-        $("#searchResults").show();
+        $("#searchResultsTab").show();
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
             Shiviz.getInstance().visualize(context.getValue(), regexp, "", "order", false);
@@ -130,7 +130,7 @@ function SearchBar() {
         context.clearMotifsTab();
         context.global.getController().resetSidebar();
         context.global.getController().bindScroll();
-        $("#searchResults").hide();
+        $("#searchResultsTab").hide();
     });
 
     $("#searchbar .predefined button").on("click", function() {
@@ -144,14 +144,14 @@ function SearchBar() {
         context.clearStructure();
         context.clearResults();
         context.setValue("#event");
-        $("#searchResults").hide();
+        $("#searchResultsTab").hide();
     });
 
     $("#searchbar .eventbased #endbar input").on("input", function() {
         context.clearStructure();
         context.clearResults();
         context.setValue("#event");
-        $("#searchResults").hide();
+        $("#searchResultsTab").hide();
     });
 
     $("#searchbar .eventbased #onlyCommunication").on("change", function() {

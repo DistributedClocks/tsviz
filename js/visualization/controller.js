@@ -263,10 +263,44 @@ function Controller(global) {
         }
     });
 
-    //Set the behavior for the saparators on the sidebar
-    $("#sidebar .separator").on("click", function() {
-       this.classList.toggle("active");
-       this.nextElementSibling.classList.toggle("show");
+    //Set the behavior for the separators on the sidebar
+    $("#nodeInfoToggle").on("click", function(){
+        //if currently inactive
+        if(!$("#nodeInfoToggle").hasClass("active")){
+            $("#nodeInfoToggle").addClass("active");
+            $("#nodeInfoTab").addClass("show");            
+        }
+        //if currently active
+        else if($("#nodeInfoToggle").hasClass("active")){
+            $("#nodeInfoToggle").removeClass("active");
+            $("#nodeInfoTab").removeClass("show");            
+        }        
+    });
+
+    $("#searchResultsToggle").on("click", function(){
+        //if currently inactive
+        if(!$("#searchResultsToggle").hasClass("active")){
+            $("#searchResultsToggle").addClass("active");
+            $("#searchResultsTab").addClass("show");            
+        }
+        //if currently active
+        else if($("#searchResultsToggle").hasClass("active")){
+            $("#searchResultsToggle").removeClass("active");
+            $("#searchResultsTab").removeClass("show");            
+        }        
+    });
+
+    $("#graphOptionsToggle").on("click", function(){
+        //if currently inactive
+        if(!$("#graphOptionsToggle").hasClass("active")){
+            $("#graphOptionsToggle").addClass("active");
+            $("#graphOptionsTab").addClass("show");            
+        }
+        //if currently active
+        else if($("#graphOptionsToggle").hasClass("active")){
+            $("#graphOptionsToggle").removeClass("active");
+            $("#graphOptionsTab").removeClass("show");            
+        }        
     });
 
     //If user presses backspace, confirm that they want to go away

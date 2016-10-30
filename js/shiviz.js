@@ -101,6 +101,8 @@ function Shiviz() {
     
     $("#refreshgraph").on("click", function() {
         context.go(2, true, true, true);
+        //1 switch to render graph, another to render elements
+        context.go(2, true, true, true);        
     });
     
     $("#zoomSlider").on("input change", function(){
@@ -313,7 +315,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
 
         //Draw ruler
         $("#graph").ruler(views[0]);
-        $("#searchResults").hide();
+        $("#searchResultsTab").hide();
         global.getController().bindScroll();
     }
     catch (err) {
