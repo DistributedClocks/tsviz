@@ -76,12 +76,22 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
         var hasHiddenChild = false;
 
         while (removalCount-- > 0) {
+			remove = true;
             var prev = curr.getPrev();
             logEvents = logEvents.concat(prev.getLogEvents().reverse());
             var removedVN = model.getVisualNodeByNode(prev);
             hasHiddenParent |= removedVN.hasHiddenParent();
             hasHiddenChild |= removedVN.hasHiddenChild();
-            prev.remove();
+            //prev.remove();
+			var children = prev.getChildren();
+			var parents = prev.getParents();
+			if (children.length > 0){
+				remove = false;
+			}
+			if (parents.length > 0){
+				remove = false;
+			}
+			if (remove) prev.remove();
         }
         var newNode = new ModelNode(logEvents.reverse());
         curr.insertPrev(newNode);
@@ -125,7 +135,7 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
 	                if (((temp3) >= model.minDistance) || CollapseNodesTransformation.prototype.isExempt.call(this, curr)) {
 	                        if(groupCount >= this.threshold) {
 	                            collapse(curr, groupCount);
-	                            // console.log("collapsing in curr");
+	                          
 	                            groupCount = -1;
 	                            ngroups++;
 	                        }
