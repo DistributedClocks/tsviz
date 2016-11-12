@@ -45,16 +45,14 @@
 	function scaleTime(number){
 		switch($("#graphtimescaleviz").val().trim()){
 	        case "ns":
+			return number;
 	        break;
 	        case "us":
 	        return number / 1000; 
-	        break;
 	        case "ms":
 	        return number / 1000000; 
-	        break;
 	        case "s":
 	        return number / 1000000000; 
-	        break;
 	    }
 	}
 
