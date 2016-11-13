@@ -51,16 +51,14 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 			// do nothing
 		} else if(node.isTail()) {
 			// do nothing
-		} else {
+		} else { 
+			// it is a regular node
 			nextTimestamp = node.getLogEvents()[0].getFields().timestamp;
-		}
-
-		if(nextTimestamp < smallestTimestamp && nextTimestamp > 0) {
-			smallestTimestamp = nextTimestamp;
+			if(nextTimestamp < smallestTimestamp) {
+				smallestTimestamp = nextTimestamp;
+			}
 		}
 	});
-
-	console.log(smallestTimestamp);
 
 	//Isolate edges that are longer than the screen
 	for(var i = 0; i < nodes.length; i++){
@@ -88,38 +86,33 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	function findInterval(longEdges, interval, edge, i, nhosts, threshold){
 		var windowStart = edge.sourceVisualNode.getY();
 		interval.maxSourceY = windowStart;
-		interval.startNode = edge.sourceVisualNode;
 		interval.minTargetY = Number.MAX_VALUE;
 		var windowEnd = windowStart + threshold;
+
 		if (edge.targetVisualNode.getY() > windowEnd) {
 			interval.minTargetY = edge.targetVisualNode.getY();
 			interval.endNode = edge.targetVisualNode;
 		}
+		interval.startNode = edge.sourceVisualNode;
 		interval.hosts.push(edge.sourceVisualNode.getHost());
 		interval.edges.push(edge);
-		console.log("threshold: "+threshold);
-		for(var j = 0; j < longEdges.length; j++){
 
+		for(var j = 0; j < longEdges.length; j++){
 		// for(var j = 0; j < longEdges.length && j != i; j++){
 			if(longEdges[j].sourceVisualNode.getY() >= windowStart || interval.hosts.length == nhosts){ 
 				break;
 			}
+
 			if(longEdges[j].sourceVisualNode.getY() <= windowStart && longEdges[j].targetVisualNode.getY() > windowEnd){ //No nodes in the middle of interval
 				//Include edge
 				if(longEdges[j].targetVisualNode.getY() < interval.minTargetY){ //If edge target node position is smaller than current minimum target Y, update
 					interval.minTargetY = longEdges[j].targetVisualNode.getY();
 					interval.endNode = longEdges[j].targetVisualNode;
-					console.log("edge: ")
-					console.log(longEdges[j]);
-					console.log("endNode: ")
-					console.log(interval.endNode);
 				}
 				interval.hosts.push(longEdges[j].sourceVisualNode.getHost());
 				interval.edges.push(longEdges[j]);
 			}
 		}
-				console.log("minTargetY: "+ interval.minTargetY);
-
 
 		return interval.hosts.length == nhosts;
 	}
@@ -160,10 +153,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	}
 	//--------- END OF SECOND DRAFT
 
-	console.log("Intervals: ");
-	console.log(intervals);
 	//COLLAPSE!
-
 	var cumulativeShift = 0;
 
 	//Shift nodes up and update common edges
@@ -199,17 +189,19 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	        
 		}
 		//Save timestamps delimiting compressed region
-		if(intervals[i].startNode.getNode().isHead()) compression.original.timestart = smallestTimestamp;
-		else if(intervals[i].startNode.isCollapsed()) compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[intervals[i].startNode.getNode().getLogEvents().length-1].getFields().timestamp;
-		else compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[0].getFields().timestamp;
-		console.log(intervals[i]);
-		console.log(compression.original.timestart);
+		if (intervals[i].startNode.getNode().isHead()) {
+			compression.original.timestart = smallestTimestamp;
+		} else if(intervals[i].startNode.isCollapsed()) {
+			compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[intervals[i].startNode.getNode().getLogEvents().length-1].getFields().timestamp;
+		} else {
+			compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[0].getFields().timestamp;
+		}
 		compression.original.timeend = intervals[i].endNode.getNode().getLogEvents()[0].getFields().timestamp;
 
 		model.compressedParts.push(compression);
 		cumulativeShift += compression.shiftAmount;
-
 	}
+	
 	//Modify edges
 	for(var i = 0; i < edgeCollection.length; i++){
 		var e = edgeCollection[i];
