@@ -71,7 +71,6 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
     var graph = model.getGraph();
 
     function collapse(curr, removalCount) {
-		console.log(removalCount);
 		var removed = 0;
         var logEvents = [];
         var hasHiddenParent = false;
