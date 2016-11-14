@@ -46,7 +46,6 @@
 		switch($("#graphtimescaleviz").val().trim()){
 	        case "ns":
 			return number;
-	        break;
 	        case "us":
 	        return number / 1000; 
 	        case "ms":
@@ -85,9 +84,9 @@
 	        height = svg.attr("height");
 
 	        //Remove old ruler if it exists
-	       	d3.selectAll(".ruler.vRule svg").remove();
+	       	d3.selectAll("#vRule svg").remove();
 	       	//Draw ruler
-			var ruler = d3.selectAll(".ruler.vRule").append("svg")
+			var ruler = d3.selectAll("#vRule").append("svg")
 	        .attr("class", "axisSVG")
 	        .attr("height", height)
 	        .attr("width", "50px").append("g")
@@ -97,7 +96,7 @@
 
 		}else{ // If there are compressed intervals
 			//Remove old ruler if it exists
-			d3.selectAll(".ruler.vRule svg").remove();
+			d3.selectAll("#vRule svg").remove();
 
 			
 			var minDistPix = layout.minDistancePixels;
@@ -109,7 +108,7 @@
 
 			height = svg.attr("height");
 
-			var ruler = d3.selectAll(".ruler.vRule").append("svg")
+			var ruler = d3.selectAll("#vRule").append("svg")
 	        .attr("class", "axisSVG")
 	        .attr("height", height)
 	        .attr("width", "50px");
@@ -178,9 +177,11 @@
 		};//defaults
 		var settings = $.extend({},defaults);
 		
+		$('#vRule').remove();
+		$('#rulerLabel').remove();
+
 		var vRule = '<div id="vRule" class="ruler vRule"></div>';
-		var corner = '<div class="ruler corner"></div>';
-		
+		var corner = '<div id="rulerLabel" class="ruler corner"></div>';
 
 		//WINDOW RESIZE
 		$(window).resize(function(e){
