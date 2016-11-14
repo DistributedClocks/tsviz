@@ -43,6 +43,22 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	var nodes = model.graph.getAllNodes();
 	var longEdges = [];
 	var edge;
+	var smallestTimestamp = Number.MAX_VALUE;
+
+	nodes.forEach(function(node) {
+		var nextTimestamp = 0;
+		if(node.isHead()) { 
+			// do nothing
+		} else if(node.isTail()) {
+			// do nothing
+		} else { 
+			// it is a regular node
+			nextTimestamp = node.getLogEvents()[0].getFields().timestamp;
+			if(nextTimestamp < smallestTimestamp) {
+				smallestTimestamp = nextTimestamp;
+			}
+		}
+	});
 
 	//Isolate edges that are longer than the screen
 	for(var i = 0; i < nodes.length; i++){
@@ -67,14 +83,17 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	});
 
 	//--------- SECOND DRAFT
-
 	function findInterval(longEdges, interval, edge, i, nhosts, threshold){
-
 		var windowStart = edge.sourceVisualNode.getY();
 		interval.maxSourceY = windowStart;
-		interval.startNode = edge.sourceVisualNode;
 		interval.minTargetY = Number.MAX_VALUE;
 		var windowEnd = windowStart + threshold;
+
+		if (edge.targetVisualNode.getY() > windowEnd) {
+			interval.minTargetY = edge.targetVisualNode.getY();
+			interval.endNode = edge.targetVisualNode;
+		}
+		interval.startNode = edge.sourceVisualNode;
 		interval.hosts.push(edge.sourceVisualNode.getHost());
 		interval.edges.push(edge);
 
@@ -83,6 +102,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 			if(longEdges[j].sourceVisualNode.getY() >= windowStart || interval.hosts.length == nhosts){ 
 				break;
 			}
+
 			if(longEdges[j].sourceVisualNode.getY() <= windowStart && longEdges[j].targetVisualNode.getY() > windowEnd){ //No nodes in the middle of interval
 				//Include edge
 				if(longEdges[j].targetVisualNode.getY() < interval.minTargetY){ //If edge target node position is smaller than current minimum target Y, update
@@ -104,10 +124,9 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 				var node = visualGraph.graph.getLastValidNodebyHost(hosts[i]);
 				var visual = visualGraph.getVisualNodeByNode(node);
 				if(visual.getY() > interval.maxSourceY) return false;
-			}
+			}			
 		}
 		return true;
-
 	}
 
 	var intervals = [];
@@ -135,7 +154,6 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	//--------- END OF SECOND DRAFT
 
 	//COLLAPSE!
-
 	var cumulativeShift = 0;
 
 	//Shift nodes up and update common edges
@@ -171,15 +189,19 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	        
 		}
 		//Save timestamps delimiting compressed region
-		if(intervals[i].startNode.isCollapsed()) compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[intervals[i].startNode.getNode().getLogEvents().length-1].getFields().timestamp;
-		else compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[0].getFields().timestamp;
-		
+		if (intervals[i].startNode.getNode().isHead()) {
+			compression.original.timestart = smallestTimestamp;
+		} else if(intervals[i].startNode.isCollapsed()) {
+			compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[intervals[i].startNode.getNode().getLogEvents().length-1].getFields().timestamp;
+		} else {
+			compression.original.timestart = intervals[i].startNode.getNode().getLogEvents()[0].getFields().timestamp;
+		}
 		compression.original.timeend = intervals[i].endNode.getNode().getLogEvents()[0].getFields().timestamp;
 
 		model.compressedParts.push(compression);
 		cumulativeShift += compression.shiftAmount;
-
 	}
+	
 	//Modify edges
 	for(var i = 0; i < edgeCollection.length; i++){
 		var e = edgeCollection[i];
