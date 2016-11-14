@@ -37,6 +37,16 @@ ShrinkTimelinesTransformation.prototype.setThreshold = function(threshold) {
     this.threshold = threshold;
 };
 
+/**
+ * Shifts nodes which are off the screen back onto the screen
+ * @param curr current node to check if off screen
+ * Modifies {@visualNode}
+ */
+function shiftOffsetNodes(curr){
+	if (curr.isHead()){
+		console.log(curr.setY(curr.getY() + 10));
+	}
+}
 
 ShrinkTimelinesTransformation.prototype.transform = function(model) {
 	
