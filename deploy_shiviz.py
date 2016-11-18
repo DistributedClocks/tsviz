@@ -121,13 +121,11 @@ def minify(branch, info):
     #Include scripts
     for r, d, f in os.walk('local_scripts'):
         for f in f:
-                print "Filename:  " + url + os.path.join(r, f)
                 params += [('code_url', url + os.path.join(r, f))]
     # Traverse all of the files underneath the js/ dir
     for root, dirs, files in os.walk('js'):
         for file in files:
             if not ('dev.js' in file):
-                print "Filename:  " + url + os.path.join(root, file)
                 params += [('code_url', url + os.path.join(root, file))]
 
     urlparams = urllib.urlencode(params)
