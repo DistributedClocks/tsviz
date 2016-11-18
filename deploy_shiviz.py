@@ -119,14 +119,14 @@ def minify(branch, info):
 
     url = 'https://bitbucket.org/mhnnunes/shiviz/raw/' + branch + '/'
     #Include scripts
-    for root, dirs, files in os.walk('local_scripts'):
-        for file in files:
-                print "Filename:  " + url + os.path.join(root, file)
-                params += [('code_url', url + os.path.join(root, file))]
+    for r, d, f in os.walk('local_scripts'):
+        for f in f:
+                print "Filename:  " + url + os.path.join(r, f)
+                params += [('code_url', url + os.path.join(r, f))]
     # Traverse all of the files underneath the js/ dir
     for root, dirs, files in os.walk('js'):
         for file in files:
-            if not ('dev.js' in files):
+            if not ('dev.js' in file):
                 print "Filename:  " + url + os.path.join(root, file)
                 params += [('code_url', url + os.path.join(root, file))]
 
@@ -222,17 +222,17 @@ def main():
 
     # Replace reference to js files with minified js in deployed version
     # of index.html.
-    # runcmd("sed -i '' -e 's/<script[^>]*><\/script>//g' " + dist_dir + "index.html")
-    # runcmd("sed -i '' -e 's/<\/body>/<script src=\"js\/min.js\"><\/script><\/body>/g' " + dist_dir + "index.html")
+    runcmd("sed -i '' -e 's/<script[^>]*><\/script>//g' " + dist_dir + "index.html")
+    runcmd("sed -i '' -e 's/<\/body>/<script src=\"js\/min.js\"><\/script><\/body>/g' " + dist_dir + "index.html")
     
-    # # Add any files that are new and remove any files that no longer exist
-    # runcmd("cd " + dist_dir + " && git add -A")
+    # Add any files that are new and remove any files that no longer exist
+    runcmd("cd " + dist_dir + " && git add -A")
 
-    # # Commit the deployed dir.
-    # runcmd("cd " + dist_dir + " && git commit -m 'shiviz auto-deployment test '")
+    # Commit the deployed dir.
+    runcmd("cd " + dist_dir + " && git commit -m 'shiviz auto-deployment test '")
     
-    # # Push the deployed dir.
-    # runcmd("cd " + dist_dir + " && git push")
+    # Push the deployed dir.
+    runcmd("cd " + dist_dir + " && git push")
 
     print
     print "Done."
