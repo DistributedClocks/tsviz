@@ -71,17 +71,28 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
     var graph = model.getGraph();
 
     function collapse(curr, removalCount) {
+		var removed = 0;
         var logEvents = [];
         var hasHiddenParent = false;
         var hasHiddenChild = false;
 
         while (removalCount-- > 0) {
+			remove = true;
             var prev = curr.getPrev();
             logEvents = logEvents.concat(prev.getLogEvents().reverse());
             var removedVN = model.getVisualNodeByNode(prev);
             hasHiddenParent |= removedVN.hasHiddenParent();
             hasHiddenChild |= removedVN.hasHiddenChild();
-            prev.remove();
+
+			var children = prev.getChildren();
+			var parents = prev.getParents();
+			if (children.length > 0 || parents.length > 0){
+				remove = false;
+			}
+			if (remove){
+				prev.remove();
+				removed += 1;
+			} 
         }
         var newNode = new ModelNode(logEvents.reverse());
         curr.insertPrev(newNode);
@@ -91,6 +102,7 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
         visualNode.setLabel(logEvents.length);
         visualNode.setHasHiddenParent(hasHiddenParent);
         visualNode.setHasHiddenChild(hasHiddenChild);
+		return removed;
     }
 
     var hosts = graph.getHosts();
@@ -109,6 +121,7 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
 
 	    while (curr != null) { 
 
+			prev = curr;
 	        curr = curr.getNext();            
 	        
 	        if(curr != null){
@@ -124,10 +137,10 @@ CollapseTemporallyCloseNodesTransformation.prototype.transform = function(model)
 	                temp3 = temp1 - temp2;
 	                if (((temp3) >= model.minDistance) || CollapseNodesTransformation.prototype.isExempt.call(this, curr)) {
 	                        if(groupCount >= this.threshold) {
-	                            collapse(curr, groupCount);
-	                            // console.log("collapsing in curr");
-	                            groupCount = -1;
-	                            ngroups++;
+	                            if (collapse(curr, groupCount) > 0){
+									groupCount = -1;
+									ngroups++;
+								}
 	                        }
 	                }else{
 	                    (groupCount == 0)? groupCount = 2 : groupCount++;

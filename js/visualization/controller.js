@@ -264,6 +264,7 @@ function Controller(global) {
     });
 
     //Set the behavior for the separators on the sidebar
+    $("#nodeInfoToggle").unbind("click"); // unbind before to make sure we aren't adding extra listeners
     $("#nodeInfoToggle").on("click", function(){
         //if currently inactive
         if(!$("#nodeInfoToggle").hasClass("active")){
@@ -277,6 +278,7 @@ function Controller(global) {
         }        
     });
 
+    $("#searchResultsToggle").unbind("click"); // unbind before to make sure we aren't adding extra listeners
     $("#searchResultsToggle").on("click", function(){
         //if currently inactive
         if(!$("#searchResultsToggle").hasClass("active")){
@@ -290,6 +292,7 @@ function Controller(global) {
         }        
     });
 
+    $("#graphOptionsToggle").unbind("click"); // unbind before to make sure we aren't adding extra listeners
     $("#graphOptionsToggle").on("click", function(){
         //if currently inactive
         if(!$("#graphOptionsToggle").hasClass("active")){
