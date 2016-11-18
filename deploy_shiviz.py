@@ -1,11 +1,16 @@
 #!/usr/bin/python
 
 '''
+
+Code for confimation message obtained from:
+http://code.activestate.com/recipes/541096-prompt-the-user-for-confirmation/
+Accessed on 03/Nov/2016
+
 Purpose:
 =========
 
 This script packages and deploys the shiviz project to:
-http://bestchai.bitbucket.org/shiviz/
+http://mhnnunes.bitbucket.org/shiviz/
 
 
 Usage:
@@ -24,9 +29,9 @@ Usage:
   3. Adds google analytics tracking.
 
   4. Copies over the entire d3/ source tree over to a destination that
-     is assumed to be the http://bestchai.bitbucket.org/shiviz/ repo.
+     is assumed to be the http://mhnnunes.bitbucket.org/shiviz/ repo.
   
-  5. Commits and pushes the http://bestchai.bitbucket.org/shiviz/ repo.
+  5. Commits and pushes the http://mhnnunes.bitbucket.org/shiviz/ repo.
 '''
 
 
@@ -35,6 +40,45 @@ import os
 import httplib
 import urllib
 import subprocess
+
+def confirm(prompt=None, resp=False):
+    """prompts for yes or no response from the user. Returns True for yes and
+    False for no.
+
+    'resp' should be set to the default value assumed by the caller when
+    user simply types ENTER.
+
+    >>> confirm(prompt='Create Directory?', resp=True)
+    Create Directory? [y]|n: 
+    True
+    >>> confirm(prompt='Create Directory?', resp=False)
+    Create Directory? [n]|y: 
+    False
+    >>> confirm(prompt='Create Directory?', resp=False)
+    Create Directory? [n]|y: y
+    True
+
+    """
+    
+    if prompt is None:
+        prompt = 'Confirm'
+
+    if resp:
+        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+    else:
+        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+        
+    while True:
+        ans = raw_input(prompt)
+        if not ans:
+            return resp
+        if ans not in ['y', 'Y', 'n', 'N']:
+            print 'please enter y or n.'
+            continue
+        if ans == 'y' or ans == 'Y':
+            return True
+        if ans == 'n' or ans == 'N':
+            return False
 
 
 def get_cmd_output(cmd, args):
@@ -64,18 +108,21 @@ def minify(branch, info):
     returns the minified resulting js code.
     '''
     params = [
-    ('code_url', 'http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.js'),
-    ('code_url', 'http://d3js.org/d3.v3.min.js'),
+    # ('code_url', 'http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js'),
+    # ('code_url', 'https://d3js.org/d3-axis.v1.min.js'),
+    # ('code_url', 'http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js'),
+    # ('code_url', 'https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'),
     ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
     ('output_format', 'text'),
     ('output_info', info)
     ]
 
-    url = 'https://bitbucket.org/bestchai/shiviz/raw/' + branch + '/'
+    url = 'https://bitbucket.org/mhnnunes/shiviz/raw/' + branch + '/'
     # Traverse all of the files underneath the js/ dir
     for root, dirs, files in os.walk('js'):
         for file in files:
             if not ('dev.js' in file):
+                print "Filename:  " + url + os.path.join(root, file)
                 params += [('code_url', url + os.path.join(root, file))]
 
     urlparams = urllib.urlencode(params)
@@ -95,19 +142,25 @@ def main():
     '''
     
     src_dir = "./"
-    dist_dir = "../bestchai.bitbucket.org/shiviz/"
+    dist_dir = "../mhnnunes.bitbucket.org/shiviz/"
 
     print "Deploying to: " + dist_dir
     print "from: " + src_dir
 
-    # TODO: add a confirmation yes/no dialog, before going ahead with rm.
+    # Confirmation message.
 
-    # Remove previously deployed version of shiviz.
-    if (os.path.exists(dist_dir)):
-        runcmd("rm -rf " + dist_dir + "*")
+    if( confirm("Is it okay to remove the previous deployed version?", False) ):
+        # Remove previously deployed version of shiviz.
+        if (os.path.exists(dist_dir)):
+            runcmd("rm -rf " + dist_dir + "*")
+        else:
+            print "Error: deployment dir is not where it is expected."
+            sys.exit(-1)
     else:
-        print "Error: deployment dir is not where it is expected."
+        print "Deployment failed."
         sys.exit(-1)
+
+    
 
     # Copy over the source.
     if (os.path.exists(src_dir)):
@@ -119,15 +172,15 @@ def main():
         sys.exit(-1)
 
     # Compile docs
-    if (runcmd("perl docgen.pl " + dist_dir) != 0):
-        sys.exit(-1)
+    # if (runcmd("perl docgen.pl " + dist_dir) != 0):
+    #     sys.exit(-1)
 
     # Find out the current revision id:
-    revid = get_cmd_output('hg', ['id', '-i']);
+    revid = get_cmd_output('git', ['rev-parse', 'HEAD']);
     revid = revid.rstrip()
 
     # Find out the current branch:
-    branch = get_cmd_output('hg', ['branch']);
+    branch = get_cmd_output('git', ['branch']);
     branch = branch.rstrip();
 
     print "Revid is : " + revid
@@ -144,13 +197,14 @@ def main():
 
     # Minify the code
     print "Minifying... please wait"
-    data = minify(branch, 'compiled_code')
+    data = minify(revid, 'compiled_code')
     print "Minified size: %i" % len(data)
 
     if len(data) < 500:
         print "Minification failed!"
-        print minify(branch, 'errors')
+        print minify(revid, 'errors')
         return
+
 
     print "Minification successful!"
     # Add hg revision id to the minified code.
@@ -167,13 +221,13 @@ def main():
     runcmd("sed -i '' -e 's/<\/body>/<script src=\"js\/min.js\"><\/script><\/body>/g' " + dist_dir + "index.html")
     
     # Add any files that are new and remove any files that no longer exist
-    runcmd("cd " + dist_dir + " && hg addremove")
+    runcmd("cd " + dist_dir + " && git add -A")
 
     # Commit the deployed dir.
-    runcmd("cd " + dist_dir + " && hg commit -m 'shiviz auto-deployment'")
+    runcmd("cd " + dist_dir + " && git commit -m 'shiviz auto-deployment test '")
     
     # Push the deployed dir.
-    runcmd("cd " + dist_dir + " && hg push")
+    runcmd("cd " + dist_dir + " && git push")
 
     print
     print "Done."
