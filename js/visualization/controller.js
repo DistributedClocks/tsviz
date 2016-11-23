@@ -1379,9 +1379,9 @@ Controller.prototype.formatSidebarInfo = function(sourceNode, targetNode, number
                                     .attr("stroke-width", 1)
                                     .attr("opacity", 0.5)
                                     .attr("x1", 8)
-                                    .attr("y1", positionTop - 70)
+                                    .attr("y1", positionTop - 80)
                                     .attr("x2", 8)
-                                    .attr("y2", positionBottom - 70);
+                                    .attr("y2", positionBottom - 80);
     }
 };
 
