@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link rel="canonical" href="http://mhnnunes.bitbucket.io/shiviz/">
     <link rel="shortcut icon" href="images/favico.ico" type="image/x-icon" />
-    <title>ShiViz</title>
+    <title>TSViz</title>
     <link href="css/style.css" type="text/css" rel="stylesheet">
     <!-- LOCAL VERSIONS -->
     <script src="local_scripts/d3.min.js"></script>
@@ -39,12 +39,12 @@
             <div id="versionContainer"></div>
         </header>
         <div class="content">
-            <h1>ShiViz++</h1>
+            <h1>TSViz</h1>
             <h2>
-                The <strong>ShiViz++</strong> vis&shy;ual&shy;izat&shy;ion engi&shy;ne gene&shy;r&shy;ate&shy;s inter&shy;active comm&shy;uni&shy;ca&shy;tion graphs from dis&shy;tri&shy;but&shy;ed sys&shy;tem exe&shy;cut&shy;ion logs.
+                The <strong>TSViz</strong> vis&shy;ual&shy;izat&shy;ion engi&shy;ne gene&shy;r&shy;ate&shy;s inter&shy;active comm&shy;uni&shy;ca&shy;tion graphs from execution logs of complex multi-threaded systems.
             </h2>
 
-            <button class="try">Try out ShiViz++</button>
+            <button class="try">Try out TSViz</button>
 
             <h3>What am I looking at?</h3>
             <p>
@@ -109,7 +109,7 @@
                   <li>
                         <strong>Expand/collapse non-communicating events</strong>
                         <br>
-                        ShiViz collapses adjacent process events not
+                        TSViz collapses adjacent process events not
                         incident on any communication edges into
                         larger circles. Click on one of these nodes
                         and select "expand" to undo this collapsing.
@@ -117,7 +117,7 @@
                   <li>
                     <strong>Search for keywords or subgraphs</strong>
                         <br>
-                        ShiViz supports keyword search across the
+                        TSViz supports keyword search across the
                         parsed fields. Search supports logical
                         connectives and regular expressions. You can
                         also search for subgraphs or communication 
@@ -169,7 +169,7 @@
 
             <h3 id="helpsectiontitle">How is this tool useful?</h3>
             <p>
-                Here are four use-cases that ShiViz helps to support:
+                Here are four use-cases that TSViz helps to support:
                 <ul>
                     <li>
                         <strong>Understanding the communication graph.</strong>
@@ -191,9 +191,9 @@
                       <strong>Execution comparison and
                       differencing</strong>
                       <br>
-                      Use ShiViz to process logs containing multiple
+                      Use TSViz to process logs containing multiple
                       executions. Compare executions pairwise,
-                      side-by-side. Use ShiViz to highlight event and
+                      side-by-side. Use TSViz to highlight event and
                       host differences between two executions to
                       understand where the executions diverge.
                     </li>
@@ -221,14 +221,14 @@
                 <pre>(?&lt;date&gt;\d\d/\d\d/\d\d \d\d:\d\d (AM|PM)) (?&lt;event&gt;.*)\n(?&lt;host&gt;\w+) (?&lt;clock&gt;\{.*\})</pre>
             </p>
             <p>
-              The capture groups in ShiViz is not standard regexp
+              The capture groups in TSViz is not standard regexp
               syntax. We recommend using a plain
               <a href="https://www.debuggex.com/">JS regexp tester</a>
               with regular capture groups to develop expressions, and
               name the capture groups afterwards.
             </p>
 
-            <h3>How can I generate logs to use in ShiViz?</h3>
+            <h3>How can I generate logs to use in TSViz?</h3>
             <p>
                 You can study the execution of any system that
                 produces logs in a format that can be parsed using the
@@ -236,7 +236,7 @@
             </p>
             <p>
               We recommend two instrumentation libraries that output
-              ShiViz-compatible logs:
+              TSViz-compatible logs:
               <ul>
                 <li><a href="http://bitbucket.org/bestchai/shivector/wiki/Home">ShiVector</a>:
                   instruments Java programs</li>
@@ -247,8 +247,8 @@
 
             <h3>More information</h3>
               <ul>
-                <li><a href="https://bitbucket.org/bestchai/shiviz/src">ShiViz source code</a></li>
-                <li><a href="https://bitbucket.org/bestchai/shiviz/wiki/Home">ShiViz wiki</a></li>
+                <li><a href="https://bitbucket.org/bestchai/shiviz/src">TSViz source code</a></li>
+                <li><a href="https://bitbucket.org/bestchai/shiviz/wiki/Home">TSViz wiki</a></li>
               </ul>
         </div>
         <div class="shivizexample">
