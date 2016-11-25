@@ -9,29 +9,29 @@ Accessed on 03/Nov/2016
 Purpose:
 =========
 
-This script packages and deploys the shiviz project to:
-http://mhnnunes.bitbucket.org/shiviz/
+This script packages and deploys the tsviz project to:
+http://bestchai.bitbucket.org/tsviz/
 
 
 Usage:
 =======
 
-- This script must be run from within the top level shiviz source directory.
+- This script must be run from within the top level tsviz source directory.
 
 - This script must be run from OSX :)
 
 - This script:
-  1. Generates the documentation for shiviz using jsdoc3
+  1. Generates the documentation for tsviz using jsdoc3
 
-  2. Removes the proxy hack that allows shiviz to access log files
-     when shiviz is run locally.
+  2. Removes the proxy hack that allows tsviz to access log files
+     when tsviz is run locally.
 
   3. Adds google analytics tracking.
 
   4. Copies over the entire d3/ source tree over to a destination that
-     is assumed to be the http://mhnnunes.bitbucket.org/shiviz/ repo.
+     is assumed to be the http://bestchai.bitbucket.org/tsviz/ repo.
   
-  5. Commits and pushes the http://mhnnunes.bitbucket.org/shiviz/ repo.
+  5. Commits and pushes the http://bestchai.bitbucket.org/tsviz/ repo.
 '''
 
 
@@ -117,7 +117,7 @@ def minify(branch, info):
     ('output_info', info)
     ]
 
-    url = 'https://bitbucket.org/mhnnunes/shiviz/raw/' + branch + '/'
+    url = 'https://bitbucket.org/mhnnunes/tsviz/raw/' + branch + '/'
     #Include scripts
     for r, d, f in os.walk('local_scripts'):
         for f in f:
@@ -145,7 +145,7 @@ def main():
     '''
     
     src_dir = "./"
-    dist_dir = "../mhnnunes.bitbucket.org/shiviz/"
+    dist_dir = "../bestchai.bitbucket.org/tsviz/"
 
     print "Deploying to: " + dist_dir
     print "from: " + src_dir
@@ -153,7 +153,7 @@ def main():
     # Confirmation message.
 
     if( confirm("Is it okay to remove the previous deployed version?", False) ):
-        # Remove previously deployed version of shiviz.
+        # Remove previously deployed version of tsviz.
         if (os.path.exists(dist_dir)):
             runcmd("rm -rf " + dist_dir + "*")
         else:
@@ -210,7 +210,7 @@ def main():
 
 
     print "Minification successful!"
-    # Add hg revision id to the minified code.
+    # Add revision id to the minified code.
     data = data.replace("revision: ZZZ", "revision: %s" % revid)
 
     # Save the minified code into js/min.js
@@ -222,15 +222,21 @@ def main():
     # of index.html.
     runcmd("sed -i '' -e 's/<script[^>]*><\/script>//g' " + dist_dir + "index.html")
     runcmd("sed -i '' -e 's/<\/body>/<script src=\"js\/min.js\"><\/script><\/body>/g' " + dist_dir + "index.html")
-    
+
     # Add any files that are new and remove any files that no longer exist
-    runcmd("cd " + dist_dir + " && git add -A")
+runcmd("cd " + dist_dir + " && hg addremove")
 
     # Commit the deployed dir.
-    runcmd("cd " + dist_dir + " && git commit -m 'shiviz auto-deployment test '")
+    runcmd("cd " + dist_dir + " && hg commit -m 'tsviz auto-deployment'")
     
     # Push the deployed dir.
-    runcmd("cd " + dist_dir + " && git push")
+    runcmd("cd " + dist_dir + " && hg push")
+
+
+    # Git version for above:
+    # runcmd("cd " + dist_dir + " && git add -A")
+    # runcmd("cd " + dist_dir + " && git commit -m 'shiviz auto-deployment test '")
+    # runcmd("cd " + dist_dir + " && git push")
 
     print
     print "Done."
