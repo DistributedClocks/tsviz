@@ -1,6 +1,6 @@
 TSViz is a tool for studying executions of multi-threaded systems.
 
-* [**Try the tool!**](http://bestchai.bitbucket.org/shiviz/)
+* [**Try the tool!**](http://bestchai.bitbucket.org/tsviz/)
 
 * [Sass](http://sass-lang.com/): a CSS preprocessor for easier and more intuitive styling
 
