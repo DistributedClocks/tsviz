@@ -224,7 +224,7 @@ def main():
     runcmd("sed -i '' -e 's/<\/body>/<script src=\"js\/min.js\"><\/script><\/body>/g' " + dist_dir + "index.html")
 
     # Add any files that are new and remove any files that no longer exist
-runcmd("cd " + dist_dir + " && hg addremove")
+    runcmd("cd " + dist_dir + " && hg addremove")
 
     # Commit the deployed dir.
     runcmd("cd " + dist_dir + " && hg commit -m 'tsviz auto-deployment'")
