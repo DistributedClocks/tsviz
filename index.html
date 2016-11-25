@@ -54,30 +54,28 @@
                         Time flows from top to bottom.
                     </li>
                     <li>
-                        The left panel shows the log and the middle panel displays a <a href="http://en.wikipedia.org/wiki/Directed_acyclic_graph">DAG</a> of the partially ordered vector timestamps recorded in the input log.
+                        The left panel shows the log and the middle panel displays a <a href="http://en.wikipedia.org/wiki/Directed_acyclic_graph">DAG</a> of the partially ordered vector timestamps recorded in the input log, the events in this DAG are placed <i>to scale</i> relative to each other according to physical clock timestamps in the log.
                     </li>
                     <li>
-                        A vertical line with a box at the top is a <strong>process timeline</strong>. This represents a single thread of execution (e.g., a process).
+                        A vertical line with a box at the top is a <strong>thread timeline</strong> representing a single thread of execution. Each thread is associated with a color.
                     </li>
                     <li>
-                        Circles on a process timeline are <strong>events</strong> that were executed by the process.
+                        Circles on a thread timeline are <strong>events</strong> that were executed by the thread.
                     </li>
                     <li>
                         Diagonal lines connecting two events represent the
                         <a href="http://en.wikipedia.org/wiki/Happened-before">happened-before</a> relation between the events: the higher of the two events happened <i>before</i> the second event.
                     </li>
                     <li>
-                        Dashed lines represent transitive communication edges. These only appear when a process is hidden, and two processes that are not hidden communicated indirectly through this process.
+                        Dashed lines represent transitive communication edges. These only appear when a thread is hidden, and two threads that are not hidden communicated indirectly through this thread.
                     </li>
                     <li>
                         Larger circles represent merged local events. These have a number inside of them, indicating the number of events that they represent.
                     </li>
                     <li>
-                        Radiating lines that fade out represent communication edges to processes that are currently hidden from view.
+                        Radiating lines that fade out represent communication edges to threads that are currently hidden from view.
                     </li>
-                    <li>
-                        Each process is associated with a unique color. Log entries in the left column have the corresponding process color. By default, the log entries are sorted in the order in which the entries appear in the graph.
-                    </li>
+                    
                 </ul>
             </p>
 
@@ -86,30 +84,30 @@
                 The visualization supports the following actions:
                 <ul>
                   <li>
-                        <strong>Show process name or event info</strong>
+                        <strong>Show thread name or event info</strong>
                         <br>
-                        Click on a process box or an event circle.
+                        Click on a thread box or an event circle.
                     </li>
                     <li>
-                        <strong>Hide a process timeline</strong>
+                        <strong>Hide a thread timeline</strong>
                         <br>
-                        Click a process box and select "hide". This
-                        will remove the process and its timeline from
-                        view. You can hide more than one process.
+                        Click a thread box and select "hide". This
+                        will remove the thread and its timeline from
+                        view. You can hide more than one thread.
                     </li>
                     <li>
-                        <strong>Filter by communication to process(es)</strong>
+                        <strong>Filter by communication to thread(s)</strong>
                         <br>
-                        Click a process box and select "filter". The
+                        Click a thread box and select "filter". The
                         graph will be filtered to show only those
-                        processes/events that communicate with the
-                        filtered process. You can filter by more than
-                        one process.
+                        threads/events that communicate with the
+                        filtered thread. You can filter by more than
+                        one thread.
                     </li>
                   <li>
                         <strong>Expand/collapse non-communicating events</strong>
                         <br>
-                        TSViz collapses adjacent process events not
+                        TSViz collapses adjacent thread events not
                         incident on any communication edges into
                         larger circles. Click on one of these nodes
                         and select "expand" to undo this collapsing.
@@ -133,7 +131,7 @@
                         click on "show differences" to highlight the
                         differences between two executions. Hosts that
                         are not common to both executions are
-                        represented as rhombuses. Processes present in
+                        represented as rhombuses. Threads present in
                         both executions have their events compared by
                         the <code>event</code> capture group. Different
                         events are drawn as rhombuses.
@@ -146,9 +144,9 @@
                         "clusters" tab to separate executions into 
                         different groups based on a chosen metric.
 
-                        Cluster by the number of processes to group
+                        Cluster by the number of threads to group
                         executions by the midpoint between the smallest 
-                        and largest number of processes.
+                        and largest number of threads.
 
                         Cluster by execution comparison to see an overview
                         of how executions differ from a selected base.
@@ -172,26 +170,32 @@
                 Here are four use-cases that TSViz helps to support:
                 <ul>
                     <li>
-                        <strong>Understanding the communication graph.</strong>
+                        <strong>Performance debugging.</strong>
                         <br>
-                        Quickly scan the graph to identify the presence or absence of certain communication patterns.
+                        Understand the how long events took to
+                        execute. TSViz orders events to scale across
+                        threads using physical clock timestamps in the
+                        log.
                     </li>
                     <li>
-                        <strong>Reasoning about ordering in a concurrent or distributed setting</strong>.
+                        <strong>Reason about ordering in a concurrent setting</strong>.
                         <br>
-                        Visualize concurrency and the happened-before relation to understand if two events occurred concurrently, or if one happened before the other.
+                        Visualize concurrency and the happened-before
+                        relation to understand if two events occurred
+                        concurrently, or if one happened before the
+                        other.
                     </li>
                     <li>
-                        <strong>Analyzing activity at processes that matter</strong>.
+                        <strong>Analyze activity at threads that matter</strong>.
                         <br>
-                        Hide processes (and their log lines) for a more focused visualization. Filter by communication to a process to see only those events at other processes that were likely to have influenced the execution of a process you care about.
+                        Hide threads (and their log lines) for a more focused visualization. Filter by communication to a thread to see only those events at other threads that were likely to have influenced the execution of a thread you care about.
                     </li>
 
                     <li>
                       <strong>Execution comparison and
                       differencing</strong>
                       <br>
-                      Use TSViz to process logs containing multiple
+                      Use TSViz to thread logs containing multiple
                       executions. Compare executions pairwise,
                       side-by-side. Use TSViz to highlight event and
                       host differences between two executions to
@@ -205,8 +209,9 @@
             <p>
                 You can specify the log format using a regular expression on the Input page. The regular expression must contain the following three named capture groups:
                 <ul>
+                  <li><strong><code>timestamp</code>:</strong> the physical clock timestamp of the event</li>
                     <li><strong><code>event</code>:</strong> the description of the event</li>
-                    <li><strong><code>host</code>:</strong> the name of the process, thread, or host that executed the event</li>
+                    <li><strong><code>host</code>:</strong> the name of the thread, thread, or host that executed the event</li>
                     <li><strong><code>clock</code>:</strong> the vector clock associated with the event, in JSON format</li>
                 </ul>
             </p>
@@ -214,11 +219,12 @@
                 You can also specify other capture groups other than <code>event</code> to capture <em>fields</em> (such as date, IP, priority) which are shown in the sidebar while hovering over an event in the visualization. These fields, unless sub-groups of the <code>event</code> group, will not be displayed as part of the event message.
             </p>
             <p>
-                For example, for a log entry like:
-                <pre>28/07/14 01:15 PM Event executed<br>process2 {"process1" : time1, "process2" : time2, ..., "processN" : timeN}</pre>
+                For example, to parse log entries like this one:
+                <pre>1456966522871394967 Exiting eviction_wait_handle.0x18988c0__wt_spin_unlock
+thread4 {"thread4":58}</pre>
 
-                We might have a parser RegExp like:
-                <pre>(?&lt;date&gt;\d\d/\d\d/\d\d \d\d:\d\d (AM|PM)) (?&lt;event&gt;.*)\n(?&lt;host&gt;\w+) (?&lt;clock&gt;\{.*\})</pre>
+                We would use the following parser RegExp:
+                <pre>(?&lt;timestamp&gt;(\d*)) (?&lt;event&gt;.*)\n(?&lt;host&gt;\w*) (?&lt;clock&gt;.*)</pre>
             </p>
             <p>
               The capture groups in TSViz is not standard regexp
@@ -235,27 +241,20 @@
                 RegExp mechanism above.
             </p>
             <p>
-              We recommend two instrumentation libraries that output
-              TSViz-compatible logs:
-              <ul>
-                <li><a href="http://bitbucket.org/bestchai/shivector/wiki/Home">ShiVector</a>:
-                  instruments Java programs</li>
-                <li><a href="https://github.com/arcaneiceman/GoVector">GoVector</a>:
-                  instruments Go programs</li>
-              </ul>
+              We recommend <a href="https://dinamite-toolkit.github.io/">DINAMITE</a> instrumentation tool that outputs
+              TSViz-compatible logs.
             </p>
 
             <h3>More information</h3>
               <ul>
                 <li><a href="https://bitbucket.org/bestchai/shiviz/src">TSViz source code</a></li>
-                <li><a href="https://bitbucket.org/bestchai/shiviz/wiki/Home">TSViz wiki</a></li>
               </ul>
         </div>
         <div class="shivizexample">
-            <img src="images/shiviz-example.png" style="padding-top: 0px;"/><br/>
-            <img src="images/event-selection.png"/><br/>
-            <img src="images/process-selection.png"/><br/>
-            <img src="images/event-expand-menu.png"/><br/>
+            <img src="images/tsviz-example.png" style="padding-top: 0px;"/><br/>
+            <img src="images/node-time-diff.png"/><br/>
+            <img src="images/edge-selection.png"/><br/>
+            <img src="images/thread-selection.png"/><br/>
             <img src="images/search.png"/><br/>
             <img src="images/diff.png"/><br/>
             <img id="clusterImg" src="images/cluster.png"/>
@@ -293,7 +292,7 @@
                         <label>Multiple executions regular expression delimiter: <input class="mono" type="text" id="delimiter"></label>
                     </div>
                     <div class="option">
-                        Sort processes in
+                        Sort threads in
                         <select id="ordering">
                             <option value="ascending">ascending</option>
                             <option value="descending" selected>descending</option>
@@ -397,7 +396,7 @@
                             <li id="customStructure">
                                 <b>Search for a custom structure:</b>
                                 draw a graph structure below (add
-                                processes, events, click and drag to
+                                threads, events, click and drag to
                                 add inter-event edges).<br>
                                 <div class="hostConstraintDialog">
                                     <input id="hostConstraint" type="text" placeholder="Add constraint">
