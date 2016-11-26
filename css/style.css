@@ -299,11 +299,8 @@ section.input .left {
 
 #graph .vRule {
   position: fixed;
-  /*min-height: 100%;*/
   left: 0;
   top: 142px;
-  /*border-left: 1px solid;*/
-  /*border-right: 1px solid;*/
   z-index: 2;
 
 }
@@ -583,9 +580,7 @@ g .tick text{
   position: fixed;
   top: 0;
   height: 4.5em;
-  padding: 1.5em 9em 0 0; /* Changed here so it would cover graph timelines */
-  /*padding: 1.5em 0 0 0;*/
-  padding: 1.5em 1.5em 0 0;
+  padding: 1.5em 1.5em 0 0; /* Changed here so it would cover graph timelines */
   background: #fff;
   z-index: 4;
 }
@@ -1028,10 +1023,18 @@ svg {
   /*background: #EEEEEE;*/
 }
 
+#nodeInfoTab {
+  border: none !important;
+  outline: 2px solid #EEEEEE;
+  overflow: hidden;
+  padding-bottom: 60px;
+  text-overflow: ellipsis;
+}
+
 #sidebar .sidebarTab.show{
   opacity: 1;
   max-height: 800px;
-  display: block; /*Show on click*/
+  display: block; 
 }
 
 #sidebar .separator{
