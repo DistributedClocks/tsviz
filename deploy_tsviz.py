@@ -108,17 +108,13 @@ def minify(branch, info):
     returns the minified resulting js code.
     '''
     params = [
-    # ('code_url', 'http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js'),
-    # ('code_url', 'https://d3js.org/d3-axis.v1.min.js'),
-    # ('code_url', 'http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js'),
-    # ('code_url', 'https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'),
     ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
     ('output_format', 'text'),
     ('output_info', info)
     ]
 
     url = 'https://bitbucket.org/mhnnunes/tsviz/raw/' + branch + '/'
-    #Include scripts
+    #Include DEPENDENCIES
     for r, d, f in os.walk('local_scripts'):
         for f in f:
                 params += [('code_url', url + os.path.join(r, f))]

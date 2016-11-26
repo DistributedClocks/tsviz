@@ -6,18 +6,12 @@
     <link rel="shortcut icon" href="images/favico.ico" type="image/x-icon" />
     <title>TSViz</title>
     <link href="css/style.css" type="text/css" rel="stylesheet">
-    <!-- LOCAL VERSIONS -->
+    <!-- DEPENDENCIES -->
     <script src="local_scripts/d3.min.js"></script>
     <script src="local_scripts/d3-axis.v1.min.js"></script>
     <script src="local_scripts/d3.tip.v0.6.3.js"></script>
     <script src="local_scripts/jquery-3.1.0.min.js"></script>
 
-    <!-- ONLINE VERSIONS -->
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
-    <script src="https://d3js.org/d3-axis.v1.min.js"></script>
-	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
     <script src="js/jquery.ruler.js"></script>
     <style type="text/css">
         #vizContainer svg line.hidden-link {
@@ -247,7 +241,7 @@ thread4 {"thread4":58}</pre>
 
             <h3>More information</h3>
               <ul>
-                <li><a href="https://bitbucket.org/bestchai/shiviz/src">TSViz source code</a></li>
+                <li><a href="https://bitbucket.org/mhnnunes/tsviz">TSViz source code</a></li>
               </ul>
         </div>
         <div class="shivizexample">
@@ -321,8 +315,8 @@ thread4 {"thread4":58}</pre>
                 <td class="right">
                     <div id="examples">
                       Examples:
-                      <a class="log-link" href="" data-log="fslock_24t_4sp.log" data-ordering="descending" data-hostsort="#hostsortLength" data-parser="(?<timestamp>(\d*)) (?<event>.*)\n(?<host>\w*) (?<clock>.*)">Key-value store lock contention</a>
-                      <a class="log-link" href="" data-log="shared_variable_3_threads.txt" data-ordering="descending" data-hostsort="#hostsortLength" data-parser="(?<timestamp>(\d*)) (?<event>.*)\n(?<host>\w*) (?<clock>.*)">Shared value contention</a>
+                      <a class="log-link" href="" data-log="tsviz_fslock_24t_4sp.log" data-ordering="descending" data-hostsort="#hostsortLength" data-parser="(?<timestamp>(\d*)) (?<event>.*)\n(?<host>\w*) (?<clock>.*)">WiredTiger KV-store lock contention</a>
+                      <a class="log-link" href="" data-log="tsviz_shared_var_3_threads.log" data-ordering="descending" data-hostsort="#hostsortLength" data-parser="(?<timestamp>(\d*)) (?<event>.*)\n(?<host>\w*) (?<clock>.*)">WiredTiger shared variable contention</a>
                     </div>
                     <textarea id="input" spellcheck="false"></textarea>
                 </td>

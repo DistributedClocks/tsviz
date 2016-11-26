@@ -28,15 +28,17 @@ function Shiviz() {
 
     $("#examples a").on("click", function(e) {
         e.preventDefault();
-
-        // logUrlPrefix is defined in dev.js & deployed.js
-        var prefix = "/shiviz/log/";
+        
+        var prefix = "./log/";
         var logName = $(this).data("log");
         var url = prefix + logName;
 
         $.get(url, function(response) {
             handleResponse(response, e);
         }).fail(function() {
+            // Non-local logs are accessed from this repo via github API:
+            // https://github.com/bestchai/shiviz-logs
+            //prefix = "https://raw.githubusercontent.com/bestchai/shiviz-logs/master/tsviz/";
             prefix = "https://api.github.com/repos/bestchai/shiviz-logs/contents/";
             url = prefix + logName;
 
