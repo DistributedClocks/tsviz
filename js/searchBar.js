@@ -103,6 +103,7 @@ function SearchBar() {
     });
 
     $("#searchButton").on("click", function(e) {
+        context.clearResults();        
         $("#searchResultsTab").show();
         if (e.ctrlKey && e.altKey) {
             var regexp = '(?<event>){"host":"(?<host>[^}]+)","clock":(?<clock>{[^}]*})}';
@@ -113,10 +114,11 @@ function SearchBar() {
         }
         context.hidePanel();
         if(! $("#searchResultsToggle").hasClass("active") ) $("#searchResultsToggle").click();
+        $(".searchLoader").hide();
     });
 
     $("#searchbar").keypress(function(e) {
-        if (e.which == 13 && context.motifChart == null) { 
+        if (e.which == 13) { 
             $('#searchButton').click(); 
         }
     });
@@ -142,14 +144,12 @@ function SearchBar() {
 
     $("#searchbar .eventbased #startbar input").on("input", function() {
         context.clearStructure();
-        context.clearResults();
         context.setValue("#event");
         $("#searchResultsTab").hide();
     });
 
     $("#searchbar .eventbased #endbar input").on("input", function() {
         context.clearStructure();
-        context.clearResults();
         context.setValue("#event");
         $("#searchResultsTab").hide();
     });
@@ -512,7 +512,7 @@ SearchBar.prototype.query = function() {
             }
             break;
 
-        case SearchBar.MODE_PREDEFINED:
+        case SearchBar.MODE_PREDEFINED:       
             var value = this.getValue();
             var type = value.trim().match(/^#(?:motif=)?(.*)/i)[1];
 
