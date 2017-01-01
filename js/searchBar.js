@@ -87,7 +87,6 @@ function SearchBar() {
     });
 
     $("#searchbar #bar input").on("input", function() {
-        context.clearResults();
         context.update();
     }).on("focus", function() {
         context.showPanel();
