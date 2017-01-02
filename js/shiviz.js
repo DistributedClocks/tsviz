@@ -211,7 +211,7 @@ Shiviz.prototype.resetView = function() {
  * This method creates the visualization. The user's input to UI elements are
  * retrieved and used to construct the visualization accordingly.
  */
-Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance, collapseLocal) {
+Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance, collapseLocal, boundaries) {
     try {
         d3.selectAll("#vizContainer svg").remove();
         d3.selectAll("span").remove();
@@ -224,7 +224,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         regexpString = regexpString.trim();
 
         if(isNaN(minDistance)){
-            throw new Exception("The value entered in the minimum distace field is not a number.\n", true);
+            throw new Exception("The value entered in the minimum distance field is not a number.\n", true);
         }
 
         if (regexpString == "")
@@ -259,7 +259,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         });
         
         hostPermutation.update();
-
+        
         var views = [];
         
         for(var i = 0; i < labels.length; i++) {
@@ -269,7 +269,18 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
             var view = new View(graph, hostPermutation, label, minDistance, collapseLocal);
             views.push(view);
         }
+
+        boundaries.setMaxTime(graph.maxTimeStamp);
+        boundaries.setMinTime(graph.minTimeStamp);
+        boundaries.setNumEvents(graph.getNodes().length);
         
+        a = boundaries.checkValue();
+
+        if(!a){
+            boundaries.errorMessage();
+            return;
+        }        
+    
         // initial properties for the diffButton
         $(".diffButton").hide();
         $(".diffButton").text("Show Differences");
@@ -364,42 +375,15 @@ Shiviz.prototype.go = function(index, store, force, viz) {
                         var collapseLocal = $("input[name=coll_str]:checked").val().trim() == "local" ;
                         $("input[name=coll_str_viz]:checked").val($("input[name=coll_str]:checked").val().trim());
                     }
-                    var scaleadjust = 0;
-                    switch(timescale){
-                        case "ns":
-                        scaleadjust = timeunit / 1000;
-                        if(scaleadjust >= 1 && scaleadjust < 1000) timescale = "us";
-                        else if(scaleadjust >= 1000 && scaleadjust< 1000000) {
-                            timescale = "ms";
-                            scaleadjust /= 1000;
-                        }else if(scaleadjust >= 1000000 && scaleadjust < 1000000000) {
-                            timescale = "s";
-                            scaleadjust /= 1000000;
-                        }else scaleadjust *= 1000;
-                        break;
-                        case "us": 
-                        scaleadjust = timeunit / 1000;
-                        if(scaleadjust >= 1 && scaleadjust < 1000) timescale = "ms";
-                        else if(scaleadjust >= 1000 && scaleadjust < 1000000) {
-                            timescale = "s";
-                            scaleadjust /= 1000;
-                        }else scaleadjust *= 1000;
-                        timeunit = timeunit * 1000;
-                        break;
-                        case "ms":
-                        scaleadjust = timeunit / 1000;
-                        if(scaleadjust >= 1 && scaleadjust < 1000) timescale = "s";
-                        else scaleadjust *= 1000;
-                        timeunit = timeunit * 1000000;
-                        break;
-                        case "s":
-                        timeunit = timeunit * 1000000000;
-                        break;
-                    }
-                    scaleadjust = scaleadjust.toString();
+
+                    var boundaries = new ValidateBoundaries(null, VisualEdge.minTimestamp, null, timeunit, timescale);
+                    var scaledBoundaries = boundaries.getFromTimeScale();
+                    timeunit = boundaries.timeunit;
+                    var scaledjust = boundaries.scaledjust;
+
                     $("#timeunitviz").val(scaleadjust).change();
                     $("#graphtimescaleviz").val(timescale);                    
-                    this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, collapseLocal);
+                    this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, collapseLocal, boundaries);
                 }
             } catch(e) {
                 $(".visualization").hide();
