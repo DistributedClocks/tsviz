@@ -145,22 +145,22 @@
 		        .call(axis);
 
 		        if(i < numberOfCompressions){
-		        	// scaleStart = (compressions[i].original.start/minDistPix) * minDistance;
-		        	// scaleEnd = (compressions[i].original.end/minDistPix) * minDistance;
+		      //   	// scaleStart = (compressions[i].original.start/minDistPix) * minDistance;
+		      //   	// scaleEnd = (compressions[i].original.end/minDistPix) * minDistance;
 		        	
-		        	scaleStart = Number(compressions[i].original.timestart.slice(3, compressions[i].original.timestart.length)) - smallTimestamp;
-		        	scaleEnd = Number(compressions[i].original.timeend.slice(3, compressions[i].original.timeend.length)) - smallTimestamp;
+		      //   	scaleStart = Number(compressions[i].original.timestart.slice(3, compressions[i].original.timestart.length)) - smallTimestamp;
+		      //   	scaleEnd = Number(compressions[i].original.timeend.slice(3, compressions[i].original.timeend.length)) - smallTimestamp;
 
-		        	var compTime = scaleEnd - scaleStart;
+		      //   	var compTime = scaleEnd - scaleStart;
 
-		        	compTime = scaleTime(compTime);
+		      //   	compTime = scaleTime(compTime);
 
-		        	//Add time difference to interval
-			        var timedif = graph.append("text")
-			        .attr("x", "50%")
-			        .attr("y", compressions[i].start + 45)
-			        .attr("fill", "#000")
-			        .text("Elapsed time: " + compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
+		      //   	//Add time difference to interval
+			     //    var timedif = graph.append("text")
+			     //    .attr("x", "50%")
+			     //    .attr("y", compressions[i].start + 45)
+			     //    .attr("fill", "#000")
+			     //    .text("Elapsed time: " + compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
 
 		        	timeStart = (compressions[i].original.end/minDistPix) * minDistance;
 		        	rangeStart = compressions[i].end;

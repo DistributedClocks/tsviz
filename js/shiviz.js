@@ -315,6 +315,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
 
         //Draw ruler
         $("#graph").ruler(views[0]);
+        views[0].drawElapsedTimeTags();
         $("#searchResultsTab").hide();
         global.getController().bindScroll();
     }

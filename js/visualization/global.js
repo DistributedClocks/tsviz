@@ -289,6 +289,7 @@ Global.prototype.drawAll = function() {
     if (this.getController().hasHighlightInView(this.viewL)) {
         searchbar.countMotifs();
     }
+    this.viewL.drawElapsedTimeTags();
     this.getController().bindScroll();
 };
 

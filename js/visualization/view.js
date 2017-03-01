@@ -147,6 +147,46 @@ View.prototype.hasQueryMatch = function() {
     }
 }
 
+function scaleTime(number){
+    switch($("#graphtimescaleviz").val().trim()){
+        case "ns":
+        return number;
+        case "us":
+        return number / 1000; 
+        case "ms":
+        return number / 1000000; 
+        case "s":
+        return number / 1000000000; 
+    }
+}
+
+View.prototype.drawElapsedTimeTags = function(){
+    var compressions = this.visualGraph.compressedParts;
+    var numberOfCompressions = compressions.length;
+    var smallTimestamp = Number(this.visualGraph.timeRange[0].slice(3, this.visualGraph.timeRange[0].length));
+    
+    var scaleStart = 0;
+    var scaleEnd = 0;
+
+    var graph = d3.select("#graphSVG");
+    for(var i = 0; i < numberOfCompressions; i++){
+        scaleStart = Number(compressions[i].original.timestart.slice(3, compressions[i].original.timestart.length)) - smallTimestamp;
+        scaleEnd = Number(compressions[i].original.timeend.slice(3, compressions[i].original.timeend.length)) - smallTimestamp;
+
+        var compTime = scaleEnd - scaleStart;
+
+        compTime = scaleTime(compTime);
+
+        //Add time difference to interval
+        var timedif = graph.append("text")
+        .attr("x", "50%")
+        .attr("y", compressions[i].start + 45)
+        .attr("fill", "#000")
+        .text("Elapsed time: " + compTime.toString() + " " + $("#graphtimescaleviz").val().trim());
+
+    }
+}
+
 /**
  * Clears the current visualization and re-draws the current model.
  */
