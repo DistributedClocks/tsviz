@@ -202,47 +202,47 @@ function Controller(global) {
     });
 
     // Event handler for switching between the left tabs
-    $(".visualization .leftTabLinks a").unbind().on("click", function(e) {
+    // $(".visualization .leftTabLinks a").unbind().on("click", function(e) {
 
-        var anchorHref = $(this).attr("href");
-        $(".visualization #" + anchorHref).show().siblings().hide();
-        $(this).parent("li").addClass("default").siblings("li").removeClass("default");
-        $("#labelIconL, #labelIconR, #selectIconL, #selectIconR").hide();
+    //     var anchorHref = $(this).attr("href");
+    //     $(".visualization #" + anchorHref).show().siblings().hide();
+    //     $(this).parent("li").addClass("default").siblings("li").removeClass("default");
+    //     $("#labelIconL, #labelIconR, #selectIconL, #selectIconR").hide();
 
-        if (anchorHref != "logTab") {
-            // Remove any log line highlighting when not on the Log lines tab
-            $(".highlight").css("opacity", 0);
-        }
-        if (anchorHref == "clusterTab") {
-            // Clear all motif results when on the clusters tab
-            if (searchbar.getMode() == SearchBar.MODE_MOTIF) {
-                if (global.getController().hasHighlight()) {
-                    searchbar.clearResults();
-                }
-                searchbar.resetMotifResults();
-            }
-            if ($("#clusterNumProcess").is(":checked") || ($("#clusterComparison").is(":checked") && $(".clusterBase").find("option:selected").text() != "Select a base execution")) {
-                $("#labelIconL, #selectIconL").show();
-                if (global.getPairwiseView()) {
-                    $("#labelIconR, #selectIconR").show();
-                }
-            }
-        }
-        // Show the pairwise button for log lines and clusters when not doing a motif search
-        if (global.getViews().length > 1 && searchbar.getMode() != SearchBar.MODE_MOTIF) {
-            $(".pairwiseButton").show();
-        }
-        if (anchorHref == "motifsTab") {
-            if (global.getPairwiseView()) {
-                $(".pairwiseButton").click();
-            }
-            $(".pairwiseButton").hide();
-            if ($(".motifResults a").length > 0) {
-                searchbar.setValue("#motif");
-            }
-        }
-        e.preventDefault();
-    });
+    //     if (anchorHref != "logTab") {
+    //         // Remove any log line highlighting when not on the Log lines tab
+    //         $(".highlight").css("opacity", 0);
+    //     }
+    //     if (anchorHref == "clusterTab") {
+    //         // Clear all motif results when on the clusters tab
+    //         if (searchbar.getMode() == SearchBar.MODE_MOTIF) {
+    //             if (global.getController().hasHighlight()) {
+    //                 searchbar.clearResults();
+    //             }
+    //             searchbar.resetMotifResults();
+    //         }
+    //         if ($("#clusterNumProcess").is(":checked") || ($("#clusterComparison").is(":checked") && $(".clusterBase").find("option:selected").text() != "Select a base execution")) {
+    //             $("#labelIconL, #selectIconL").show();
+    //             if (global.getPairwiseView()) {
+    //                 $("#labelIconR, #selectIconR").show();
+    //             }
+    //         }
+    //     }
+    //     // Show the pairwise button for log lines and clusters when not doing a motif search
+    //     if (global.getViews().length > 1 && searchbar.getMode() != SearchBar.MODE_MOTIF) {
+    //         $(".pairwiseButton").show();
+    //     }
+    //     if (anchorHref == "motifsTab") {
+    //         if (global.getPairwiseView()) {
+    //             $(".pairwiseButton").click();
+    //         }
+    //         $(".pairwiseButton").hide();
+    //         if ($(".motifResults a").length > 0) {
+    //             searchbar.setValue("#motif");
+    //         }
+    //     }
+    //     e.preventDefault();
+    // });
 
     // Event handler for switching between clustering options
     $("#clusterNumProcess, #clusterComparison").unbind().on("change", function() {
@@ -895,22 +895,6 @@ Controller.prototype.bindHosts = function(hosts) {
     }).on("mouseout", tip.hide);
 };
 
-/**
- * Binds node highlighting to mouseover event on log lines
- * 
- * @param {jQuery.selection} lines A jQuery selection of the log lines
- */
-Controller.prototype.bindLines = function(lines) {
-    lines.unbind().on("mouseover", function() {
-        var id = "#node" + $(this).data("id");
-        $(id)[0].dispatchEvent(new MouseEvent("mouseover"));
-    })
-
-    lines.add(".highlight").on("click", function() {
-        var id = "#node" + $(this).data("id");
-        $(id)[0].dispatchEvent(new MouseEvent("click"));
-    });
-};
 
 /**
  * Binds unhide to double-click event on hidden hosts.
@@ -1010,7 +994,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     } 
 
     // Highlight the node with an appropriate outline
-    if (!type) {
+    if (!type) { //type == 0
         
         e.setSelected(true);
         var id = e.getId();

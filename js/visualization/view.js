@@ -25,10 +25,7 @@ function View(model, hostPermutation, label, minDistance, collapseLocal) {
     
     /** @private */
     this.$hostSVG = $(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
-    
-    /** @private */
-    this.logTable = $("<td></td>");
-    
+ 
     /** @private */
     this.hostPermutation = hostPermutation;
 
@@ -68,10 +65,6 @@ View.prototype.getSVG = function() {
 
 View.prototype.getHostSVG = function() {
     return this.$hostSVG;
-};
-
-View.prototype.getLogTable = function() {
-    return this.logTable;
 };
 
 /**
@@ -117,10 +110,6 @@ View.prototype.getVisualModel = function() {
  */
 View.prototype.setWidth = function(newWidth) {
     this.layout.setWidth(newWidth);
-};
-
-View.prototype.setLogTableWidth = function(newWidth) {
-    this.logTable.width(newWidth + "pt");
 };
 
 /**
@@ -225,7 +214,6 @@ View.prototype.draw = function(viewPosition) {
     drawLinks();
     drawNodes();
     drawHosts();
-    // drawLogLines();
 
     // Hide line highlight
     $(".highlight").hide();
@@ -283,79 +271,5 @@ View.prototype.draw = function(viewPosition) {
         
         // Bind the hosts
         view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
-    }
-
-    function drawLogLines() {
-        view.logTable.empty();
-
-        var lines = {};
-        var visualNodes = view.getVisualModel().getVisualNodes();
-        for (var i in visualNodes) {
-            var node = visualNodes[i];
-            var y = node.getY();
-            if (lines[y] === undefined)
-                lines[y] = [ node ];
-            // nodes with the same y coordinate saved in lines[y]
-            else
-                lines[y].push(node);
-        }
-
-        delete lines[0];
-
-        var $div = $("<div></div>");
-        $div.addClass("logLabel" + viewPosition);
-        $div.text(view.getLabel());
-        view.logTable.append($div);
-
-        for (var y in lines) {
-            var overflow = null;
-            var vn = lines[y];
-            // shift the log lines down by adding 20px or about 1.5em to the y coordinate
-            var top = (Number(y) + 20).toString();
-            var startMargin = (1 - Math.min(vn.length, 3)) / 2;
-
-            if (vn.length > 3)
-                overflow = vn.splice(2, vn.length);
-
-            for (var i in vn) {
-                var text = vn[i].getText();
-                var $div = $("<div></div>", {
-                    "id": "line" + vn[i].getId()
-                }).data({
-                    "id": vn[i].getId()
-                }).addClass("line").css({
-                    "top": top + "px",
-                    "margin-top": startMargin + "em",
-                    "color": vn[i].getFillColor(),
-                    "opacity": vn[i].getOpacity()
-                }).text(text);
-                view.logTable.append($div);
-                startMargin++;
-            }
-
-            if (overflow != null) {
-                var $div = $("<div></div>").addClass("line more").css({
-                    "top": top + "px",
-                    "margin-top": (startMargin * 10) + "pt",
-                    "color": "#ddd"
-                }).text("+ " + overflow.length + " more");
-
-                for (var o in overflow) {
-                    var text = overflow[o].getText();
-                    $div.append($("<div></div>", {
-                        "id": "line" + overflow[o].getId()
-                    }).data({
-                        "id": overflow[o].getId()
-                    }).addClass("line").css({
-                        "margin-top": o + "em",
-                        "color": overflow[o].getFillColor(),
-                        "opacity": vn[i].getOpacity()
-                    }).text(text));
-                    startMargin++;
-                }
-
-                view.logTable.append($div);
-            }
-        }
     }
 };

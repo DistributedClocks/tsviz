@@ -285,10 +285,10 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         $(".searchTabLinks li").first().addClass("default").siblings("li").removeClass("default");
 
         // reset left sidebar tabs
-        $(".leftTabLinks").children().hide();
-        $(".leftTabLinks li").not(":last").show();
-        $(".leftTabLinks li").first().addClass("default").siblings().removeClass("default");
-        $("#logTab").show().siblings().hide();
+        // $(".leftTabLinks").children().hide();
+        // $(".leftTabLinks li").not(":last").show();
+        // $(".leftTabLinks li").first().addClass("default").siblings().removeClass("default");
+        // $("#logTab").show().siblings().hide();
 
         // Reset the motifs tab
         $(".motifResults td").empty();
@@ -305,7 +305,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
             $("#clusterOption input").prop("checked", false);
         }
 
-        var global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("table.log"), views);
+        var global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), views);
         var searchbar = SearchBar.getInstance();
         searchbar.setGlobal(global);
         SearchBar.getInstance().clear();

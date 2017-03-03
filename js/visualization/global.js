@@ -11,7 +11,7 @@
  * 
  * @constructor
  */
-function Global($vizContainer, $sidebar, $hostBar, $logTable, views) {
+function Global($vizContainer, $sidebar, $hostBar, views) {
 
     if (!!Global.instance) {
         throw new Exception("Global is a singleton - use getInstance() instead.");
@@ -43,10 +43,7 @@ function Global($vizContainer, $sidebar, $hostBar, $logTable, views) {
 
     /** @private */
     this.searchbar = SearchBar.getInstance();
-    
-    /** @private */
-    this.$logTable = $logTable;
-  
+      
     /** @private */
     this.showDiff = false;
 
@@ -91,7 +88,6 @@ Global.prototype.drawAll = function() {
     var searchbar = this.searchbar;
     this.resize();
 
-    // this.$logTable.empty(); //TODO: check
     this.$vizContainer.children("*").remove();
     this.$hostBar.children("*").remove();
     
@@ -255,9 +251,7 @@ Global.prototype.drawAll = function() {
     this.viewL.draw("L");
     this.$vizContainer.append(this.viewL.getSVG());
     this.$hostBar.append(this.viewL.getHostSVG());
-    this.$logTable.append(this.viewL.getLogTable());
-    this.controller.bindLines(this.viewL.getLogTable().find(".line:not(.more)"));
-  
+    
     if (this.getPairwiseView()) {
         $(".diffButton").show(); $("#viewSelectR").show();
 
@@ -272,9 +266,7 @@ Global.prototype.drawAll = function() {
         }   
         this.$vizContainer.append(this.viewR.getSVG());
         this.$hostBar.append(this.viewR.getHostSVG());
-        this.$logTable.append($("<td></td>").addClass("spacer"));
-        this.$logTable.append(this.viewR.getLogTable());
-        this.controller.bindLines(this.viewR.getLogTable().find(".line:not(.more)"));
+    
     }
 
     this.resize();
@@ -493,14 +485,12 @@ Global.prototype.resize = function() {
     $("#searchbar").width(globalWidth - headerWidth + 50);
 
     var widthPerHost = Math.max(Global.MIN_HOST_WIDTH, globalWidth / visibleHosts);
-    var logTableWidth = this.viewR != null && this.getPairwiseView() ? (Global.SIDE_BAR_WIDTH - 12) / 2 : Global.SIDE_BAR_WIDTH;
+    // var logTableWidth = this.viewR != null && this.getPairwiseView() ? (Global.SIDE_BAR_WIDTH - 12) / 2 : Global.SIDE_BAR_WIDTH;
 
     this.viewL.setWidth(viewLNumHosts * widthPerHost);
-    this.viewL.setLogTableWidth(logTableWidth);
     
     if (this.viewR != null && this.getPairwiseView()) {
         this.viewR.setWidth(viewRNumHosts * widthPerHost);
-        this.viewR.setLogTableWidth(logTableWidth);
     }
     
     var sel = d3.select("circle.sel").data()[0];

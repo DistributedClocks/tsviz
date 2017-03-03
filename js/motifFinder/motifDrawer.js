@@ -209,12 +209,10 @@ MotifDrawer.prototype.highlightMotif = function(motifIndex) {
     viewL.getTransformer().highlightMotif(finder, false);
     // Redraw the view to apply the transformation to the graph and to the log lines
     viewL.draw("L");
-    controller.bindLines(viewL.getLogTable().find(".line:not(.more)"));
 
     if (this.global.getPairwiseView()) {
         viewR.getTransformer().highlightMotif(finder, false);
         viewR.draw("R");
-        controller.bindLines(viewR.getLogTable().find(".line:not(.more)"));
     }
 }
 
