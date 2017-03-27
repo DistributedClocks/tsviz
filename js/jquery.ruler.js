@@ -192,7 +192,7 @@
 				
 				$(corner).css({
 					width: settings.vRuleSize,
-					height: 40
+					height: 70
 				}).prependTo($this);
 				var $corner = $(".corner")
 				$corner.children().remove();
