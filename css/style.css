@@ -585,6 +585,7 @@ g .tick text{
   height: 4.5em;
   /*height: 2.25em;*/
   padding: 1.5em 1.5em 0 0; /* Changed here so it would cover graph timelines */
+  /*padding: 2em 0 0 0;*/   /* hostlabels */
   background: #fff;
   z-index: 4;
 }
@@ -882,6 +883,8 @@ svg {
   background: white;
   z-index: 2;
   padding-top: 2%;
+  /*top: 4em;*/           /* hostlabels */
+  /*padding-top: 2em;*/   /* hostlabels */
 }
 
 #hostBarSeparator {

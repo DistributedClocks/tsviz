@@ -46,6 +46,10 @@ function View(model, hostPermutation, label, minDistance, collapseLocal) {
 
     /** @private */
     this.controller = null;
+
+    /** @private */
+    // Cache a mapping of hostnames to abbreviated hostnames
+    this.abbreviatedHostnames = null; // {String} -> {String}
 }
 
 /**
@@ -271,5 +275,116 @@ View.prototype.draw = function(viewPosition) {
         
         // Bind the hosts
         view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
+
+        drawHostLabels(arr);
+    }
+
+    function drawHostLabels(g_hosts) {
+        view.$hostSVG.attr("overflow", "visible");
+
+        var hosts = d3.selectAll(g_hosts);
+        var x_offset = Global.HOST_SIZE / 3;
+        var hostLabels = hosts.append("text")
+            .text(function(node) {
+                const label = view.getAbbreviatedHostname(node.getHost());
+                return label;
+            })
+            //.attr("text-anchor", "middle")
+            .attr("transform", "rotate(-45)")
+            .attr("x", x_offset)
+            .attr("y", "1em")
+            .attr("font-size", "x-small");
+
+        if (!view.hasAbbreviatedHostnames()) {
+            setTimeout(function() {
+                // Must abbreviate after timeout so that the text elements will have
+                // been drawn. Otherwise they will have no computed text length.
+                abbreviateD3Texts(hostLabels);
+            });
+        }
+    }
+
+    function abbreviateD3Texts(d3Texts) {
+        const textsToFitter = getD3FitterMap(d3Texts, Global.HOST_LABEL_WIDTH);
+        const textsToSetter = getD3SetterMap(d3Texts);
+
+        // Must come after after creating the textsToXXXMaps, since it mutates
+        // the d3Texts
+        const abbrevs = Abbreviation.generateFromStrings(textsToFitter);
+
+        for (let abbrev of abbrevs) {
+            const hostname = abbrev.getOriginalString();
+            view.setAbbreviatedHostname(hostname, abbrev.getEllipsesString());
+
+            let setText = textsToSetter.get(hostname);
+            setText(abbrev);
+        }
+
+        function getD3FitterMap(d3Texts, svgWidth) {
+            const textsToFitter = new Map();
+            d3Texts.each(function() {
+                const d3Text = d3.select(this);
+                const self = this;
+                textsToFitter.set(d3Text.text(),
+                    function (str) {
+                        d3Text.text(str);
+                        return self.getComputedTextLength() < svgWidth;
+                    });
+            });
+            return textsToFitter;
+        }
+        
+        function getD3SetterMap(d3Texts) {
+            const textsToSetter = new Map();
+            d3Texts.each(function() {
+                const d3Text = d3.select(this);
+                const setAbbrevText = makeAbbrevTextSetter(this);
+                textsToSetter.set(d3Text.text(), setAbbrevText);
+                    
+            });
+            return textsToSetter;
+        }
+
+        function makeAbbrevTextSetter(svgText) {
+            const d3Text = d3.select(svgText);
+            return function(abbrev) {
+                d3Text.text(abbrev.getEllipsesString());
+            };
+        }
+    }
+
+};
+
+/**
+ * Returns true if the abbrviated hostname strings have been cached.
+ * @return {boolean} 
+ */
+View.prototype.hasAbbreviatedHostnames = function() {
+    return this.abbreviatedHostnames !== null;
+};
+
+/**
+ * Gets the abbreiviated hostname string associated with given hostname
+ * string. If no abbreviation is recorded, then returns original string.
+ * @param {string} hostname
+ * @return {string} abbreviated hostname
+ */
+View.prototype.getAbbreviatedHostname = function(hostname) {
+    if (this.hasAbbreviatedHostnames() &&
+        this.abbreviatedHostnames.has(hostname)) {
+        return this.abbreviatedHostnames.get(hostname);
+    } else {
+        return hostname;
     }
 };
+
+/**
+ * Caches the abbreviated hostname, creating the cache if necessary
+ * @param {string, string}
+ */
+View.prototype.setAbbreviatedHostname = function(hostname, abbrev) {
+    if (!this.hasAbbreviatedHostnames()) {
+        this.abbreviatedHostnames = new Map();
+    }
+    this.abbreviatedHostnames.set(hostname, abbrev);
+}
