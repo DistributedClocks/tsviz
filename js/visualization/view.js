@@ -267,6 +267,7 @@ View.prototype.draw = function(viewPosition) {
         }
         var startNodes = view.visualGraph.getStartVisualNodes();
         var arr = [];
+        // var hostlabelsarr = [];
         startNodes.forEach(function(visualNode) {
             var svg = visualNode.getSVG();
             view.$hostSVG.append(svg);
@@ -274,9 +275,11 @@ View.prototype.draw = function(viewPosition) {
         });
         
         // Bind the hosts
-        view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
-
+        // view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
+        d3.selectAll(arr).data(startNodes);
         drawHostLabels(arr);
+        // // Bind the hosts
+        view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
     }
 
     function drawHostLabels(g_hosts) {
