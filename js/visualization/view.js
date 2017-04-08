@@ -381,7 +381,8 @@ View.prototype.getAbbreviatedHostname = function(hostname) {
 
 /**
  * Caches the abbreviated hostname, creating the cache if necessary
- * @param {string, string}
+ * @param {string} hostname Complete hostname
+ * @param {string} abbrev Abbreviated, ellipsified hostname
  */
 View.prototype.setAbbreviatedHostname = function(hostname, abbrev) {
     if (!this.hasAbbreviatedHostnames()) {
