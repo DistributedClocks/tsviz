@@ -46,9 +46,10 @@
 </head>
 <body>
 	<ul id="output"></ul>
-	
+
     <script type="text/javascript" src="../js/searchBar.js"></script>
-    
+    <script type="text/javascript" src="../js/clusterer.js"></script>
+
     <script type="text/javascript" src="../js/graph/graphEvent.js"></script>
     <script type="text/javascript" src="../js/graph/abstractGraph.js"></script>
     <script type="text/javascript" src="../js/graph/abstractNode.js"></script>
@@ -68,6 +69,7 @@
     <script type="text/javascript" src="../js/logEventMatcher/lemTokenizer.js"></script>
     <script type="text/javascript" src="../js/logEventMatcher/logEventMatcher.js"></script>
 
+    <script type="text/javascript" src="../js/model/interval.js"></script>
     <script type="text/javascript" src="../js/model/logEvent.js"></script>
     <script type="text/javascript" src="../js/model/modelGraph.js"></script>
     <script type="text/javascript" src="../js/model/modelNode.js"></script>
@@ -77,20 +79,25 @@
 
     <script type="text/javascript" src="../js/motifFinder/motif.js"></script>
     <script type="text/javascript" src="../js/motifFinder/motifFinder.js"></script>
+    <script type="text/javascript" src="../js/motifFinder/motifDrawer.js"></script>
     <script type="text/javascript" src="../js/motifFinder/broadcastGatherFinder.js"></script>
     <script type="text/javascript" src="../js/motifFinder/customMotifFinder.js"></script>
+    <script type="text/javascript" src="../js/motifFinder/eventMotifFinder.js"></script>
     <script type="text/javascript" src="../js/motifFinder/motifGroup.js"></script>
     <script type="text/javascript" src="../js/motifFinder/motifNavigator.js"></script>
     <script type="text/javascript" src="../js/motifFinder/requestResponseFinder.js"></script>
     <script type="text/javascript" src="../js/motifFinder/textQueryMotifFinder.js"></script>
 
     <script type="text/javascript" src="../js/transform/transformation.js"></script>
+    <script type="text/javascript" src="../js/transform/collapseNodesTransformation.js"></script>
+    <script type="text/javascript" src="../js/transform/collapseTemporallyCloseNodesTransformation.js"></script>
     <script type="text/javascript" src="../js/transform/collapseSequentialNodesTransformation.js"></script>
     <script type="text/javascript" src="../js/transform/hideHostTransformation.js"></script>
     <script type="text/javascript" src="../js/transform/highlightHostTransformation.js"></script>
     <script type="text/javascript" src="../js/transform/highlightMotifTransformation.js"></script>
     <script type="text/javascript" src="../js/transform/showDiffTransformation.js"></script>
     <script type="text/javascript" src="../js/transform/transformer.js"></script>
+    <script type="text/javascript" src="../js/transform/shrinkTimelinesTransformation.js"></script>
 
     <script type="text/javascript" src="../js/util/exception.js"></script>
     <script type="text/javascript" src="../js/util/regexp.js"></script>
@@ -100,11 +107,14 @@
     <script type="text/javascript" src="../js/visualization/global.js"></script>
     <script type="text/javascript" src="../js/visualization/hostPermutation.js"></script>
     <script type="text/javascript" src="../js/visualization/layout.js"></script>
+    <script type="text/javascript" src="../js/visualization/motifChart.js"></script>
+    <script type="text/javascript" src="../js/visualization/motifPoint.js"></script>
     <script type="text/javascript" src="../js/visualization/view.js"></script>
     <script type="text/javascript" src="../js/visualization/visualEdge.js"></script>
     <script type="text/javascript" src="../js/visualization/visualGraph.js"></script>
     <script type="text/javascript" src="../js/visualization/visualNode.js"></script>
+    <script type="text/javascript" src="../js/visualization/abbreviation.js"></script>
 
-	<script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript" src="test.js"></script>
 </body>
 </html>
