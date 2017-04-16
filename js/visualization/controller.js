@@ -972,7 +972,9 @@ Controller.prototype.showDialog = function(e, type, elem) {
     // Erase second event from the bottom
     $(".dialog").find(".nameBottom").text("");
 
-    if(d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
+    
+    if(type === 0 && // Don't want to show sidebar between host node and circle node
+      d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
         //Get nodes
         var node1 = d3.selectAll("circle.sel").data()[0];
         var node2 = e;
@@ -1086,8 +1088,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     // Set properties for dialog, and show
     if (type == 2)
         $dialog.css({
-            "left": $rect.offset().left - $dialog.width() - 40,
-            "margin-left": -$(window).scrollLeft()
+            "left": $rect.offset().left - $dialog.width()/2 + $rect.width()/2,
         }).addClass("top").show();
     else if (type == 1) 
         $dialog.css({
