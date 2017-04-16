@@ -949,10 +949,13 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
     $("#graph .vRule").css("margin-top", -y);
     $(".log").css("margin-left", x);
 
-    if ($(".line.focus").length)
+    if ($(".line.focus").length) {
         $(".highlight").css({
             "left": $(".line.focus").offset().left - parseFloat($(".line.focus").css("margin-left")) - $(".visualization .left").offset().left
         });
+    }
+
+    this.toggleGreyHostNodes();
 };
 
 /**
@@ -964,6 +967,8 @@ Controller.prototype.onScroll = function(e) { //Enables the hostbar to scroll ho
  * @param {DOMElement} elem The SVG node element
  */
 Controller.prototype.showDialog = function(e, type, elem) {
+    const controller = this;
+
     // Erase second event from the bottom
     $(".dialog").find(".nameBottom").text("");
 
@@ -1073,14 +1078,15 @@ Controller.prototype.showDialog = function(e, type, elem) {
         }
     }
 
+    const $rect = $(elem).is("rect") ? $(elem) : $(elem).find("rect");
+    var $svg = $rect.parents("svg");
     var $dialog = $(".dialog");
-    var $svg = $(elem).parents("svg");
     var $graph = $("#graph");
-
+    
     // Set properties for dialog, and show
     if (type == 2)
         $dialog.css({
-            "left": $(elem).offset().left - 38,
+            "left": $rect.offset().left - $dialog.width() - 40,
             "margin-left": -$(window).scrollLeft()
         }).addClass("top").show();
     else if (type == 1) 
@@ -1103,18 +1109,23 @@ Controller.prototype.showDialog = function(e, type, elem) {
         }).addClass("top").show();
 
     // Set fill color, etc.
-    if (type)
+    if (type) {
+        const rectOffset = $rect.offset().top;
+        const scrollOffset = $(window).scrollTop(); 
+        const hostAdjust = Global.HOST_SIZE / 2;
+        const top = rectOffset - scrollOffset + hostAdjust;
         $dialog.css({
-            "top": $(elem).offset().top - $(window).scrollTop() + Global.HOST_SIZE / 2,
-            "background": type == 2 ? $(elem).css("fill") : e.getFillColor(),
-            "border-color": type == 2 ? $(elem).css("fill") : e.getFillColor()
+            "top": top,
+            "background": type == 2 ? $rect.css("fill") : e.getFillColor(),
+            "border-color": type == 2 ? $rect.css("fill") : e.getFillColor()
         }).data("element", type == 2 ? e : e.getHost());
-    else
+    } else {
         $dialog.css({
             "top": e.getY() + $svg.offset().top,
             "background": e.getFillColor(),
             "border-color": e.getFillColor()
         }).data("element", e.getNode());
+    }
 
     // Set class "host" if host (hidden or not) is selected
     if (type) {
@@ -1191,31 +1202,55 @@ Controller.prototype.showDialog = function(e, type, elem) {
         $dialog.find(".collapse").hide();
     }
     
-    // keep a copy of the dialog box's top coordinate
-    var copyOfDialogTop = $dialog.offset().top;
+    // The dialogtop doesn't change while scrolling, but it does get set
+    // to 0 by JS when hidden, so must keep track of its location 
+    const visibleDialogTop = $dialog.offset().top;
     
     $(window).scroll(function() {
-        // get the current top coordinate of the dialog box and the current bottom coordinate of the hostbar 
-        // (both values change with scrolling)
-        var dialogTop = $dialog.offset().top;
-        var hostBarBottom = $("#hostBar").offset().top + $("#hostBar").height();
-        // get the vertical position of the scrollbar (position = 0 when scrollbar at very top)
-        var scrollbarTop = $(window).scrollTop();
-        
-        // when a dialog box is hidden, its top coordinate is set to 0 so dialogTop starts having the same value as scrollbarTop
-        // we don't want it to be hidden forever after the first time it's hidden so we check for this condition below. We also check
-        // if we've scrolled past the distance between the dialog box and host bar, this is when we want to hide it. 
-        // Note: the 20 in the second condition is hardcoded for host dialog boxes so that they're never hidden when scrolling
-        if ((scrollbarTop != dialogTop) && (scrollbarTop - 20 > (dialogTop - (hostBarBottom - scrollbarTop)))) { 
+        toggleDialogVisibility();
+        controller.toggleGreyHostNodes();
+    });
+
+    // Makes the dialog disappear if it scrolls above the bottom of the
+    // hostbar; or reappear if scrolls lower than it. Does nothing
+    // to host node dialogs
+    function toggleDialogVisibility() {
+        // After scrolling, the hostbarbottom offset will have changed. We
+        // will use this latest version to determine if the dialog
+        // is above it or not.
+        const scrolledHostbarBottom = getHostbarBottomOffset();
+        const isHostDialog = $dialog.attr("id") === Global.HOST_DIALOG_ID;
+
+        if (isHostDialog) {
+            // do nothing
+        } else if (scrolledHostbarBottom > visibleDialogTop) {
+            // dialog is above hostbar
             $dialog.hide();
-        // otherwise, if we haven't scrolled past the distance, show the dialog. Note: we use copyOfDialogTop here
-        // because dialogTop has already changed with scrolling and we want the original distance
-        } else if ($(window).scrollTop() <= (copyOfDialogTop - (hostBarBottom - $(window).scrollTop()))){
+        } else {
+            // dialog is below hostbar
             $dialog.show();
         }
-    });
+    }
 }
 
+// If scrolling past a host's last process, grey out host
+Controller.prototype.toggleGreyHostNodes = function () {
+    for (let view of this.global.getViews()) {
+        for (let visualNode of view.getTailNodes()) {
+            const isScrolledPast = isAboveHostbar(visualNode);
+            view.setGreyHost(visualNode, isScrolledPast);
+        }
+    }
+ 
+    // VisualNode => Boolean
+    function isAboveHostbar(visualNode) {
+        const $circle = visualNode.getSVG().find("circle");
+        const circleTop = $circle.offset().top;
+        const hostBarBottom = getHostbarBottomOffset();
+        return circleTop < hostBarBottom;
+    }
+
+};
 
 /**
  * Clears the information in the sidebar
@@ -1464,9 +1499,21 @@ Controller.prototype.formatTime = function(time) {
 Controller.prototype.bindScroll = function (){
     var self = this;
     $(window).unbind("scroll");
-    $(window).bind("scroll", self.onScroll);
+    $(window).bind("scroll", function(e) {
+        self.onScroll(e);
+    });
     $(window).scroll();
 };
+
+// Return current offset of the hostbar. This gets larger the lower down we
+// scroll
+function getHostbarBottomOffset() {
+    const $hostbar = $("#hostBar");
+    const hostbarBottom = $hostbar.offset().top + $hostbar.height()
+        + parseFloat($hostbar.css('padding-top'));
+    return hostbarBottom;
+}
+
 
 Controller.prototype.resetSidebar = function(){
     if($("#graphOptionsToggle").hasClass("active")) $("#graphOptionsToggle").click();
