@@ -61,11 +61,11 @@ function VisualNode(node) {
 
     /** @private */
     this.strokeColor;
-    this.setStrokeColor("#fff");
+    this.setStrokeColor(Global.NODE_STROKE_COLOR);
 
     /** @private */
     this.strokeWidth;
-    this.setStrokeWidth(2);
+    this.setStrokeWidth(Global.NODE_STROKE_WIDTH);
 
     /** @private */
     this.opacity;
@@ -282,12 +282,42 @@ VisualNode.prototype.getFillColor = function() {
  * @param {String} newFillColor The new fill color. The color must be a string
  *            that parses to a valid SVG color as defined in
  *            http://www.w3.org/TR/SVG/types.html#WSP
+ * @param {Boolean} isTemporary When true, this VisualNode will still produce
+ *            its previous colour when calling getFillColor, and calling
+ *            resetFillColor will set it.
+ *            When false, the record of the previous colour is lost (default).
  */
-VisualNode.prototype.setFillColor = function(newFillColor) {
-    this.fillColor = newFillColor;
+VisualNode.prototype.setFillColor = function(newFillColor, isTemporary=false) {
+    if (!isTemporary) {
+        this.fillColor = newFillColor;
+    }
     this.$circle.attr("fill", newFillColor);
     this.$rect.attr("fill", newFillColor);
     this.$diamond.attr("fill", newFillColor);
+}
+
+/**
+ * Sets the fillcolour to what was previously recorded prior to last
+ * non-temporary call to setFillColor.
+ *
+ */
+VisualNode.prototype.resetFillColor = function() {
+    this.setFillColor(this.fillColor);
+};
+
+
+/**
+ * Sets the hostlabel colour of this node.
+ * Precondition: this VisualNode represents a host node
+ *
+ * 
+ * @param {String} newTextColor The new text color. The color must be a string
+ *            that parses to a valid SVG color as defined in
+ *            http://www.w3.org/TR/SVG/types.html#WSP
+ */
+VisualNode.prototype.setHostLabelColor = function(newTextColor) {
+    const $text = this.$rect.siblings("text");
+    $text.attr("fill", newTextColor);
 };
 
 /**
@@ -423,6 +453,17 @@ VisualNode.prototype.getLineNumber = function() {
  */
 VisualNode.prototype.isStart = function() {
     return this.node.isHead();
+};
+
+/**
+ * Determines if this VisualNode is the last node of its host.
+ * The last node will have an event handler on it for grey-ing out its host.
+ * 
+ * @returns {Boolean} True if this is the last VisualNode
+ */
+VisualNode.prototype.isLast = function() {
+    const nextNode = this.node.getNext();
+    return nextNode === null || nextNode.isTail();
 };
 
 /**

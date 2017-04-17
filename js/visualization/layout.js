@@ -68,9 +68,7 @@ SpaceTimeLayout.prototype.constructor = SpaceTimeLayout;
 SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
 
     this.height = 0;
-
-    var offset = 30;
-    // var offset = 10;
+    var offset = 10;
     this.minDistancePixels = 50;
     var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
     var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));

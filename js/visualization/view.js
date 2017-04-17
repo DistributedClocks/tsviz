@@ -47,9 +47,23 @@ function View(model, hostPermutation, label, minDistance, collapseLocal) {
     /** @private */
     this.controller = null;
 
-    /** @private */
-    // Cache a mapping of hostnames to abbreviated hostnames
+    /**
+     * Cacheed mapping of hostnames to abbreviated hostnames
+     * @private
+     */
     this.abbreviatedHostnames = null; // {String} -> {String}
+
+    /** 
+    * Used to determine if a tailnode is scrolling out of view
+    * @private
+    */
+    this.tailNodes = [];
+
+    /**
+    * A mapping of hostnode names to their visual nodes
+    * @private
+    */
+    this.hostNodes = new Map();
 }
 
 /**
@@ -242,6 +256,9 @@ View.prototype.draw = function(viewPosition) {
             var svg = visualNode.getSVG();
             view.$svg.append(svg);
             arr.push(svg[0]);
+            if (visualNode.isLast()) {
+                view.tailNodes.push(visualNode);
+            }
         });
 
         // Bind the nodes
@@ -268,6 +285,7 @@ View.prototype.draw = function(viewPosition) {
         var startNodes = view.visualGraph.getStartVisualNodes();
         var arr = [];
         startNodes.forEach(function(visualNode) {
+            view.hostNodes.set(visualNode.getHost(), visualNode);
             var svg = visualNode.getSVG();
             view.$hostSVG.append(svg);
             arr.push(svg[0]);
@@ -390,3 +408,36 @@ View.prototype.setAbbreviatedHostname = function(hostname, abbrev) {
     }
     this.abbreviatedHostnames.set(hostname, abbrev);
 }
+
+/**
+ * If isScrolledPast is true, changes colour of visualNode's host to grey.
+ * If it is false, changes host node back to the original colour
+ * @param {VisualNode} 
+ * @param {Boolean}
+ */
+View.prototype.setGreyHost = function(visualNode, isScrolledPast) {
+    const view = this;
+    const visualHostNode = this.hostNodes.get(visualNode.getHost());
+    if (isScrolledPast) {
+        // set to grey
+        const isTemporary = true;
+        visualHostNode.setFillColor("white", isTemporary);
+        visualHostNode.setStrokeColor("lightgrey");
+        visualHostNode.setHostLabelColor("grey");
+        visualHostNode.setStrokeWidth(1);
+    } else {
+        // reset to original colour
+        visualHostNode.resetFillColor();
+        visualHostNode.setHostLabelColor("black");
+        visualHostNode.setStrokeColor(Global.NODE_STROKE_COLOR);
+        visualHostNode.setStrokeWidth(Global.NODE_STROKE_WIDTH);
+    }
+}
+
+/**
+ * Return the tail nodes of each host in this view's graph
+ * @return {VisualNode[]}
+ */
+View.prototype.getTailNodes = function() {
+    return this.tailNodes;
+};
