@@ -34,11 +34,10 @@ function beginSection (section) {
 
 var start = Date.now();
 
-var log = 'a1\na {"a":1}\na2\na {"a":2, "b":2}\nb1\nb {"b":1,"a":1}\nb2\nb {"b":2,"a":1}';
-var parser = new LogParser(log, null, new NamedRegExp('(?<event>.*)\\n(?<host>\\S*) (?<clock>{.*})', 'm'));
+var log = '10000 a1\na {"a":1}\n20000 a2\na {"a":2, "b":2}\n15000 b1\nb {"b":1,"a":1}\n25000 b2\nb {"b":2,"a":1}';
+var parser = new LogParser(log, null, new NamedRegExp('(?<timestamp>(\\d*)) (?<event>.*)\\n(?<host>\\S*) (?<clock>.*)', 'm'));
 var hostPermutation = new LengthPermutation(true);
 var graph = new ModelGraph(parser.getLogEvents(""));
-
 hostPermutation.addGraph(graph);
 hostPermutation.update();
 
@@ -46,6 +45,7 @@ $("body").append("<div id='vizContainer'></div>");
 $("body").append("<div id='sideBar'></div>");
 $("body").append("<div id='hostBar'></div>");
 $("body").append("<div id='logTable'></div>");
+$("body").append("<div class='visualization'><header></header></div>");
 
 /**
  * Graph.js
@@ -311,7 +311,7 @@ var viewL = new View(graph, hostPermutation, "viewL", 1000, true);
 var viewR = new View(graph, hostPermutation, "viewR", 1000, true);
 var views = [viewL, viewR];
 
-var global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);
+var global = new Global($("#vizContainer"), $("#sideBar"), $("#hostBar"), views);
 global.setHostPermutation(hostPermutation);
 
 /**
@@ -339,6 +339,198 @@ assert("draw: component count", function () {
     var l = $links.length == 6;
     return h && c && l;
 });
+
+/**
+ * View Subsection: Abbreviation
+ */
+
+/**
+ * Aids in testing Abbreviation.generateFromStrings.
+ * Supply a Map where keys are the input strings and the values are the
+ * ellipsified output strings assuming there is a maximum string length of 8
+ * non-Ellipsis characters.
+ *
+ * @param {Map(String:String) => }
+ */
+function testAbbreviation(testName, inputStringsToAbbrevStringMap) {
+
+    // Return true when the string has fewer than 8 characters, or 8 characters
+    // plus two ellipses. (Note: isFit can be any predicate function, including
+    // one dependent on the DOM.)
+    function testIsFit(string) {
+        let maxLen = 8;
+        if (string.startsWith(Abbreviation.ELLIPSIS)) {
+            maxLen += Abbreviation.ELLIPSIS.length;
+        }
+        if (string.endsWith(Abbreviation.ELLIPSIS)) {
+            maxLen += Abbreviation.ELLIPSIS.length;
+        }
+        const isFit = string.length <= maxLen;
+        return isFit;
+    }
+
+    const stringsToFitter = new Map();
+    for (let [string,abbrev] of inputStringsToAbbrevStringMap) {
+        stringsToFitter.set(string, testIsFit);    
+    }
+
+    const abbreviations = Abbreviation.generateFromStrings(stringsToFitter);
+
+    let isPass = true;
+    for (let abbrev of abbreviations) {
+        let string = abbrev.getOriginalString();
+        let abbrevString = abbrev.getEllipsesString();
+        if (inputStringsToAbbrevStringMap.get(string) !== abbrevString) {
+            isPass = false;
+            console.log("Abbreviation failure for '" + string +
+                "'. Expected: '" + inputStringsToAbbrevStringMap.get(string) +
+                "'; Actual: '" + abbrevString + "'");
+            console.log("   Failed Abbreviation: ", abbrev);
+            console.log("   inputStringsToAbbrevStringMap:", inputStringsToAbbrevStringMap);
+        }
+    }
+
+    assert("Abbreviation: " + testName, function() { return isPass; });
+}
+
+testAbbreviation("empty", new Map());
+testAbbreviation("short one", new Map([["a", "a"]])); 
+testAbbreviation("obvious prefix", new Map([
+    ["node1", "..1"],
+    ["node2", "..2"],
+    ["node3", "..3"],
+]));
+testAbbreviation("obvious suffix", new Map([
+    ["a-node", "a.."],
+    ["b-node", "b.."],
+    ["c-node", "c.."],
+]));
+testAbbreviation("equal commonplace suffix and prefix", new Map([
+    ["hello-1234node", "..1234node"],
+    ["hello-5678node", "..5678node"],
+    ["hello-9012node", "..9012node"],
+])); // There can only be one affix, so it the prefix is chosen arbitrarily
+testAbbreviation("more prefixes than suffixes", new Map([
+    ["hello-1234", "..1234"],
+    ["hello-5678", "..5678"],
+    ["hello-9012", "..9012"],
+    ["hello-3456", "..3456"],
+    ["a-node", "a-node"],
+    ["b-node", "b-node"],
+    ["c-node", "c-node"],
+]));
+testAbbreviation("more suffixes than prefixes", new Map([
+    ["hello-1", "hello-1"],
+    ["hello-2", "hello-2"],
+    ["hello-3", "hello-3"],
+    ["a-node", "a.."], 
+    ["b-node", "b.."], 
+    ["c-node", "c.."], 
+    ["d-node", "d.."], 
+]));
+testAbbreviation("one name IS prefix", new Map([
+    ["hello-1234", "..-1234"],
+    ["hello-5678", "..-5678"],
+    ["hello-9012", "..-9012"],
+    ["hello", "hello"],
+]));
+testAbbreviation("long, un-affixed strings", new Map([
+    ["abcdefhijklmnopqrstuvwxyz", "..jklmnopq.."],
+    ["bcdefhijklmnopqrstuvwxyza", "..klmnopqr.."],
+    ["cdefhijklmnopqrstuvwxyzab", "..lmnopqrs.."],
+    ["defhijklmnopqrstuvwxyzabc", "..mnopqrst.."],
+]));
+testAbbreviation("right truncation", new Map([
+    ["abcdefghijklmnopqrstuvwxyz-node", "abcdefgh.."],
+    ["bcdefghijklmnopqrstuvwxyza-node", "bcdefghi.."],
+    ["cdefghijklmnopqrstuvwxyzab-node", "cdefghij.."],
+    ["defghijklmnopqrstuvwxyzabc-node", "defghijk.."],
+]));
+testAbbreviation("left truncation", new Map([
+    ["node-abcdefhijklmnopqrstuvwxyz", "..stuvwxyz"],
+    ["node-bcdefhijklmnopqrstuvwxyza", "..tuvwxyza"],
+    ["node-cdefhijklmnopqrstuvwxyzab", "..uvwxyzab"],
+    ["node-defhijklmnopqrstuvwxyzabc", "..vwxyzabc"],
+]));
+testAbbreviation("several prefix contenders", new Map([
+    ["hello-1234", "..1234"],
+    ["hello-5678", "..5678"],
+    ["hello-9012", "..9012"],
+    ["hello-3456", "..3456"],
+    ["node-xxx", "node-xxx"],
+    ["node-yyy", "node-yyy"], 
+    ["node-zzz", "node-zzz"], 
+    ["test-aaa", "test-aaa"], 
+    ["test-bbb", "test-bbb"], 
+    ["test-ccc", "test-ccc"], 
+]));
+testAbbreviation("complex", new Map([
+    ["hello", "hello"],
+    ["hello-1234", "..-1234"],
+    ["hello-3456", "..-3456"],
+    ["hello-3456789012", "..56789012"],
+    ["hello-5678", "..-5678"],
+    ["hello-9012", "..-9012"],
+
+    ["node", "node"],
+    ["a-node", "a-node"], 
+    ["b-node", "b-node"], 
+    ["c-node", "c-node"], 
+
+    ["test-aaa", "test-aaa"], 
+    ["test-bbb", "test-bbb"], 
+
+    ["abcdefhijklmnopqrstuvwxyz", "..jklmnopq.."],
+    ["lenny", "lenny"],
+    ["carl", "carl"],
+]));
+testAbbreviation("complex, shuffled", new Map([
+    ["a-node", "a-node"], 
+    ["hello-1234", "..-1234"],
+    ["test-bbb", "test-bbb"], 
+    ["c-node", "c-node"], 
+    ["b-node", "b-node"], 
+    ["hello-9012", "..-9012"],
+    ["hello", "hello"],
+    ["carl", "carl"],
+    ["abcdefhijklmnopqrstuvwxyz", "..jklmnopq.."],
+    ["node", "node"],
+    ["test-aaa", "test-aaa"], 
+    ["hello-3456", "..-3456"],
+    ["hello-3456789012", "..56789012"],
+    ["hello-5678", "..-5678"],
+    ["lenny", "lenny"],
+]));
+testAbbreviation("an algorithmic weakness (1)", new Map([
+    // Note that this algorithm can easily be thrown off if the best
+    // affix has its starting characters the same as some others
+    ["hello-1", "hello-1"],
+    ["hello-2", "hello-2"],
+    ["test-aaa", "test-aaa"], // ideally "..aaa"
+    ["test-bbb", "test-bbb"], // ideally "..bbb" 
+    ["test-ccc", "test-ccc"], // ideally "..ccc" 
+    ["harry", "harry"], 
+    ["hermione", "hermione"],
+    // In this case, the last two entries begin with 'h', making 'h' the
+    // dominant prefix. However, it the similarities end there, and since
+    // a prefix must be at least Abbreviation.MIN_AFFIX_LEN long, so
+    // ultimately no affix is chosen.
+]));
+testAbbreviation("an algorithmic weakness (2)", new Map([
+    // Continuing the example from the previous test....
+    ["hello-1", "..lo-1"],    // ideally "hello-1"
+    ["hello-2", "..lo-2"],    // ideally "hello-2"
+    ["test-aaa", "test-aaa"], // ideally "..aaa"
+    ["test-bbb", "test-bbb"], // ideally "..bbb" 
+    ["test-ccc", "test-ccc"], // ideally "..ccc" 
+    ["helsinki", "..sinki"],  // ideally "helsinki"
+    ["help", "..p"],          // ideally "help"
+    // In this case, the last two entries begin with 'hel', making 'hel' the
+    // dominant prefix, which is long enough to be a prefix. However, the
+    // similarities end there, and 'hel' hijacks the legitimate prefix of
+    // 'test-'.
+]));
+
 
 
 /**
@@ -417,7 +609,7 @@ assert("draw: no differences", function () {
     && rhombusEvents && lines;
 });
 
-log = 'a1\na {"a":1}\na2\na {"a":2, "b":2}\nb1\nb {"b":1,"a":1}\nb2\nb {"b":2,"a":1}\nc1\nc {"c":1}\nd1\nd {"d":1}';
+log = '10000 a1\na {"a":1}\n20000 a2\na {"a":2, "b":2}\n15000 b1\nb {"b":1,"a":1}\n25000 b2\nb {"b":2,"a":1}\n30000 c1\nc {"c":1}\n30000 d1\nd {"d":1}';
 drawNewLogAndShowDiff(log);
 
 assert("draw: different hosts", function() {
@@ -430,7 +622,7 @@ assert("draw: different hosts", function() {
     && rhombusEvents && lines;
 });
 
-log = 'a1\na {"a":1}\na2\na {"a":2, "b":2}\nb1\nb {"b":1,"a":1}\nb2\nb {"b":2,"a":1}\nb3\nb {"b":3,"a":1}';
+log = '10000 a1\na {"a":1}\n20000 a2\na {"a":2, "b":2}\n15000 b1\nb {"b":1,"a":1}\n25000 b2\nb {"b":2,"a":1}\n30000 b3\nb {"b":3,"a":1}';
 drawNewLogAndShowDiff(log);
 
 assert("draw: some different events", function() {
@@ -443,7 +635,7 @@ assert("draw: some different events", function() {
     && rhombusEvents && lines;
 });
 
-log = 'a_event1\na {"a":1}\na_event2\na {"a":2, "b":2}\nb_event1\nb {"b":1,"a":1}\nb_event2\nb {"b":2,"a":1}';
+log = '10000 a_event1\na {"a":1}\n20000 a_event2\na {"a":2, "b":2}\n15000 b_event1\nb {"b":1,"a":1}\n25000 b_event2\nb {"b":2,"a":1}';
 drawNewLogAndShowDiff(log);
 
 assert("draw: all different events", function() {
@@ -466,7 +658,6 @@ function drawNewLogAndShowDiff (log) {
      */
     global.getController().hideDiff();
 
-    parser = new LogParser(log, null, new NamedRegExp('(?<event>.*)\\n(?<host>\\S*) (?<clock>{.*})', 'm'));
     var graph = new ModelGraph(parser.getLogEvents(""));
     hostPermutation.addGraph(graph);
     hostPermutation.update();
@@ -474,7 +665,7 @@ function drawNewLogAndShowDiff (log) {
     viewR = new View(graph, hostPermutation, "viewR", 1000, true);
     views = [viewL, viewR];
 
-    global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);
+    global = new Global($("#vizContainer"), $("#sideBar"), $("#hostBar"), views);
     global.setPairwiseView(true);
 
     global.setHostPermutation(hostPermutation);
