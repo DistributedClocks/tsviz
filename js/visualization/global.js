@@ -642,11 +642,14 @@ Global.prototype.drawSideBar = function() {
     }
   
     // Update search chart if there is one
-    var hideTheseHosts = {};
+    // This requires an array instead of an object
+    let hideTheseHosts = [];
     hideTheseHosts = this.viewL.getTransformer().getHiddenHosts();
     
-    if (this.viewR != null && this.getPairwiseView()) 
-        hideTheseHosts = hiddenHosts.concat(this.viewR.getTransformer().getHiddenHosts());
+    if (this.viewR != null && this.getPairwiseView())  {
+        const hiddenHostsR = this.viewR.getTransformer().getHiddenHosts();
+        hideTheseHosts = hideTheseHosts.concat(hiddenHostsR);
+    }
 
     if(this.searchbar.getMotifChart() != null) {
         this.searchbar.getMotifChart().removeHosts(hideTheseHosts);

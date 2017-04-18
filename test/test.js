@@ -34,11 +34,10 @@ function beginSection (section) {
 
 var start = Date.now();
 
-var log = 'a1\na {"a":1}\na2\na {"a":2, "b":2}\nb1\nb {"b":1,"a":1}\nb2\nb {"b":2,"a":1}';
-var parser = new LogParser(log, null, new NamedRegExp('(?<event>.*)\\n(?<host>\\S*) (?<clock>{.*})', 'm'));
+var log = '10000 a1\na {"a":1}\n20000 a2\na {"a":2, "b":2}\n15000 b1\nb {"b":1,"a":1}\n25000 b2\nb {"b":2,"a":1}';
+var parser = new LogParser(log, null, new NamedRegExp('(?<timestamp>(\\d*)) (?<event>.*)\\n(?<host>\\S*) (?<clock>.*)', 'm'));
 var hostPermutation = new LengthPermutation(true);
 var graph = new ModelGraph(parser.getLogEvents(""));
-
 hostPermutation.addGraph(graph);
 hostPermutation.update();
 
@@ -46,6 +45,7 @@ $("body").append("<div id='vizContainer'></div>");
 $("body").append("<div id='sideBar'></div>");
 $("body").append("<div id='hostBar'></div>");
 $("body").append("<div id='logTable'></div>");
+$("body").append("<div class='visualization'><header></header></div>");
 
 /**
  * Graph.js
@@ -311,7 +311,7 @@ var viewL = new View(graph, hostPermutation, "viewL", 1000, true);
 var viewR = new View(graph, hostPermutation, "viewR", 1000, true);
 var views = [viewL, viewR];
 
-var global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);
+var global = new Global($("#vizContainer"), $("#sideBar"), $("#hostBar"), views);
 global.setHostPermutation(hostPermutation);
 
 /**
@@ -417,7 +417,7 @@ assert("draw: no differences", function () {
     && rhombusEvents && lines;
 });
 
-log = 'a1\na {"a":1}\na2\na {"a":2, "b":2}\nb1\nb {"b":1,"a":1}\nb2\nb {"b":2,"a":1}\nc1\nc {"c":1}\nd1\nd {"d":1}';
+log = '10000 a1\na {"a":1}\n20000 a2\na {"a":2, "b":2}\n15000 b1\nb {"b":1,"a":1}\n25000 b2\nb {"b":2,"a":1}\n30000 c1\nc {"c":1}\n30000 d1\nd {"d":1}';
 drawNewLogAndShowDiff(log);
 
 assert("draw: different hosts", function() {
@@ -430,7 +430,7 @@ assert("draw: different hosts", function() {
     && rhombusEvents && lines;
 });
 
-log = 'a1\na {"a":1}\na2\na {"a":2, "b":2}\nb1\nb {"b":1,"a":1}\nb2\nb {"b":2,"a":1}\nb3\nb {"b":3,"a":1}';
+log = '10000 a1\na {"a":1}\n20000 a2\na {"a":2, "b":2}\n15000 b1\nb {"b":1,"a":1}\n25000 b2\nb {"b":2,"a":1}\n30000 b3\nb {"b":3,"a":1}';
 drawNewLogAndShowDiff(log);
 
 assert("draw: some different events", function() {
@@ -443,7 +443,7 @@ assert("draw: some different events", function() {
     && rhombusEvents && lines;
 });
 
-log = 'a_event1\na {"a":1}\na_event2\na {"a":2, "b":2}\nb_event1\nb {"b":1,"a":1}\nb_event2\nb {"b":2,"a":1}';
+log = '10000 a_event1\na {"a":1}\n20000 a_event2\na {"a":2, "b":2}\n15000 b_event1\nb {"b":1,"a":1}\n25000 b_event2\nb {"b":2,"a":1}';
 drawNewLogAndShowDiff(log);
 
 assert("draw: all different events", function() {
@@ -466,7 +466,6 @@ function drawNewLogAndShowDiff (log) {
      */
     global.getController().hideDiff();
 
-    parser = new LogParser(log, null, new NamedRegExp('(?<event>.*)\\n(?<host>\\S*) (?<clock>{.*})', 'm'));
     var graph = new ModelGraph(parser.getLogEvents(""));
     hostPermutation.addGraph(graph);
     hostPermutation.update();
@@ -474,7 +473,7 @@ function drawNewLogAndShowDiff (log) {
     viewR = new View(graph, hostPermutation, "viewR", 1000, true);
     views = [viewL, viewR];
 
-    global = new Global($("#vizContainer"), $("#sidebar"), $("#hostBar"), $("#logTable"), views);
+    global = new Global($("#vizContainer"), $("#sideBar"), $("#hostBar"), views);
     global.setPairwiseView(true);
 
     global.setHostPermutation(hostPermutation);
