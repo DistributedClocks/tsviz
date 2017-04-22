@@ -336,7 +336,8 @@ assert("getModel", function () {
 assert("draw: component count", function () {
     var h = $hosts.length == 2;
     var c = $circles.length == 4;
-    var l = $links.length == 6;
+    //In order to make the edges hoverable, the svg for the edge contains two lines, so double the old value 6
+    var l = $links.length == 12; 
     return h && c && l;
 });
 
@@ -556,7 +557,8 @@ assert("getViews", function () {
 assert("draw: component count", function () {
     var h = $hosts.length == 4;
     var c = $circles.length == 8;
-    var l = $links.length == 12;
+    //Same reason as view component count
+    var l = $links.length == 24;
     return h && c && l;
 });
 
@@ -586,7 +588,7 @@ assert("draw: node ordering", function () {
     var la = $(a[0]).offset().top < $(a[1]).offset().top;
     var lb = $(b[0]).offset().top < $(b[1]).offset().top;
     var ab = $(a[0]).offset().top < $(b[0]).offset().top;
-    var ba = $(b[1]).offset().top < $(a[1]).offset().top;
+    var ba = $(a[1]).offset().top < $(b[1]).offset().top;
 
     return la && lb && ab && ba;
 });
@@ -604,7 +606,8 @@ assert("draw: no differences", function () {
     var rhombusHosts = $("#hostBar polygon").length == 0;
     var circleEvents = $("#vizContainer circle").length == 8;
     var rhombusEvents = $("#vizContainer polygon").length == 0;
-    var lines = $("svg line").length == 12;
+    //Same as view component count
+    var lines = $("svg line").length == 24;
     return squareHosts && rhombusHosts && circleEvents
     && rhombusEvents && lines;
 });
@@ -617,7 +620,8 @@ assert("draw: different hosts", function() {
     var rhombusHosts = $("#hostBar polygon").length == 2;
     var circleEvents = $("#vizContainer circle").length == 10;
     var rhombusEvents = $("#vizContainer polygon").length == 0;
-    var lines = $("svg line").length == 14;
+//    var lines = $("svg line").length == 14;
+    var lines = $("svg line").length == 28;
     return squareHosts && rhombusHosts && circleEvents
     && rhombusEvents && lines;
 });
@@ -630,7 +634,8 @@ assert("draw: some different events", function() {
     var rhombusHosts = $("#hostBar polygon").length == 0;
     var circleEvents = $("#vizContainer circle").length == 8;
     var rhombusEvents = $("#vizContainer polygon").length == 1;
-    var lines = $("svg line").length == 13;
+//    var lines = $("svg line").length == 13;
+    var lines = $("svg line").length == 26;
     return squareHosts && rhombusHosts && circleEvents
     && rhombusEvents && lines;
 });
@@ -643,7 +648,8 @@ assert("draw: all different events", function() {
     var rhombusHosts = $("#hostBar polygon").length == 0;
     var circleEvents = $("#vizContainer circle").length == 0;
     var rhombusEvents = $("#vizContainer polygon").length == 8;
-    var lines = $("svg line").length == 12;
+//    var lines = $("svg line").length == 12;
+    var lines = $("svg line").length == 24;
     return squareHosts && rhombusHosts && circleEvents
     && rhombusEvents && lines;
 });
@@ -657,7 +663,7 @@ function drawNewLogAndShowDiff (log) {
      *  so showDiff won't apply to it (because it already has a showDiff transformation) otherwise
      */
     global.getController().hideDiff();
-
+    parser = new LogParser(log, null, new NamedRegExp('(?<timestamp>(\\d*)) (?<event>.*)\\n(?<host>\\S*) (?<clock>.*)', 'm'));
     var graph = new ModelGraph(parser.getLogEvents(""));
     hostPermutation.addGraph(graph);
     hostPermutation.update();

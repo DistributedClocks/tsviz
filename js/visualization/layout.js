@@ -70,8 +70,20 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     this.height = 0;
     var offset = 10;
     this.minDistancePixels = 50;
-    var timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
-    var timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
+    var timeStart;
+    var timeEnd; 
+    if(Number(visualGraph.timeRange[0]) > Number.MAX_SAFE_INTEGER){
+        timeStart = Number(visualGraph.timeRange[0].slice(3, visualGraph.timeRange[0].length));
+    }else{
+        timeStart = Number(visualGraph.timeRange[0]);
+    }
+    
+    if(Number(visualGraph.timeRange[1]) > Number.MAX_SAFE_INTEGER){
+        timeEnd = Number(visualGraph.timeRange[1].slice(3, visualGraph.timeRange[1].length));
+    }else{
+        timeEnd = Number(visualGraph.timeRange[1]);
+    }
+    
     
     var timeSpan = (timeEnd - timeStart);
 
@@ -148,7 +160,7 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
             if (nodeToNumParents[child.getId()] == 0) {
                 noParents.push(child);
             }
-            //child.setY(Math.max(child.getY(), current.getY() + this.delta));
+//            child.setY(Math.max(child.getY(), current.getY() + this.delta));
             child.setY(this.timeScale(child.getNode().getFirstLogEvent().fields.timestamp));
         }
     }

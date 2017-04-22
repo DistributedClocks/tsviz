@@ -241,7 +241,7 @@ View.prototype.draw = function(viewPosition) {
         var arr = [];
         edges.forEach(function(visualEdge) {
             var svg = visualEdge.getSVG();
-            view.$svg.append(svg);
+            view.$svg.append(visualEdge.getSVG());
             arr.push(svg[0]);
         });
 
