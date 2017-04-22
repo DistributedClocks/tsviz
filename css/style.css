@@ -306,7 +306,7 @@ section.input .left {
 }
 #graph .corner {
   position: fixed;
-  top: 47px;
+  top: 54px;
   left: 0;
   /*height: 70px;*/
   color: rgba(130,130,130,1); /*Gray*/
