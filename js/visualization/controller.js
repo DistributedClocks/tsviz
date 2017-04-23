@@ -974,7 +974,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
     
     if(type === 0 && // Don't want to show sidebar between host node and circle node
-      d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
+      d3.selectAll("circle.sel").size() == 1){ //If there's another selected node
         //Get nodes
         var node1 = d3.selectAll("circle.sel").data()[0];
         var node2 = e;
@@ -986,7 +986,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     }
     // Remove existing selection highlights
     // The user can select at most two nodes at a time. If she selects a third, the previous selections will be cleared.
-    if(d3.selectAll("circle.sel")[0].length == 2){
+    if(d3.selectAll("circle.sel").size() == 2){
         d3.selectAll("circle.sel").each(function(d){
             $(this).remove();
             d.setSelected(false);
@@ -998,7 +998,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     }
 
     //TODO: apply the same selection rule to polygons
-    if(d3.selectAll("polygon.sel")[0].length == 2){
+    if(d3.selectAll("polygon.sel").size() == 2){
         d3.select("polygon.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);

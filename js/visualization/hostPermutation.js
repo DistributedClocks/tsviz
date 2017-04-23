@@ -53,8 +53,8 @@ function HostPermutation(reverse) {
     this.reverse = reverse;
 
     /** @private */
-    this.color = d3.scale.category20();
-    this.color2 = d3.scale.category10();
+    this.color = d3.scaleOrdinal(d3.schemeCategory20);
+    this.color2 = d3.scaleOrdinal(d3.schemeCategory10);
 
     /** @private */
     this.hostColors = {};
