@@ -17,6 +17,9 @@ function assert (description, outcome) {
         li.appendChild(err);
         document.getElementById('output').appendChild(li);
 
+        all_tests_pass = false;
+        console.log("CRASH: " + description);
+
         return;
     }
 
@@ -24,6 +27,11 @@ function assert (description, outcome) {
     li.className = result ? 'pass' : 'fail';
     li.appendChild(document.createTextNode(description));
     document.getElementById('output').appendChild(li);
+    
+    if (!result) {
+        all_tests_pass = false;
+        console.log("FAIL: " + description);
+    }
 };
 
 function beginSection (section) {
@@ -31,6 +39,8 @@ function beginSection (section) {
     h1.appendChild(document.createTextNode(section));
     document.getElementById('output').appendChild(h1);
 }
+
+let all_tests_pass = true;
 
 var start = Date.now();
 
@@ -41,11 +51,11 @@ var graph = new ModelGraph(parser.getLogEvents(""));
 hostPermutation.addGraph(graph);
 hostPermutation.update();
 
-$("body").append("<div id='vizContainer'></div>");
-$("body").append("<div id='sideBar'></div>");
-$("body").append("<div id='hostBar'></div>");
-$("body").append("<div id='logTable'></div>");
 $("body").append("<div class='visualization'><header></header></div>");
+$(".visualization").append("<div id='graph'></div>");
+$("#graph").append("<div id='hostBar'></div>");
+$("#graph").append("<div id='vizContainer'></div>");
+$(".visualization").append("<div id='sideBar'></div>");
 
 /**
  * Graph.js
@@ -542,8 +552,11 @@ beginSection("Global.js");
 global.setPairwiseView(true);
 global.drawAll();
 
-var hostAColor = global.hostPermutation.getHostColors().a;
-var hostBColor = global.hostPermutation.getHostColors().b;
+const hostname1 = "a";
+const hostname2 = "b";
+
+var hostAColor = global.hostPermutation.getHostColor(hostname1);
+var hostBColor = global.hostPermutation.getHostColor(hostname2);
 
 var $hosts = $("#hostBar rect");
 var $circles = $("svg circle");
@@ -573,8 +586,8 @@ assert("draw: host ordering", function () {
     });
     var first = sortedHosts[0];
     var second = sortedHosts[1];
-    return first.getAttribute("fill") == hostAColor
-    && second.getAttribute("fill") == hostBColor;
+    return first.nextElementSibling.innerHTML == hostname1 &&
+           second.nextElementSibling.innerHTML == hostname2;
 });
 
 assert("draw: node ordering", function () {
@@ -681,6 +694,6 @@ function drawNewLogAndShowDiff (log) {
 $("#vizContainer").remove();
 $("#hostBar").remove();
 $("#sideBar").remove();
-$("#logTable").remove();
 
 console.log(Date.now() - start);
+console.log("All tests pass:", all_tests_pass);
