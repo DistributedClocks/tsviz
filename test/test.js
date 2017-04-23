@@ -352,8 +352,9 @@ assert("draw: component count", function () {
 });
 
 /**
- * View Subsection: Abbreviation
+ * Abbreviation
  */
+beginSection("Abbreviation.js");
 
 /**
  * Aids in testing Abbreviation.generateFromStrings.
@@ -401,7 +402,7 @@ function testAbbreviation(testName, inputStringsToAbbrevStringMap) {
         }
     }
 
-    assert("Abbreviation: " + testName, function() { return isPass; });
+    assert(testName, function() { return isPass; });
 }
 
 testAbbreviation("empty", new Map());
@@ -512,7 +513,7 @@ testAbbreviation("complex, shuffled", new Map([
     ["hello-5678", "..-5678"],
     ["lenny", "lenny"],
 ]));
-testAbbreviation("an algorithmic weakness (1)", new Map([
+testAbbreviation("algorithmic weakness: affix not found when available", new Map([
     // Note that this algorithm can easily be thrown off if the best
     // affix has its starting characters the same as some others
     ["hello-1", "hello-1"],
@@ -523,11 +524,11 @@ testAbbreviation("an algorithmic weakness (1)", new Map([
     ["harry", "harry"], 
     ["hermione", "hermione"],
     // In this case, the last two entries begin with 'h', making 'h' the
-    // dominant prefix. However, it the similarities end there, and since
+    // dominant prefix. However, the similarities end there, and since
     // a prefix must be at least Abbreviation.MIN_AFFIX_LEN long, so
     // ultimately no affix is chosen.
 ]));
-testAbbreviation("an algorithmic weakness (2)", new Map([
+testAbbreviation("algorithmic weakness: dominant affix not best", new Map([
     // Continuing the example from the previous test....
     ["hello-1", "..lo-1"],    // ideally "hello-1"
     ["hello-2", "..lo-2"],    // ideally "hello-2"
