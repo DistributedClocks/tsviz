@@ -1011,11 +1011,9 @@ Controller.prototype.showDialog = function(e, type, elem) {
           // If this node is not a unique event, highlight the node with a circular outline
           if (uniqueEventsL.indexOf(id) == -1 && uniqueEventsR.indexOf(id) == -1) {
             var selcirc = d3.select("#node" + e.getId()).insert("circle", "circle");
-            selcirc.style({
-               "fill": function(d) {
+            selcirc.style("fill", function(d) {
                   return d.getFillColor();
-                }
-            });
+                });
             selcirc.attr("class", "sel")
                 .attr("r", function(d) {
                   return d.getRadius() + 6;
@@ -1023,11 +1021,10 @@ Controller.prototype.showDialog = function(e, type, elem) {
           // If this node is a unique event, highlight it with a rhombus outline
           } else {
             var selrhombus = d3.select("#node" + e.getId()).insert("polygon", "polygon");
-            selrhombus.style({
-              "stroke": function(d) { return d.getFillColor(); },
-              "stroke-width": 2,
-              "fill": "white"
-            });
+            selrhombus
+                .style("stroke", function(d) { return d.getFillColor(); })
+                .style("stroke-width", 2)
+                .style("fill", "white");
             selrhombus.attr("class", "sel")
                 .attr("points", function(d) {
                     var points = d.getPoints();
@@ -1040,11 +1037,9 @@ Controller.prototype.showDialog = function(e, type, elem) {
         // If showDiff is false, all node outlines are circular
         } else {
             var selcirc = d3.select("#node" + e.getId()).insert("circle", "circle");
-            selcirc.style({
-                "fill": function(d) {
+            selcirc.style("fill", function(d) {
                    return d.getFillColor();
-                }
-            });
+                });
             selcirc.attr("class", "sel")
                 .attr("r", function(d) {
                   return d.getRadius() + 6;
