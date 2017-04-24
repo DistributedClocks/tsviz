@@ -205,10 +205,9 @@ GraphBuilder.prototype.removeHost = function(host) {
         h.rx = i * 65;
         h.x = h.rx + 12.5;
         h.rect.attr("x", h.rx);
-        h.line.attr({
-            "x1": h.x,
-            "x2": h.x
-        });
+        h.line
+            .attr("x1", h.x)
+            .attr("x2", h.x);
 
         h.nodes.forEach(function(n) {
             n.lines.forEach(function(l) {
@@ -225,9 +224,8 @@ GraphBuilder.prototype.removeHost = function(host) {
         var currHostNum = h.getHostNum();
         if (currHostNum > hostNum) {
             h.setHostNum(currHostNum - 1);
-            h.getConstraintSVG().attr({
-                "x": parseFloat(h.getHostSquare().attr("x")) + 8
-            });
+            h.getConstraintSVG()
+                .attr("x", parseFloat(h.getHostSquare().attr("x")) + 8);
         }
     });
 

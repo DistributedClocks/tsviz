@@ -714,27 +714,23 @@ Controller.prototype.bindNodes = function(nodes) {
             $(this).remove();
         });
     }).on("mouseover", function(e) {
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "r": function(d) {
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius() + 4;
-            }
-        });
-        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100).attr({
-            "r": function(d) {
+            });
+        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius();
-            }
-        });
+            });
 
-        d3.select(this).classed("focus", true).select("circle:not(.sel)").transition().duration(100).attr({
-            "r": function(d) {
+        d3.select(this).classed("focus", true).select("circle:not(.sel)").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius() + 2;
-            }
-        });
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "r": function(d) {
+            });
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius() + 6;
-            }
-        });
+            });
 
         //Draws the tooltip
         tip.attr('class', 'd3-tip')
@@ -749,11 +745,10 @@ Controller.prototype.bindNodes = function(nodes) {
 
     }).on("mouseout", function(e){
         //Return nodes to their original side on hover off
-        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100).attr({
-            "r": function(d) {
+        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius();
-            }
-        });
+            });
         tip.hide();
 
     });
@@ -797,56 +792,52 @@ Controller.prototype.bindEdges = function(edges) {
                 return "<strong>Time:</strong> <span style='color:white'>" + e.getTimeDifference() + "</span>";
            });
     
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "stroke-width": function(d) {
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth() + 2;
-            },
-            "stroke": "dimgrey",
-            "opacity": 1
-        });
-        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
+            })
+            .attr("stroke", "dimgrey")
+            .attr("opacity", 1);
+        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth();
-            },
-            "stroke": function(d) {
+            })
+            .attr("stroke", function(d) {
                 return d.getColor();
-            },
-            "opacity": function(d) {
+            })
+            .attr("opacity", function(d) {
                 return d.getOpacity();
-            }
-        });
+            });
 
-        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
+        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth() ;
-            },
-            "stroke": "dimgrey",
-            "opacity": 1
-        });
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "stroke-width": function(d) {
+            })
+            .attr("stroke", "dimgrey")
+            .attr("opacity", 1);
+
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth() + 4;
-            },
-            "stroke": "dimgrey",
-            "opacity": 1
-        });
+            })
+            .attr("stroke", "dimgrey")
+            .attr("opacity", 1);
 
         tip.show(e);
 
     }).on("mouseout", function(e){
         tip.hide(e);
        
-        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
+        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth();
-            },
-            "stroke": function(d) {
+            })
+            .attr("stroke", function(d) {
                 return d.getColor();
-            },
-            "opacity": function(d) {
+            })
+            .attr("opacity", function(d) {
                 return d.getOpacity();
-            }
-        });        
+            });
     });
 };
 
@@ -1025,12 +1016,10 @@ Controller.prototype.showDialog = function(e, type, elem) {
                   return d.getFillColor();
                 }
             });
-            selcirc.attr({
-               "class": "sel",
-               "r": function(d) {
+            selcirc.attr("class", "sel")
+                .attr("r", function(d) {
                   return d.getRadius() + 6;
-                }
-            });
+                });
           // If this node is a unique event, highlight it with a rhombus outline
           } else {
             var selrhombus = d3.select("#node" + e.getId()).insert("polygon", "polygon");
@@ -1039,14 +1028,13 @@ Controller.prototype.showDialog = function(e, type, elem) {
               "stroke-width": 2,
               "fill": "white"
             });
-            selrhombus.attr({
-              "class": "sel",
-              "points": function(d) {
-                  var points = d.getPoints();
-                  var newPoints = [points[0], points[1]-3, points[2]+3, points[3], points[4], points[5]+3, points[6]-3, points[7]];
-                  return newPoints.join();
-               }
-            });
+            selrhombus.attr("class", "sel")
+                .attr("points", function(d) {
+                    var points = d.getPoints();
+                    var newPoints = [points[0], points[1]-3, points[2]+3, points[3],
+                          points[4], points[5]+3, points[6]-3, points[7]];
+                    return newPoints.join();
+               });
           }
 
         // If showDiff is false, all node outlines are circular
@@ -1057,12 +1045,10 @@ Controller.prototype.showDialog = function(e, type, elem) {
                    return d.getFillColor();
                 }
             });
-            selcirc.attr({
-               "class": "sel",
-               "r": function(d) {
+            selcirc.attr("class", "sel")
+                .attr("r", function(d) {
                   return d.getRadius() + 6;
-                }
-            });
+                });
 
             if (e.getRadius() <= 5) {
                 var viz = $("#vizContainer");

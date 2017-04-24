@@ -207,12 +207,12 @@ GraphBuilderHost.prototype.setConstraint = function(constraint) {
 
     if (constraint) {
         // If the constraint is not empty, add an indicator to the host box
-        this.constraintSVG.attr({
-            "font-family": "arial",
-            "font-size": "15px",
-            "x": parseFloat(gbh.getHostSquare().attr("x")) + 8,
-            "y": parseFloat(gbh.getHostSquare().attr("y")) + 18
-        }).text("C").css("cursor", "default");
+        this.constraintSVG
+            .attr("font-family", "arial")
+            .attr("font-size", "15px")
+            .attr("x", parseFloat(gbh.getHostSquare().attr("x")) + 8)
+            .attr("y", parseFloat(gbh.getHostSquare().attr("y")) + 18)
+            .text("C").css("cursor", "default");
 
         gbh.graphBuilder.getSVG().append(this.constraintSVG);
 

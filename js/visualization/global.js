@@ -670,9 +670,6 @@ Global.prototype.drawSideBar = function() {
         .attr("height", Math.ceil(hh.length / hostsPerLine) * (Global.HOST_SIZE + 5) - 5)
         .attr("class", "hidden-hosts");
 
-    //var hiddenHostsGroup = hiddenHostsSVG.append("g");
-    //hiddenHostsGroup.append("title").text("Double click to view");
-  
     var first = true; var count = 0;
     // initial points for a unique host (ie. x and y coordinates for each corner of the rhombus shape)
     var x1 = 12; var y1 = 0; var x2 = 22; var y2 = 12;
