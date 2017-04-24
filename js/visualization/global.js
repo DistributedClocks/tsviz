@@ -665,14 +665,13 @@ Global.prototype.drawSideBar = function() {
     var hiddenHostsSVG = hiddenHostsSelection.append("svg");
   
     var hostsPerLine = Math.floor((Global.SIDE_BAR_WIDTH + 5) / (Global.HOST_SIZE + 5));
-    hiddenHostsSVG.attr({
-        "width": this.$sidebar.width(),
-        "height": Math.ceil(hh.length / hostsPerLine) * (Global.HOST_SIZE + 5) - 5,
-        "class": "hidden-hosts"
-    });
+    hiddenHostsSVG
+        .attr("width", this.$sidebar.width())
+        .attr("height", Math.ceil(hh.length / hostsPerLine) * (Global.HOST_SIZE + 5) - 5)
+        .attr("class", "hidden-hosts");
 
-    var hiddenHostsGroup = hiddenHostsSVG.append("g");
-    hiddenHostsGroup.append("title").text("Double click to view");
+    //var hiddenHostsGroup = hiddenHostsSVG.append("g");
+    //hiddenHostsGroup.append("title").text("Double click to view");
   
     var first = true; var count = 0;
     // initial points for a unique host (ie. x and y coordinates for each corner of the rhombus shape)
@@ -682,65 +681,65 @@ Global.prototype.drawSideBar = function() {
     var rectx = 0; var recty = 0; 
   
     hh.forEach(function(host) {
-       var hiddenHost = global.drawHiddenHost(hiddenHostsSVG);  
+        var hiddenHost = global.drawHiddenHost(hiddenHostsSVG);  
 
-      // If showDiff is true, check if this hidden host needs to be drawn as a rhombus
-      if (global.getShowDiff()) {
-          var uniqueHostsL = global.viewL.getTransformer().getUniqueHosts();
-          //check if this hidden host is in the list of unique hosts for viewL     
-          if (uniqueHostsL && uniqueHostsL.indexOf(host) != -1) {
-              hiddenHost = global.drawHiddenHostAsRhombus(hiddenHostsSVG);
-          }
-          else if (global.viewR != null && global.getPairwiseView()) {
-              //check if this hidden host is in the list of unique hosts for viewR
-              var uniqueHostsR = global.viewR.getTransformer().getUniqueHosts();
-              if (uniqueHostsR && uniqueHostsR.indexOf(host) != -1) {
-                  hiddenHost = global.drawHiddenHostAsRhombus(hiddenHostsSVG);
-              }
-          }
-      }
-      
-      hiddenHost.attr("width", Global.HOST_SIZE);
-      hiddenHost.attr("height", Global.HOST_SIZE);
-      hiddenHost.style("fill", global.hostPermutation.getHostColor(host));
-      hiddenHost.append("title").text("Double click to view");
+        // If showDiff is true, check if this hidden host needs to be drawn as a rhombus
+        if (global.getShowDiff()) {
+            var uniqueHostsL = global.viewL.getTransformer().getUniqueHosts();
+            //check if this hidden host is in the list of unique hosts for viewL     
+            if (uniqueHostsL && uniqueHostsL.indexOf(host) != -1) {
+                hiddenHost = global.drawHiddenHostAsRhombus(hiddenHostsSVG);
+            }
+            else if (global.viewR != null && global.getPairwiseView()) {
+                //check if this hidden host is in the list of unique hosts for viewR
+                var uniqueHostsR = global.viewR.getTransformer().getUniqueHosts();
+                if (uniqueHostsR && uniqueHostsR.indexOf(host) != -1) {
+                    hiddenHost = global.drawHiddenHostAsRhombus(hiddenHostsSVG);
+                }
+            }
+        }
+        
+        hiddenHost.attr("width", Global.HOST_SIZE);
+        hiddenHost.attr("height", Global.HOST_SIZE);
+        hiddenHost.style("fill", global.hostPermutation.getHostColor(host));
+        hiddenHost.append("title").text("Double click to view");
 
-      // start over on a new line once the hidden hosts have taken up the side bar width
-      if (count == hostsPerLine) { 
-          if (global.getShowDiff()) {
-            x1 = 12; y1 += Global.HOST_SIZE + 5; 
-            x2 = 22; y2 += Global.HOST_SIZE + 5; 
-            x3 = 12; y3 += Global.HOST_SIZE + 5; 
-            x4 = 2; y4 += Global.HOST_SIZE + 5;
-          }
-          rectx = 0; recty += Global.HOST_SIZE + 5;
-          first = true;
-          count = 0;
-      }
+        // start over on a new line once the hidden hosts have taken up the side bar width
+        if (count == hostsPerLine) { 
+            if (global.getShowDiff()) {
+              x1 = 12; y1 += Global.HOST_SIZE + 5; 
+              x2 = 22; y2 += Global.HOST_SIZE + 5; 
+              x3 = 12; y3 += Global.HOST_SIZE + 5; 
+              x4 = 2; y4 += Global.HOST_SIZE + 5;
+            }
+            rectx = 0; recty += Global.HOST_SIZE + 5;
+            first = true;
+            count = 0;
+        }
 
-      // increment x coordinates so that the next hidden host will be drawn
-      // next to the currently hidden hosts without any overlap
-      if (!first) { 
-          if (global.getShowDiff()) {
-            x1 += Global.HOST_SIZE + 5;
-            x2 += Global.HOST_SIZE + 5;
-            x3 += Global.HOST_SIZE + 5;
-            x4 += Global.HOST_SIZE + 5;
-          }
-          rectx += Global.HOST_SIZE + 5;    
-      }
-      first = false;
+        // increment x coordinates so that the next hidden host will be drawn
+        // next to the currently hidden hosts without any overlap
+        if (!first) { 
+            if (global.getShowDiff()) {
+              x1 += Global.HOST_SIZE + 5;
+              x2 += Global.HOST_SIZE + 5;
+              x3 += Global.HOST_SIZE + 5;
+              x4 += Global.HOST_SIZE + 5;
+            }
+            rectx += Global.HOST_SIZE + 5;    
+        }
+        first = false;
      
-      // update attributes of the drawn node
-      if (global.getShowDiff()) {
-        var points = [x1,y1,x2,y2,x3,y3,x4,y4];
-        hiddenHost.attr("points", points.join());
-      }
-      hiddenHost.attr("x", rectx);
-      hiddenHost.attr("y", recty);
-      count++;
+        // update attributes of the drawn node
+        if (global.getShowDiff()) {
+          var points = [x1,y1,x2,y2,x3,y3,x4,y4];
+          hiddenHost.attr("points", points.join());
+        }
+        hiddenHost.attr("x", rectx);
+        hiddenHost.attr("y", recty);
+        count++;
      
-      // bind the hidden host nodes to user input
-      global.controller.bindHiddenHosts(host, hiddenHost);     
-  });
+        // bind the hidden host nodes to user input
+        global.controller.bindHiddenHosts(host, hiddenHost);     
+    });
 };
