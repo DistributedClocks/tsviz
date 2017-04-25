@@ -256,21 +256,19 @@ VisualEdge.prototype.selectEdge = function(clear) {
     }
         
     // Add extra highlight to selected edge
-    var $selLine = d3.select(this.$svg[0]).append("line", "line");
+    var selLine = d3.select(this.$svg[0]).append("line", "line");
 
-    $selLine.style({
-        "stroke": "firebrick",
-        "stroke-width": this.getWidth(),
-        "opacity": 1
-    });
+    selLine
+        .style("stroke", "firebrick")
+        .style("stroke-width", this.getWidth())
+        .style("opacity", 1);
 
-    $selLine.attr({
-        "class": "sel",
-        "x1": this.getSourceVisualNode().getX(),
-        "y1": this.getSourceVisualNode().getY(),
-        "x2": this.getTargetVisualNode().getX(),
-        "y2": this.getTargetVisualNode().getY(),
-    });
+    selLine
+        .attr("class", "sel")
+        .attr("x1", this.getSourceVisualNode().getX())
+        .attr("y1", this.getSourceVisualNode().getY())
+        .attr("x2", this.getTargetVisualNode().getX())
+        .attr("y2", this.getTargetVisualNode().getY());
 };
 
 /**

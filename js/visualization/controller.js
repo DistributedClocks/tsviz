@@ -714,27 +714,23 @@ Controller.prototype.bindNodes = function(nodes) {
             $(this).remove();
         });
     }).on("mouseover", function(e) {
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "r": function(d) {
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius() + 4;
-            }
-        });
-        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100).attr({
-            "r": function(d) {
+            });
+        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius();
-            }
-        });
+            });
 
-        d3.select(this).classed("focus", true).select("circle:not(.sel)").transition().duration(100).attr({
-            "r": function(d) {
+        d3.select(this).classed("focus", true).select("circle:not(.sel)").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius() + 2;
-            }
-        });
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "r": function(d) {
+            });
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius() + 6;
-            }
-        });
+            });
 
         //Draws the tooltip
         tip.attr('class', 'd3-tip')
@@ -749,11 +745,10 @@ Controller.prototype.bindNodes = function(nodes) {
 
     }).on("mouseout", function(e){
         //Return nodes to their original side on hover off
-        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100).attr({
-            "r": function(d) {
+        d3.selectAll("g.focus").classed("focus", false).select("circle:not(.sel)").transition().duration(100)
+            .attr("r", function(d) {
                 return d.getRadius();
-            }
-        });
+            });
         tip.hide();
 
     });
@@ -797,56 +792,52 @@ Controller.prototype.bindEdges = function(edges) {
                 return "<strong>Time:</strong> <span style='color:white'>" + e.getTimeDifference() + "</span>";
            });
     
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "stroke-width": function(d) {
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth() + 2;
-            },
-            "stroke": "dimgrey",
-            "opacity": 1
-        });
-        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
+            })
+            .attr("stroke", "dimgrey")
+            .attr("opacity", 1);
+        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth();
-            },
-            "stroke": function(d) {
+            })
+            .attr("stroke", function(d) {
                 return d.getColor();
-            },
-            "opacity": function(d) {
+            })
+            .attr("opacity", function(d) {
                 return d.getOpacity();
-            }
-        });
+            });
 
-        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
+        d3.select(this).classed("focus", true).select("line:not(.sel)").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth() ;
-            },
-            "stroke": "dimgrey",
-            "opacity": 1
-        });
-        d3.selectAll("g.focus .sel").transition().duration(100).attr({
-            "stroke-width": function(d) {
+            })
+            .attr("stroke", "dimgrey")
+            .attr("opacity", 1);
+
+        d3.selectAll("g.focus .sel").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth() + 4;
-            },
-            "stroke": "dimgrey",
-            "opacity": 1
-        });
+            })
+            .attr("stroke", "dimgrey")
+            .attr("opacity", 1);
 
         tip.show(e);
 
     }).on("mouseout", function(e){
         tip.hide(e);
        
-        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100).attr({
-            "stroke-width": function(d) {
+        d3.selectAll("g.focus").classed("focus", false).select("line:not(.sel)").transition().duration(100)
+            .attr("stroke-width", function(d) {
                 return d.getWidth();
-            },
-            "stroke": function(d) {
+            })
+            .attr("stroke", function(d) {
                 return d.getColor();
-            },
-            "opacity": function(d) {
+            })
+            .attr("opacity", function(d) {
                 return d.getOpacity();
-            }
-        });        
+            });
     });
 };
 
@@ -974,7 +965,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
     
     if(type === 0 && // Don't want to show sidebar between host node and circle node
-      d3.selectAll("circle.sel")[0].length == 1){ //If there's another selected node
+      d3.selectAll("circle.sel").size() == 1){ //If there's another selected node
         //Get nodes
         var node1 = d3.selectAll("circle.sel").data()[0];
         var node2 = e;
@@ -986,7 +977,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     }
     // Remove existing selection highlights
     // The user can select at most two nodes at a time. If she selects a third, the previous selections will be cleared.
-    if(d3.selectAll("circle.sel")[0].length == 2){
+    if(d3.selectAll("circle.sel").size() == 2){
         d3.selectAll("circle.sel").each(function(d){
             $(this).remove();
             d.setSelected(false);
@@ -998,7 +989,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     }
 
     //TODO: apply the same selection rule to polygons
-    if(d3.selectAll("polygon.sel")[0].length == 2){
+    if(d3.selectAll("polygon.sel").size() == 2){
         d3.select("polygon.sel").each(function(d) {
             $(this).remove();
             d.setSelected(false);
@@ -1020,49 +1011,39 @@ Controller.prototype.showDialog = function(e, type, elem) {
           // If this node is not a unique event, highlight the node with a circular outline
           if (uniqueEventsL.indexOf(id) == -1 && uniqueEventsR.indexOf(id) == -1) {
             var selcirc = d3.select("#node" + e.getId()).insert("circle", "circle");
-            selcirc.style({
-               "fill": function(d) {
+            selcirc.style("fill", function(d) {
                   return d.getFillColor();
-                }
-            });
-            selcirc.attr({
-               "class": "sel",
-               "r": function(d) {
+                });
+            selcirc.attr("class", "sel")
+                .attr("r", function(d) {
                   return d.getRadius() + 6;
-                }
-            });
+                });
           // If this node is a unique event, highlight it with a rhombus outline
           } else {
             var selrhombus = d3.select("#node" + e.getId()).insert("polygon", "polygon");
-            selrhombus.style({
-              "stroke": function(d) { return d.getFillColor(); },
-              "stroke-width": 2,
-              "fill": "white"
-            });
-            selrhombus.attr({
-              "class": "sel",
-              "points": function(d) {
-                  var points = d.getPoints();
-                  var newPoints = [points[0], points[1]-3, points[2]+3, points[3], points[4], points[5]+3, points[6]-3, points[7]];
-                  return newPoints.join();
-               }
-            });
+            selrhombus
+                .style("stroke", function(d) { return d.getFillColor(); })
+                .style("stroke-width", 2)
+                .style("fill", "white");
+            selrhombus.attr("class", "sel")
+                .attr("points", function(d) {
+                    var points = d.getPoints();
+                    var newPoints = [points[0], points[1]-3, points[2]+3, points[3],
+                          points[4], points[5]+3, points[6]-3, points[7]];
+                    return newPoints.join();
+               });
           }
 
         // If showDiff is false, all node outlines are circular
         } else {
             var selcirc = d3.select("#node" + e.getId()).insert("circle", "circle");
-            selcirc.style({
-                "fill": function(d) {
+            selcirc.style("fill", function(d) {
                    return d.getFillColor();
-                }
-            });
-            selcirc.attr({
-               "class": "sel",
-               "r": function(d) {
+                });
+            selcirc.attr("class", "sel")
+                .attr("r", function(d) {
                   return d.getRadius() + 6;
-                }
-            });
+                });
 
             if (e.getRadius() <= 5) {
                 var viz = $("#vizContainer");
@@ -1088,7 +1069,7 @@ Controller.prototype.showDialog = function(e, type, elem) {
     // Set properties for dialog, and show
     if (type == 2)
         $dialog.css({
-            "left": $rect.offset().left - $dialog.width()/2 + $rect.width()/2,
+            "left": $rect.offset().left - $dialog.width()/2 + Global.HOST_SIZE/2,
         }).addClass("top").show();
     else if (type == 1) 
         $dialog.css({

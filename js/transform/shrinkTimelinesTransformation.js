@@ -228,7 +228,7 @@ ShrinkTimelinesTransformation.prototype.transform = function(model) {
 
 		lineData.push({x: x, y: y})
 
-		var lineFunction = d3.svg.line()
+		var lineFunction = d3.line()
         .defined(function(d) { return d; })
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; });

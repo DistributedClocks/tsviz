@@ -78,7 +78,7 @@
 		    scaleMinDistance = scaleTime(scaleMinDistance);
 
 		    //Generate the axis scale
-		    scale = d3.scale.ordinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([layout.rangeStart,layout.rangeEnd]);
+		    scale = d3.scaleOrdinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([layout.rangeStart,layout.rangeEnd]);
 		    //Generate the axis
 		    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
 	        height = svg.attr("height");
@@ -132,9 +132,9 @@
 			    scaleEnd = scaleTime(scaleEnd);
 			    scaleMinDistance = scaleTime(scaleMinDistance);
 			    timeSpan = scaleTime(timeSpan);
-			    scale = d3.scale.ordinal().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).rangePoints([rangeStart,rangeEnd]);
+			    scale = d3.scalePoint().domain(d3.range(scaleStart, scaleEnd, scaleMinDistance)).range([rangeStart,rangeEnd]);
 
-			    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
+			    axis = d3.axisLeft(scale).tickFormat(d3.format(".3s"));
 			    // axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".4g")).orient("left");
 		        height = rangeEnd - rangeStart;
 		        

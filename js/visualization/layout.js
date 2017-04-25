@@ -104,7 +104,7 @@ SpaceTimeLayout.prototype.start = function(visualGraph, hostPermutation) {
     timeStart = Number(visualGraph.timeRange[0]);
     timeEnd = Number(visualGraph.timeRange[1]);
 
-    this.timeScale = d3.scale.linear()
+    this.timeScale = d3.scaleLinear()
         .domain([timeStart, timeEnd])
         .range([this.rangeStart,this.rangeEnd]);
     
