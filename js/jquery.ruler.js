@@ -78,9 +78,9 @@
 		    scaleMinDistance = scaleTime(scaleMinDistance);
 
 		    //Generate the axis scale
-		    scale = d3.scaleOrdinal().domain(d3.range(0, timeSpan, scaleMinDistance)).rangePoints([layout.rangeStart,layout.rangeEnd]);
+		    scale = d3.scalePoint().domain(d3.range(0, timeSpan, scaleMinDistance)).range([layout.rangeStart,layout.rangeEnd]);
 		    //Generate the axis
-		    axis = d3.svg.axis().scale(scale).tickFormat(d3.format(".3s")).orient("left");
+		    axis = d3.axisLeft(scale).tickFormat(d3.format(".3s"));
 	        height = svg.attr("height");
 
 	        //Remove old ruler if it exists
