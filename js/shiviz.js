@@ -54,7 +54,6 @@ function Shiviz() {
     function handleResponse(response, e) {
         $("#input").val(response);
         context.resetView();
-        $("#delimiter").val($(e.target).data("delimiter"));
         $("#parser").val($(e.target).data("parser") || defaultParser);
         $("#ordering").val($(e.target).data("ordering") || defaultOrdering);
         $($(e.target).data("hostsort") || defaultHostSort).prop("checked", true);
@@ -124,6 +123,8 @@ function Shiviz() {
           var text = reader.result;
           // Split the text string by the new line character 
           // to get the first 2 lines as substrings in an array
+           // NOTE: the second line is for the obsolete 'delimiter' and will be
+           // ignored
           var lines = text.split("\n",2);
           
           var defaultOrdering = "descending";
@@ -134,9 +135,7 @@ function Shiviz() {
           if (lines[0].trim()) { $("#parser").val(lines[0]);}
           else { $("#parser").val(defaultParser);}
           
-          // Set the 'multiple executions regular expression delimiter' field
-          // to the second line and set the ordering of the processes to descending
-          $("#delimiter").val(lines[1].trim());
+          // Set the ordering of the processes to descending
           $("#ordering").val(defaultOrdering);
           
           // Get the position of the new line character that occurs at the end of the second line
@@ -150,7 +149,7 @@ function Shiviz() {
           
           // Clears the file input value whenever the log text area or regular expression
           // fields are modified
-          $("#input, #parser, #delimiter").on("input", function() {
+          $("#input, #parser").on("input", function() {
              $("#file").replaceWith($("#file").clone(true));
           });
        }
@@ -211,7 +210,7 @@ Shiviz.prototype.resetView = function() {
  * This method creates the visualization. The user's input to UI elements are
  * retrieved and used to construct the visualization accordingly.
  */
-Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance, collapseLocal) {
+Shiviz.prototype.visualize = function(log, regexpString, sortType, descending, minDistance, collapseLocal) {
     try {
         d3.selectAll("#vizContainer svg").remove();
         d3.selectAll("span").remove();
@@ -219,8 +218,6 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         if(collapseLocal) $("#coll_local_viz").prop('checked', true); 
         else $("#coll_time_viz").prop('checked', true); 
         
-        delimiterString = delimiterString.trim();
-        var delimiter = delimiterString == "" ? null : new NamedRegExp(delimiterString, "m");
         regexpString = regexpString.trim();
 
         if(isNaN(minDistance)){
@@ -231,7 +228,7 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
             throw new Exception("The parser regexp field must not be empty.", true);
 
         var regexp = new NamedRegExp(regexpString, "m");
-        var parser = new LogParser(log, delimiter, regexp);
+        var parser = new LogParser(log, null, regexp); // null is for the obsolete delimiter parameter
 
         var hostPermutation = null;
 
@@ -400,7 +397,7 @@ Shiviz.prototype.go = function(index, store, force, viz) {
                     scaleadjust = scaleadjust.toString();
                     $("#timeunitviz").val(scaleadjust).change();
                     $("#graphtimescaleviz").val(timescale);                    
-                    this.visualize($("#input").val(), $("#parser").val(), $("#delimiter").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, collapseLocal);
+                    this.visualize($("#input").val(), $("#parser").val(), $("input[name=host_sort]:checked").val().trim(), $("#ordering option:selected").val().trim() == "descending", timeunit, collapseLocal);
                 }
             } catch(e) {
                 $(".visualization").hide();
