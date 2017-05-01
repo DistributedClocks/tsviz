@@ -204,23 +204,21 @@ MotifChart.prototype.drawChart = function() {
  * Sets up the axis with a linear scale
  */
 MotifChart.prototype.linearScale = function() {
-    this.xScale = d3.scale.linear()
+    this.xScale = d3.scaleLinear()
                           .domain([0, this.motifPoints.length]);
 
     // Create a scale so that the data bars do not go above the chart height
-    this.yScale = d3.scale.linear()
+    this.yScale = d3.scaleLinear()
                           .domain([0, d3.max(this.motifPoints, function(d) { return d.getYScaled(); })]);                 
 
     // Set up the axes
-    this.xAxis = d3.svg.axis()
+    this.xAxis = d3.axisBottom()
                    .scale(this.xScale)
-                   .orient("bottom")
                    .ticks(0);
 
-    this.yAxis = d3.svg.axis()
+    this.yAxis = d3.axisLeft()
                    .scale(this.yScale)
-                   .orient("left")
-                   .outerTickSize(0)
+                   .tickSizeOuter(0)
                    .ticks(6);
 
     this.yScale.type = "LINEAR";
@@ -232,23 +230,21 @@ MotifChart.prototype.linearScale = function() {
  */
 MotifChart.prototype.logScale = function() {
     // Create a x scale for the axis
-    this.xScale = d3.scale.linear()
+    this.xScale = d3.scaleLinear()
                           .domain([0, this.motifPoints.length]);
 
     // Create a scale so that the data bars do not go above the chart height                          
-    this.yScale = d3.scale.log()
+    this.yScale = d3.scaleLog()
                           .base(10)
                           .domain([1, d3.max(this.motifPoints, function(d) { return d.getYScaled() + 1; })]);
 
     // Set up the axes
-    this.xAxis = d3.svg.axis()
+    this.xAxis = d3.axisBottom()
                    .scale(this.xScale)
-                   .orient("bottom")
                    .ticks(0);
 
-    this.yAxis = d3.svg.axis()
+    this.yAxis = d3.axisLeft()
                    .scale(this.yScale)
-                   .orient("left")
                    .ticks(7, ",.1s");
 
     this.yScale.type = "LOG";
