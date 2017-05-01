@@ -1,3 +1,5 @@
+(?<timestamp>(\d*)) (?<event>.*)\n(?<host>\w*) (?<clock>.*)
+
 256824341944726 Read 0x7fef50805200 from __wt_session.connection of type __wt_connection** (ptr=7fef5080ec00)
 thread5 {"thread5":1}
 256824341944760 Read Unknown from __wt_cursor_btree.flags of type i8* (ptr=7fef5060039a)
