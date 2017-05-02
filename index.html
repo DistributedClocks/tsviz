@@ -200,6 +200,8 @@
 
             <h3>What is the input log format to the tool?</h3>
 
+            <p>(Also, see the <a href="https://bitbucket.org/mhnnunes/tsviz/wiki/LogFormat">LogFormat</a> wiki page.)
+
             <p>
                 You can specify the log format using a regular expression on the Input page. The regular expression must contain the following three named capture groups:
                 <ul>
@@ -271,12 +273,14 @@ thread4 {"thread4":58}</pre>
                     <h3>Options</h3>
                     <div id="file_input">
                         <label>Select a file: <input type="file" id="file"></label>
-                        <span id="file_icon">d</span>
+                        <span id="file_icon"><a
+                                href="https://bitbucket.org/mhnnunes/tsviz/wiki/LogFormat">d</a></span>
                         <div id="file_desc">Upload a log by selecting a file with the following format: <br><br>
-                        <li> The first line of the file is the log parsing regular expression. If left empty, the default regular expression 
-                        <span class="regex">"(?&ltevent&gt.*)\n(?&lthost&gt\S*) (?&ltclock&gt{.*})"</span> will be used.<br>
-                        <li> The second line of the file is the multiple executions regular expression delimiter. This can be left empty if the log does not contain multiple executions. <br>
-                        <li> The rest of the file is the log.
+                            <li> The first line of the file is the log parsing regular expression. If left empty, the default regular expression 
+                            <span class="regex">"(?&ltevent&gt.*)\n(?&lthost&gt\S*) (?&ltclock&gt{.*})"</span> will be used.<br>
+                            <li> The second line of the file is the multiple executions regular expression delimiter. This can be left empty if the log does not contain multiple executions. <br>
+                            <li> The rest of the file is the log.<br><br>
+                            <div>Click the <b>?</b> for more information.</div>
                         </div>
                     </div>                    
                     <div class="option">
