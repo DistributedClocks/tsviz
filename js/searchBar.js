@@ -457,7 +457,7 @@ SearchBar.prototype.clearResults = function() {
         this.global.getController().clearHighlight();
     } else {
         // Show the pairwise button on the log lines tab when clearing a motif search
-        if (this.global.getViews().length > 1 && !$(".leftTabLinks li").first().next().hasClass("default") && !$(".pairwiseButton").is(":visible")) {
+        if (this.global.getViews().length > 1 && !$(".pairwiseButton").is(":visible")) {
             $(".pairwiseButton").show();
         }
     }
@@ -646,7 +646,6 @@ SearchBar.prototype.query = function() {
         motifDrawer.drawResults();
 
         // Switch to the Motifs tab and clear any previously highlighted results
-        $(".leftTabLinks li").first().next().show().find("a").click();
         searchbar.clearResults();
     }
 };
@@ -735,9 +734,7 @@ SearchBar.prototype.clearMotifsTab = function() {
  */
 SearchBar.prototype.resetMotifResults = function() {
     // Clear the #motif value in the searchbar if not on the motifs tab
-    if (!$(".leftTabLinks li").first().next().hasClass("default")) {
-        this.clearText();
-    }
+    this.clearText();
     $("#motifIcon").remove();
     $(".motifResults a").removeClass("indent");
 }

@@ -123,56 +123,13 @@ Global.prototype.drawAll = function() {
     var viewSelectDiv = $('<div id="viewSelectDiv"></div>');
     var viewSelectL = $('<select id="viewSelectL"></select>');
 
-    // Show arrow icons and highlight cluster results that match a search term when on the Clusters tab
-    if ($(".leftTabLinks li").is(":visible") && $(".leftTabLinks li").last().hasClass("default")) {
-        if ($("#clusterNumProcess").is(":checked") || ($("#clusterComparison").is(":checked")
-            && $(".clusterBase").find("option:selected").text() != "Select a base execution")) {
-            labelIconL.show(); selectIconL.show();
-
-            if (global.getPairwiseView()) {
-                labelIconR.show();
-                selectIconR.show();
-            }
-
-            var baseDropdown = $(".clusterBase");
-            var selected = $(".clusterBase option:selected");
-            var mode = searchbar.getMode();
-
-            // If the searchbar is not empty or in motif mode, fade out all executions in Clusters tab
-            if (mode != SearchBar.MODE_EMPTY) {
-                $("table.clusterResults a").filter(function() {
-                    var text = $(this).text();
-                    return text != "Show all" && text != "Condense";
-                }).addClass("execFade");
-                if (baseDropdown.is(":visible")) {
-                    baseDropdown.addClass("fade");
-                }
-
-                // Remove fading for executions that match the search term
-                this.views.forEach(function(view) {
-                  if (view.hasQueryMatch()) {
-                      var label = view.getLabel();
-                      if (baseDropdown.is(":visible") && selected.val() == label) {
-                          baseDropdown.removeClass("fade");
-                      } else {
-                        $("table.clusterResults a").filter(function() {
-                            return $(this).attr("href") == label;
-                        }).removeClass("execFade");
-                      }
-                  }
-                });
-            }
-        }
-    }
-
     if (this.viewR != null) {
         // the "Pairwise" button is only visible when there are > 1 executions and when not doing a motif search
-        if (!$(".leftTabLinks li").first().next().hasClass("default") && searchbar.getMode() != SearchBar.MODE_MOTIF) {
+        if (searchbar.getMode() != SearchBar.MODE_MOTIF) {
             $(".pairwiseButton").show();
         }
         $(".searchTabLinks li").last().show();
-        $(".visualization .left #tabs").css("height", "4.5em");
-
+        
         var rightLabel = this.viewR.getLabel();
        // If there are only two executions in pairwise view, use labels instead of drop-downs
        if (numViews == 2 && global.getPairwiseView()) {
@@ -236,7 +193,7 @@ Global.prototype.drawAll = function() {
         // The label here is "" but it'll help shift the hostbar down
         this.$hostBar.append(viewLabelDiv); 
         viewLabelDiv.append(viewLabelL);
-        $(".visualization .left #tabs").css("height", "2.5em");
+//        $(".visualization .left #tabs").css("height", "2.5em");
     }
 
     viewSelectL.unbind().on("change", function(e) {
