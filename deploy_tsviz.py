@@ -117,6 +117,7 @@ def minify(branch, info):
     #Include DEPENDENCIES
     for r, d, f in os.walk('local_scripts'):
         for f in f:
+            if f.endswith(".js"):
                 params += [('code_url', url + os.path.join(r, f))]
     # Traverse all of the files underneath the js/ dir
     for root, dirs, files in os.walk('js'):

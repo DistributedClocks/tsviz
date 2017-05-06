@@ -201,49 +201,6 @@ function Controller(global) {
         self.bindScroll();
     });
 
-    // Event handler for switching between the left tabs
-    // $(".visualization .leftTabLinks a").unbind().on("click", function(e) {
-
-    //     var anchorHref = $(this).attr("href");
-    //     $(".visualization #" + anchorHref).show().siblings().hide();
-    //     $(this).parent("li").addClass("default").siblings("li").removeClass("default");
-    //     $("#labelIconL, #labelIconR, #selectIconL, #selectIconR").hide();
-
-    //     if (anchorHref != "logTab") {
-    //         // Remove any log line highlighting when not on the Log lines tab
-    //         $(".highlight").css("opacity", 0);
-    //     }
-    //     if (anchorHref == "clusterTab") {
-    //         // Clear all motif results when on the clusters tab
-    //         if (searchbar.getMode() == SearchBar.MODE_MOTIF) {
-    //             if (global.getController().hasHighlight()) {
-    //                 searchbar.clearResults();
-    //             }
-    //             searchbar.resetMotifResults();
-    //         }
-    //         if ($("#clusterNumProcess").is(":checked") || ($("#clusterComparison").is(":checked") && $(".clusterBase").find("option:selected").text() != "Select a base execution")) {
-    //             $("#labelIconL, #selectIconL").show();
-    //             if (global.getPairwiseView()) {
-    //                 $("#labelIconR, #selectIconR").show();
-    //             }
-    //         }
-    //     }
-    //     // Show the pairwise button for log lines and clusters when not doing a motif search
-    //     if (global.getViews().length > 1 && searchbar.getMode() != SearchBar.MODE_MOTIF) {
-    //         $(".pairwiseButton").show();
-    //     }
-    //     if (anchorHref == "motifsTab") {
-    //         if (global.getPairwiseView()) {
-    //             $(".pairwiseButton").click();
-    //         }
-    //         $(".pairwiseButton").hide();
-    //         if ($(".motifResults a").length > 0) {
-    //             searchbar.setValue("#motif");
-    //         }
-    //     }
-    //     e.preventDefault();
-    // });
-
     // Event handler for switching between clustering options
     $("#clusterNumProcess, #clusterComparison").unbind().on("change", function() {
         $("#labelIconL, #labelIconR, #selectIconL, #selectIconR").hide();
@@ -673,40 +630,6 @@ Controller.prototype.bindNodes = function(nodes) {
             var $line = $("#line" + e.getId());
             var $parent = $line.parent(".line").addClass("reveal");
 
-            // Only highlight log lines on the Log Lines tab
-
-            if ($(".leftTabLinks li").first().hasClass("default")) {
-                
-                $line.addClass("focus").css({
-                    "background": "transparent",
-                    "color": "white",
-                    "width": "calc(" + $line.width() + "px - 1em)"
-                }).data("fill", e.getFillColor());
-
-                $(".highlight").css({
-                    "width": $line.width(),
-                    "height": $line.height(),
-                    "opacity": e.getOpacity()
-                });
-
-                var top = parseFloat($line.css("top")) || 0;
-                var ptop = parseFloat($parent.css("top")) || 0;
-                var margin = parseFloat($line.css("margin-top")) || 0;
-                var pmargin = parseFloat($parent.css("margin-top")) || 0;
-                var vleft = $(".visualization .left").offset().left;
-                var vtop = $(".visualization .left").offset().top;
-                var offset = $(".log").offset().top - vtop;
-
-                $(".highlight").css({
-                    "background": e.getFillColor(),
-                    "top": top + ptop + margin + pmargin + offset,
-                    "left": $line.offset().left - parseFloat($line.css("margin-left")) - vleft
-                }).attr({
-                    "data-ln": e.getLineNumber()
-                }).data({
-                    "id": e.getId()
-                }).show();
-            }
         }
         
         // Unhighlight any previously clicked edges
@@ -1383,7 +1306,7 @@ Controller.prototype.formatSidebarInfo = function(sourceNode, targetNode, number
                                     .attr("stroke-width", 1)
                                     .attr("opacity", 0.5)
                                     .attr("x1", 8)
-                                    .attr("y1", positionTop - 80)
+                                    .attr("y1", positionTop - 74)
                                     .attr("x2", 8)
                                     .attr("y2", positionBottom - 80);
     }
