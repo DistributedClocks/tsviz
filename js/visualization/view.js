@@ -284,6 +284,7 @@ View.prototype.draw = function(viewPosition) {
         }
         var startNodes = view.visualGraph.getStartVisualNodes();
         var arr = [];
+        // var hostlabelsarr = [];
         startNodes.forEach(function(visualNode) {
             view.hostNodes.set(visualNode.getHost(), visualNode);
             var svg = visualNode.getSVG();
@@ -291,19 +292,20 @@ View.prototype.draw = function(viewPosition) {
             arr.push(svg[0]);
         });
         
-        const d3Hosts = d3.selectAll(arr).data(startNodes);
-        drawHostLabels(d3Hosts);
-
-        const hostbar = view.$hostSVG[0]; 
-        const d3Hostbar = d3.select(hostbar);
-        view.controller.bindHosts(d3Hostbar, startNodes);
+        // Bind the hosts
+        // view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
+        d3.selectAll(arr).data(startNodes);
+        drawHostLabels(arr);
+        // // Bind the hosts
+        view.controller.bindHosts(d3.selectAll(arr).data(startNodes));
     }
 
-    function drawHostLabels(d3Hosts) {
+    function drawHostLabels(g_hosts) {
         view.$hostSVG.attr("overflow", "visible");
 
+        var hosts = d3.selectAll(g_hosts);
         var x_offset = Global.HOST_SIZE / 3;
-        var hostLabels = d3Hosts.append("text")
+        var hostLabels = hosts.append("text")
             .text(function(node) {
                 const label = view.getAbbreviatedHostname(node.getHost());
                 return label;

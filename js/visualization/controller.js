@@ -849,25 +849,21 @@ Controller.prototype.bindEdges = function(edges) {
  * <li>shift+double-click: Highlights the host</li>
  * </ul>
  * 
- * @param {d3.selection} d3Hostbar A D3 selection of the hostbar
- * @param {d3.selection} startNode An array host visualNodes
+ * @param {d3.selection} hosts A D3 selection of the host rects
  */
-Controller.prototype.bindHosts = function(d3Hostbar, startNodes) {
+Controller.prototype.bindHosts = function(hosts) {
     var controller = this;
+    var tip = d3.tip();
+    hosts.call(tip);
 
-    /* Initialize tooltip */
-    const tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-14, 0])
-        .html(function(visualNode) {
-            return visualNode.getText();
-        });
-
-    d3Hostbar.call(tip);
-
-    d3Hostbar.selectAll("rect")
-        .data(startNodes)
-      .on("dblclick", function(e) {
+    hosts.on("mouseover", function(e) {
+        tip.attr('class', 'd3-tip')
+           .offset([-14, 0])
+           .html(function(d) {
+                return "<span style='color:white'>" + e.getText() + "</span>";
+           });
+        tip.show(e);
+    }).on("dblclick", function(e) {
         var views = controller.global.getViews();
 
         if (d3.event.shiftKey) {
@@ -887,8 +883,7 @@ Controller.prototype.bindHosts = function(d3Hostbar, startNodes) {
         controller.showDialog(e, 1, this);
         controller.clearSidebarInfo();
         $(".event").find(".source").find(".name").text(e.getText());
-    }).on("mouseover", tip.show)
-      .on("mouseout", tip.hide);
+    }).on("mouseout", tip.hide);
 };
 
 
