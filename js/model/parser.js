@@ -48,7 +48,7 @@ function LogParser(rawString, delimiter, regexp) {
     this.executions = {};
 
     var names = this.regexp.getNames();
-    if (names.indexOf("clock") < 0 || names.indexOf("host") < 0 || names.indexOf("event") < 0) {
+    if (names.indexOf("timestamp") < 0 || names.indexOf("clock") < 0 || names.indexOf("host") < 0 || names.indexOf("event") < 0) {
         var e = new Exception("The parser RegExp you entered does not have the necessary named capture groups.\n", true);
         e.append("Please see the documentation for details.");
         throw e;
