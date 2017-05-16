@@ -122,7 +122,8 @@ Global.prototype.drawAll = function() {
     var viewLabelL = $('<p id="viewLabelL"></p>').text(leftLabel).prepend(labelIconL);
     var viewSelectDiv = $('<div id="viewSelectDiv"></div>');
     var viewSelectL = $('<select id="viewSelectL"></select>');
-
+    
+    this.drawSideBar();
     if (this.viewR != null) {
         // the "Pairwise" button is only visible when there are > 1 executions and when not doing a motif search
         if (searchbar.getMode() != SearchBar.MODE_MOTIF) {
@@ -133,13 +134,15 @@ Global.prototype.drawAll = function() {
         var rightLabel = this.viewR.getLabel();
        // If there are only two executions in pairwise view, use labels instead of drop-downs
        if (numViews == 2 && global.getPairwiseView()) {
-          this.$hostBar.append(viewLabelDiv);
+          // this.$hostBar.append(viewLabelDiv);
+          $("#sidebar").append(viewSelectDiv); 
           var viewLabelR = $('<p id="viewLabelR"></p>').text(rightLabel).append(labelIconR);
           viewLabelDiv.append(viewLabelL, viewLabelR);
 
        // Otherwise, use drop-downs
        } else {
-            this.$hostBar.append(viewSelectDiv); 
+            // this.$hostBar.append(viewSelectDiv); 
+            $("#sidebar").append(viewSelectDiv); 
             var viewSelectR = $('<select id="viewSelectR"></select>').hide();
             viewSelectDiv.append(selectIconL, selectIconR, viewSelectL);
             if (numViews != 2) {
@@ -191,7 +194,8 @@ Global.prototype.drawAll = function() {
     // If there is a single execution
     else {
         // The label here is "" but it'll help shift the hostbar down
-        this.$hostBar.append(viewLabelDiv); 
+        // this.$hostBar.append(viewLabelDiv); 
+        $("#sidebar").append(viewSelectDiv); 
         viewLabelDiv.append(viewLabelL);
 //        $(".visualization .left #tabs").css("height", "2.5em");
     }
@@ -249,7 +253,7 @@ Global.prototype.drawAll = function() {
     this.$vizContainer.height("auto");
     $(".dialog").hide();
     $(".hostConstraintDialog").hide();
-    this.drawSideBar();
+    
 
     // only call countMotifs if there are actually highlighted motifs to count, 
     // otherwise the motifGroup parameter to addMotif() in motifNavigator is null

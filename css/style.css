@@ -724,16 +724,16 @@ svg {
   padding: 0.15em;
   font-family: sans-serif;
   opacity: 0.8;
-  margin-left: 1.5em;
+  /*margin-left: 1.5em;*/
 }
 
 #viewSelectR {
-  position: fixed;
+  position: relative;
   padding: 0.15em;
-  right: 260px;
+/*  right: 260px;*/
   font-family: sans-serif;
   opacity: 0.8;
-  margin-right: 0.8em;
+  /*margin-right: 0.8em;*/
 }
 
 #viewSeparator {
@@ -931,6 +931,7 @@ svg {
   overflow: auto;
   z-index: -4;
 }
+
 #sidebar svg line{
     z-index: -30;
 }
