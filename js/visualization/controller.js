@@ -267,16 +267,18 @@ function Controller(global) {
     $("#multiExecToggle").unbind("click"); // unbind before to make sure we aren't adding extra listeners
     $("#multiExecToggle").on("click", function(){
         //if currently inactive
-        if(!$("#multiExecToggle").hasClass("active")){
-            $("#multiExecToggle").addClass("active");
-            $("#multiExecTab").addClass("show");
-            $(".pairwiseButton").show();
-        }
-        //if currently active
-        else if($("#multiExecToggle").hasClass("active")){
-            $("#multiExecToggle").removeClass("active");
-            $("#multiExecTab").removeClass("show");
-            $(".pairwiseButton").hide();
+        if(self.global.getViews().length >= 2){
+            if(!$("#multiExecToggle").hasClass("active")){
+                $("#multiExecToggle").addClass("active");
+                $("#multiExecTab").addClass("show");
+                $(".pairwiseButton").show();
+            }
+            //if currently active
+            else if($("#multiExecToggle").hasClass("active")){
+                $("#multiExecToggle").removeClass("active");
+                $("#multiExecTab").removeClass("show");
+                $(".pairwiseButton").hide();
+            }
         }
     });
 
