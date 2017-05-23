@@ -263,6 +263,22 @@ function Controller(global) {
         }        
     });
 
+    //Multi-exec tab
+    $("#multiExecToggle").unbind("click"); // unbind before to make sure we aren't adding extra listeners
+    $("#multiExecToggle").on("click", function(){
+        //if currently inactive
+        if(!$("#multiExecToggle").hasClass("active")){
+            $("#multiExecToggle").addClass("active");
+            $("#multiExecTab").addClass("show");
+            $(".pairwiseButton").show();           
+        }
+        //if currently active
+        else if($("#multiExecToggle").hasClass("active")){
+            $("#multiExecToggle").removeClass("active");
+            $("#multiExecTab").removeClass("show");            
+        }        
+    });
+
     //If user presses backspace, confirm that they want to go away
     $(window).unbind("keydown.dialog").on("keydown.dialog", function(e) {
         if (e.which == 8) {

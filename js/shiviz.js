@@ -272,12 +272,12 @@ Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortTy
         
         // initial properties for the diffButton
         $(".diffButton").hide();
-        $(".diffButton").text("Show Differences");
+        // $(".diffButton").text("Show Differences");
         $(".diffButton").removeClass("fade");
 
         // initial properties for the pairwiseButton
         $(".pairwiseButton").hide();
-        $(".pairwiseButton").text("Pairwise");
+        // $(".pairwiseButton").text("Pairwise");
         $(".pairwiseButton").removeClass("fade");
 
         // reset search tabs

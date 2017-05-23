@@ -110,16 +110,13 @@ Global.prototype.drawAll = function() {
     this.$hostBar.children("*").remove();
     
     this.$vizContainer.height(global.getMaxViewHeight());
-    var viewLabelDiv = $('<div id="viewLabelDiv"></div>');
+    // var viewLabelDiv = $('<div id="viewLabelDiv"></div>');
 
     // Icons for left and right view, styled differently for labels and dropdowns
-    var labelIconL = $('<label id="labelIconL"></label>').text("r").hide();
-    var labelIconR = $('<label id="labelIconR"></label>').text("r").hide();
-    var selectIconL = $('<label id="selectIconL"></label>').text("r").hide();
-    var selectIconR = $('<label id="selectIconR"></label>').text("r").hide();
+    var labelIconL = $('<label id="labelIconL"></label>').text("Left:");
+    var labelIconR = $('<label id="labelIconR"></label>').text("Right:");
 
     var leftLabel = this.viewL.getLabel();
-    var viewLabelL = $('<p id="viewLabelL"></p>').text(leftLabel).prepend(labelIconL);
     var viewSelectDiv = $('<div id="viewSelectDiv"></div>');
     var viewSelectL = $('<select id="viewSelectL"></select>');
     
@@ -127,6 +124,9 @@ Global.prototype.drawAll = function() {
     if (this.viewR != null) {
         // the "Pairwise" button is only visible when there are > 1 executions and when not doing a motif search
         if (searchbar.getMode() != SearchBar.MODE_MOTIF) {
+            if(!$("#multiExecToggle").hasClass("active") && !$("#multiExecTab").hasClass("show")){
+                $("#multiExecTab").addClass("show");
+            }
             $(".pairwiseButton").show();
         }
         $(".searchTabLinks li").last().show();
@@ -134,18 +134,18 @@ Global.prototype.drawAll = function() {
         var rightLabel = this.viewR.getLabel();
        // If there are only two executions in pairwise view, use labels instead of drop-downs
        if (numViews == 2 && global.getPairwiseView()) {
-          // this.$hostBar.append(viewLabelDiv);
-          $("#sidebar").append(viewSelectDiv); 
-          var viewLabelR = $('<p id="viewLabelR"></p>').text(rightLabel).append(labelIconR);
-          viewLabelDiv.append(viewLabelL, viewLabelR);
-
+          viewSelectDiv.append(labelIconL);
+          $("#multiExecTab").append(viewSelectDiv); 
        // Otherwise, use drop-downs
        } else {
-            // this.$hostBar.append(viewSelectDiv); 
-            $("#sidebar").append(viewSelectDiv); 
+            viewSelectDiv.append(labelIconL);
             var viewSelectR = $('<select id="viewSelectR"></select>').hide();
-            viewSelectDiv.append(selectIconL, selectIconR, viewSelectL);
+            viewSelectDiv.append(viewSelectL);
+            $("#multiExecTab").append(viewSelectDiv); 
             if (numViews != 2) {
+                if(global.getPairwiseView()){
+                    viewSelectDiv.append(labelIconR);
+                }
                 viewSelectDiv.append(viewSelectR);
             }
       
@@ -195,8 +195,7 @@ Global.prototype.drawAll = function() {
     else {
         // The label here is "" but it'll help shift the hostbar down
         // this.$hostBar.append(viewLabelDiv); 
-        $("#sidebar").append(viewSelectDiv); 
-        viewLabelDiv.append(viewLabelL);
+        $("#multiExecTab").append(viewSelectDiv); 
 //        $(".visualization .left #tabs").css("height", "2.5em");
     }
 
@@ -588,7 +587,7 @@ Global.prototype.drawSideBar = function() {
     
     var global = this;  
     this.$sidebar.children("#hiddenHosts").remove();
-    this.$sidebar.children("#viewSelectDiv").remove();
+    this.$sidebar.children("#multiExecTab").children("#viewSelectDiv").remove();
 
     // Draw hidden hosts
     var hiddenHosts = {};

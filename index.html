@@ -440,8 +440,17 @@ thread4 {"thread4":58}</pre>
             <div id="vizContainer"></div>
         </div>
         <div id="sidebar">
-            <button class="pairwiseButton">Pairwise</button>
-            <button class="diffButton">Show Differences</button>
+            <!-- <button class="pairwiseButton" title="Show logs side by side">Pairwise</button>
+            <button class="diffButton" title="Show differences between logs">Show Differences</button> -->
+            
+            <!-- =============================== MULTI-EXECUTIONS =============================== -->
+            <div id="multiExecToggle" class="separator" title="Click to toggle Multiple Execution information"> Multiple Executions </div>
+            <div id="multiExecTab" class="sidebarTab">
+                <button class="pairwiseButton">Pairwise</button>
+                <button class="diffButton">Show Differences</button>
+            </div>
+
+            <!-- =============================== NODE-INFO =============================== -->
 	        <div id="nodeInfoToggle" class="separator" title="Click to toggle node information"> Node information </div>
 	        <div id="nodeInfoTab" class="sidebarTab">
 	        	<div class="info">
@@ -477,12 +486,13 @@ thread4 {"thread4":58}</pre>
 	                </svg>  
 	            </div>
 	        </div>
-	        <div id="searchResultsToggle" class="separator" title="Click to toggle search results"> Search results </div>
+	        <!-- =============================== SEARCH-RESULTS =============================== -->
+            <div id="searchResultsToggle" class="separator" title="Click to toggle search results"> Search results </div>
             <div id="searchResultsTab" class="sidebarTab">
 	            <div class="chart"></div>	
                 <div class="chartButtons"></div>
             </div>
-            
+            <!-- =============================== GRAPH-OPTIONS =============================== -->
             <div id="graphOptionsToggle" class="separator" title="Click to toggle graph options"> Graph options </div>
             <div id="graphOptionsTab" class="sidebarTab">
 	            <div class="option">

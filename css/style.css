@@ -696,28 +696,14 @@ svg {
 
 /* View drop-downs and labels */
 #viewSelectDiv {
-  margin-bottom: 1em;
+  display: block;
+  margin: auto;
+  /*margin-bottom: 1em;*/
 }
-
+/*
 #viewLabelDiv {
   margin-bottom: 1em;
-}
-
-#viewLabelL {
-  position: relative;
-  font-family: sans-serif;
-  opacity: 0.8;
-  margin-right: 0.5em;
-}
-
-#viewLabelR {
-  position: fixed;
-  right: 240px;
-  font-family: sans-serif;
-  opacity: 0.8;
-  margin-top: -2.2em;
-  margin-right: 0.5em;
-}
+}*/
 
 #viewSelectL {
   position: relative;
@@ -746,15 +732,17 @@ svg {
 
 /* Arrow icons for clustering */
 #labelIconR, #labelIconL {
-  font-family: "Icomoon";
-  margin-left: .5em;
-  margin-right: .5em;
+  display: block;
+  margin: auto;
+  /*font-family: "Icomoon";*/
+  /*margin-left: .5em;
+  margin-right: .5em;*/
 }
 
-#labelIconL {
-  float: left;
+/*#labelIconL {
+  /*float: left;
   transform: rotate(180deg);
-}
+}*/
 
 #selectIconL {
   font-family: "Icomoon";
