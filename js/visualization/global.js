@@ -126,6 +126,7 @@ Global.prototype.drawAll = function() {
         if (searchbar.getMode() != SearchBar.MODE_MOTIF) {
             if(!$("#multiExecToggle").hasClass("active") && !$("#multiExecTab").hasClass("show")){
                 $("#multiExecTab").addClass("show");
+                $("#multiExecToggle").addClass("active");
             }
             $(".pairwiseButton").show();
         }

@@ -270,13 +270,14 @@ function Controller(global) {
         if(!$("#multiExecToggle").hasClass("active")){
             $("#multiExecToggle").addClass("active");
             $("#multiExecTab").addClass("show");
-            $(".pairwiseButton").show();           
+            $(".pairwiseButton").show();
         }
         //if currently active
         else if($("#multiExecToggle").hasClass("active")){
             $("#multiExecToggle").removeClass("active");
-            $("#multiExecTab").removeClass("show");            
-        }        
+            $("#multiExecTab").removeClass("show");
+            $(".pairwiseButton").hide();
+        }
     });
 
     //If user presses backspace, confirm that they want to go away
@@ -1316,20 +1317,18 @@ Controller.prototype.formatSidebarInfo = function(sourceNode, targetNode, number
         //1.5 ===> circle radius
         var positionTop = $("#sourceCircle").offset().top - $(window).scrollTop() + 2;
         var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop() + 2;
-        if($(".pairwiseButton").is(":visible")){
-            positionTop -= $(".pairwiseButton").height();
-            positionTop -= parseFloat($(".pairwiseButton").css("margin-bottom")); 
-            positionBottom -= $(".pairwiseButton").height();
+        positionTop -= $("#multiExecToggle").height();
+        positionBottom -= $("#multiExecToggle").height();
+        positionTop -= $(".pairwiseButton").height();
+        positionBottom -= $(".pairwiseButton").height();
+
+        if($("#multiExecTab").hasClass("show")){    
+            positionTop -= $("#multiExecTab").height();
+            positionTop -= parseFloat($(".pairwiseButton").css("margin-bottom"));             
+            positionBottom -= $("#multiExecTab").height();
             positionBottom -= parseFloat($(".pairwiseButton").css("margin-bottom"));    
         }
         
-        if($(".diffButton").is(":visible")){
-            positionTop -= $(".diffButton").height();
-            positionTop -= parseFloat($(".diffButton").css("margin-bottom")); 
-            positionBottom -= $(".diffButton").height();
-            positionBottom -= parseFloat($(".diffButton").css("margin-bottom"));       
-        }
-
         d3.select(".nodeConnection").select("svg").select("line")
                                     .attr("stroke-dasharray", "0,0")
                                     .attr("stroke", "dimgrey")
