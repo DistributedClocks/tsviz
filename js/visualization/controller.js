@@ -1318,11 +1318,14 @@ Controller.prototype.formatSidebarInfo = function(sourceNode, targetNode, number
         // Add the line to connect the two circles together
         //1.5 ===> circle radius
         var positionTop = $("#sourceCircle").offset().top - $(window).scrollTop() + 2;
-        var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop() + 2;
-        positionTop -= $("#multiExecToggle").height();
-        positionBottom -= $("#multiExecToggle").height();
-        positionTop -= $(".pairwiseButton").height();
-        positionBottom -= $(".pairwiseButton").height();
+        var positionBottom = $("#targetCircle").offset().top - $(window).scrollTop();
+        
+        if($("#multiExecToggle").is(":visible")){
+            positionTop -= $("#multiExecToggle").height();
+            positionBottom -= $("#multiExecToggle").height();
+            positionTop -= $(".pairwiseButton").height();
+            positionBottom -= $(".pairwiseButton").height();
+        }
 
         if($("#multiExecTab").hasClass("show")){    
             positionTop -= $("#multiExecTab").height();

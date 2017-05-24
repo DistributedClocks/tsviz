@@ -197,6 +197,7 @@ Global.prototype.drawAll = function() {
         // The label here is "" but it'll help shift the hostbar down
         // this.$hostBar.append(viewLabelDiv); 
         $("#multiExecTab").append(viewSelectDiv); 
+        $("#multiExecToggle").hide();
 //        $(".visualization .left #tabs").css("height", "2.5em");
     }
 
