@@ -637,6 +637,16 @@ Controller.prototype.bindNodes = function(nodes) {
             }
 
             controller.showDialog(e, 0, this);
+            var group = d3.select("#node" + e.getId());
+                group.append("line").attr("class", "dashed")
+                    .attr("x1", -e.getX())
+                    .attr("x2", $("#vizContainer").width())
+                    .attr("y1", 0)
+                    .attr("y2", 0)
+                    .attr("stroke-dasharray", "5,5")
+                    .attr("stroke-width", "2px")
+                    .attr("stroke", "#999")
+                    .attr("z-index", 120);
 
             $(".line.focus").css({
                 "color": $(".focus").data("fill"),
@@ -731,6 +741,12 @@ Controller.prototype.bindEdges = function(edges) {
     edges.on("click", function(e) {
         //If the node info tab is hidden, unhide it
         if(! $("#nodeInfoToggle").hasClass("active")) $("#nodeInfoToggle").click();
+
+        //Clear previously selected nodes
+        d3.selectAll("circle.sel").each(function(d){
+            $(this).remove();
+            d.setSelected(false);
+        });
         e.selectEdge(true);
         controller.clearSidebarInfo();
         controller.formatSidebarInfo(e.getSourceVisualNode(), e.getTargetVisualNode(), 0);
@@ -1001,16 +1017,16 @@ Controller.prototype.showDialog = function(e, type, elem) {
 
             if (e.getRadius() <= 5) {
                 var viz = $("#vizContainer");
-                var group = d3.select("#node" + e.getId());
-                group.append("line").attr("class", "dashed")
-                    .attr("x1", -e.getX())
-                    .attr("x2", viz.width())
-                    .attr("y1", 0)
-                    .attr("y2", 0)
-                    .attr("stroke-dasharray", "5,5")
-                    .attr("stroke-width", "2px")
-                    .attr("stroke", "#999")
-                    .attr("z-index", 120);
+                // var group = d3.select("#node" + e.getId());
+                // group.append("line").attr("class", "dashed")
+                //     .attr("x1", -e.getX())
+                //     .attr("x2", viz.width())
+                //     .attr("y1", 0)
+                //     .attr("y2", 0)
+                //     .attr("stroke-dasharray", "5,5")
+                //     .attr("stroke-width", "2px")
+                //     .attr("stroke", "#999")
+                //     .attr("z-index", 120);
             }
         }
     }
