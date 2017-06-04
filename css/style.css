@@ -477,12 +477,13 @@ g .tick text{
 }
 
 #searchbar.results #bar input {
-  /*width: calc(100% - 140pt);*/
-  width: calc(100% - 52pt);
+  width: calc(100% - 140pt);
+  /*width: calc(100% - 52pt);*/
 }
 #searchbar.results #bar .clear {
   /*left: calc(100% - 180pt);*/ /*--ORIGINAL*/
-  left: calc(100% - 108pt);
+  /*left: calc(100% - 108pt);*/
+  left: calc(100% - 200pt);
 }
 #searchbar.results #bar .nav {
   display: initial;

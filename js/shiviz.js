@@ -214,7 +214,7 @@ Shiviz.prototype.resetView = function() {
 Shiviz.prototype.visualize = function(log, regexpString, delimiterString, sortType, descending, minDistance, collapseLocal) {
     try {
         d3.selectAll("#vizContainer svg").remove();
-        d3.selectAll("span").remove();
+        // d3.selectAll("span").remove();
 
         if(collapseLocal) $("#coll_local_viz").prop('checked', true); 
         else $("#coll_time_viz").prop('checked', true); 
