@@ -918,7 +918,11 @@ svg {
   padding: 0 2em 0 0;
   height: auto;
   overflow: auto;
-  z-index: -4;
+  z-index: 4;
+}
+
+#sidebar .info .event{
+  font-size: 12pt;
 }
 
 #sidebar svg line{

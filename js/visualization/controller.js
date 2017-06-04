@@ -648,6 +648,23 @@ Controller.prototype.bindNodes = function(nodes) {
 
             var $line = $("#line" + e.getId());
             var $parent = $line.parent(".line").addClass("reveal");
+            $(".event").css("font-size", "12pt");
+            $(".fields").css("font-size", "10pt");
+            while($(".info").outerHeight() > $("#nodeInfoTab").outerHeight()){
+                var oldevent = parseFloat($(".event").css("font-size"));
+                var oldfield = parseFloat($(".fields").css("font-size"));
+                if(oldfield > 5){
+                    $(".event").css("font-size", String(oldevent-1) + "px");
+                    $(".fields").css("font-size", String(oldfield-1) + "px");
+                }
+                else break;
+            }
+            // console.log("info outerHeight: ");
+            // console.log($(".info").outerHeight());
+            // console.log(parseFloat());
+            // console.log(parseFloat($(".fields").css("font-size")));
+            // console.log("nodeInfoTab outerHeight: ");
+            // console.log($("#nodeInfoTab").outerHeight());
 
         }
         
